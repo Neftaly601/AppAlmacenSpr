@@ -106,7 +106,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         keyboard = (InputMethodManager) getSystemService(ActivityRecepTraspMultSuc.INPUT_METHOD_SERVICE);
 
         txtProd.setInputType(InputType.TYPE_NULL);
-        txtProd.requestFocus();
+        //txtProd.requestFocus();
 
         txtProd.addTextChangedListener(new TextWatcher() {
             @Override
@@ -267,6 +267,8 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                     insertarSql(listaTrasp.get(i).getProducto(),listaTrasp.get(i).getCantidad(),listaTrasp.get(i).getCantSurt());
                 }//for
                 consultaSql();
+                txtProd.setEnabled(true);
+                txtProd.requestFocus();
             }else{
                 Toast.makeText(ActivityRecepTraspMultSuc.this, "Ningun dato", Toast.LENGTH_SHORT).show();
                 consultaSql();
