@@ -65,7 +65,7 @@
 
 
             </LinearLayout>
-            <com.google.android.material.button.MaterialButton
+            <!--<com.google.android.material.button.MaterialButton
                 android:id="@+id/btnBuscarProd"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -77,7 +77,7 @@
                 android:backgroundTint="@color/AzulBack"
                 android:text="@string/buscar"
                 android:textColor="@color/ColorWhite"
-                android:textSize="14sp"/>
+                android:textSize="14sp"/>-->
 
             <View
                 android:layout_width="match_parent"

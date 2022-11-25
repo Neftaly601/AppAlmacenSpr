@@ -59,7 +59,7 @@ import dmax.dialog.SpotsDialog;
 
 public class ActivityInventarioXProd extends AppCompatActivity {
     private EditText txtFolioProd,txtUbi,txtCantProd,txtTotUbi,txtExistAlmProd,txtCantAcum;
-    private Button btnBuscarProd,btnGuarda,btnTrasl;
+    private Button btnGuarda,btnTrasl;
     private TextView tvClvProd,tvDescProd;
     private ImageView ivProdIm;
     private SharedPreferences preference;
@@ -84,7 +84,7 @@ public class ActivityInventarioXProd extends AppCompatActivity {
                 setMessage("Espere un momento...").build();
 
         txtFolioProd   = findViewById(R.id.txtFolioProd);
-        btnBuscarProd = findViewById(R.id.btnBuscarProd);
+        //btnBuscarProd = findViewById(R.id.btnBuscarProd);
         btnGuarda      = findViewById(R.id.btnGuarda);
         btnTrasl       = findViewById(R.id.btnTrasl);
         tvClvProd      = findViewById(R.id.tvClvProd);
@@ -136,13 +136,13 @@ public class ActivityInventarioXProd extends AppCompatActivity {
 
             }//afterTextChange
         });
-        btnBuscarProd.setOnClickListener(new View.OnClickListener() {
+        /*btnBuscarProd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 firtMet();
             }//onClick
         });//btnBuscarProd.setonclick
-
+        */
         btnGuarda.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
