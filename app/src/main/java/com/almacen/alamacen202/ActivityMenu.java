@@ -176,11 +176,11 @@ public class ActivityMenu extends AppCompatActivity {
 
 
     }
-    public void eliminarSqlySP() {//eliminar bd y shared preferences
+    public void eliminarSqlySP(boolean var) {//eliminar bd y shared preferences yani(true cuando tambien se incluya la de inventario)
         try{
             SQLiteDatabase db = conn.getWritableDatabase();
             db.delete("INVENTARIOALM",null,null);
-            db.delete("INVENTARIO",null,null);
+            if(var==true){db.delete("INVENTARIO",null,null);}
             editor2.clear().commit();
         }catch(Exception e){}
     }//eliminarSql
@@ -278,7 +278,7 @@ public class ActivityMenu extends AppCompatActivity {
             if (id == R.id.cerrarSe) {
                 editor.clear();
                 editor.commit();
-                eliminarSqlySP();
+                eliminarSqlySP(true);
                 Intent cerrar = new Intent(this, MainActivity.class);
                 startActivity(cerrar);
                 System.exit(0);
@@ -288,7 +288,7 @@ public class ActivityMenu extends AppCompatActivity {
                 StrServer = "sprautomotive.servehttp.com:9090";
                 editor.putString("Server", StrServer);
                 editor.commit();
-                eliminarSqlySP();
+                eliminarSqlySP(false);
                 overridePendingTransition(0, 0);
                 startActivity(getIntent());
                 overridePendingTransition(0, 0);
@@ -297,7 +297,7 @@ public class ActivityMenu extends AppCompatActivity {
                 StrServer = "sprautomotive.servehttp.com:9095";
                 editor.putString("Server", StrServer);
                 editor.commit();
-                eliminarSqlySP();
+                eliminarSqlySP(false);
                 overridePendingTransition(0, 0);
                 startActivity(getIntent());
                 overridePendingTransition(0, 0);
@@ -306,7 +306,7 @@ public class ActivityMenu extends AppCompatActivity {
                 StrServer = "sprautomotive.servehttp.com:9080";
                 editor.putString("Server", StrServer);
                 editor.commit();
-                eliminarSqlySP();
+                eliminarSqlySP(false);
                 overridePendingTransition(0, 0);
                 startActivity(getIntent());
                 overridePendingTransition(0, 0);

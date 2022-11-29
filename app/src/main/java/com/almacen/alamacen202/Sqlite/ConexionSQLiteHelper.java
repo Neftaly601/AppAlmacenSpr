@@ -16,7 +16,8 @@ public class ConexionSQLiteHelper extends SQLiteOpenHelper {
             "SUCURSAL VARCHAR (2)," +
             "PRODUCTO VARCHAR (45)," +
             "CANTIDAD INTEGER (11)," +
-            "SURTIDO INTEGER (11),PRIMARY KEY(SUCURSAL,PRODUCTO))";
+            "SURTIDO INTEGER (11),"+
+            "UBICACION VARCHAR(45),PRIMARY KEY(SUCURSAL,PRODUCTO))";
 
 
 

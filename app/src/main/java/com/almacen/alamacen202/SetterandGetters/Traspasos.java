@@ -5,12 +5,14 @@ public class Traspasos {
     private String producto;
     private String cantidad;
     private String cantSurt;
+    private String ubic;
 
-    public Traspasos(String  num, String producto, String cantidad,String cantSurt) {
+    public Traspasos(String  num, String producto, String cantidad,String cantSurt,String ubic) {
         this.num = num;
         this.producto = producto;
         this.cantidad = cantidad;
         this.cantSurt = cantSurt;
+        this.ubic=ubic;
     }//constructor
 
     public String getNum() {
@@ -43,5 +45,13 @@ public class Traspasos {
 
     public void setCantSurt(String cantSurt) {
         this.cantSurt = cantSurt;
+    }
+
+    public String getUbic() {
+        return ubic;
+    }
+
+    public void setUbic(String ubic) {
+        this.ubic = ubic;
     }
 }//clase

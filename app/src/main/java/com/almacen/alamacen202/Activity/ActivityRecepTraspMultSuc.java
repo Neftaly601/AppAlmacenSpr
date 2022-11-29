@@ -53,7 +53,10 @@ import org.ksoap2.transport.HttpTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 import dmax.dialog.SpotsDialog;
 
@@ -264,7 +267,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             mDialog.dismiss();
             if (listaTrasp.size()>0) {
                 for (int i=0;i<listaTrasp.size();i++){//guardar datos
-                    insertarSql(listaTrasp.get(i).getProducto(),listaTrasp.get(i).getCantidad(),listaTrasp.get(i).getCantSurt());
+                    insertarSql(listaTrasp.get(i).getProducto(),listaTrasp.get(i).getCantidad(),listaTrasp.get(i).getCantSurt(),listaTrasp.get(i).getUbic());
                 }//for
                 consultaSql();
                 txtProd.setEnabled(true);
@@ -296,13 +299,12 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             for (int i = 0; i < response.getPropertyCount(); i++) {
                 SoapObject response0 = (SoapObject) soapEnvelope.bodyIn;
                 response0 = (SoapObject) response0.getProperty(i);
-                String cc=(response0.getPropertyAsString("CANTIDAD").equals("anyType{}") ? " " : response0.getPropertyAsString("CANTIDAD"));
+                String can=(response0.getPropertyAsString("CANTIDAD").equals("anyType{}") ? " " : response0.getPropertyAsString("CANTIDAD"));
+                String ub=(response0.getPropertyAsString("UBICACION").equals("anyType{}") ? " " : response0.getPropertyAsString("UBICACION"));
                 String surt="0";
                 listaTrasp.add(new Traspasos(
-                        "",
-                        (response0.getPropertyAsString("PRODUCTO").equals("anyType{}") ? " " : response0.getPropertyAsString("PRODUCTO")),
-                        cc,
-                        surt));
+                        "",(response0.getPropertyAsString("PRODUCTO").equals("anyType{}") ? " " : response0.getPropertyAsString("PRODUCTO")),
+                        can,surt,ub));
             }//for
         } catch (Exception ex) {}//catch
     }//conectaListInv
@@ -317,16 +319,18 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         protected Void doInBackground(Void... params) {
             escaneo=false;
             mensaje="";
+            String fecha =new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault()).format(new Date());
+            String hora=new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
             for(int i=0;i<listaTrasp.size();i++){
                 pro=listaTrasp.get(i).getProducto();
                 cc=listaTrasp.get(i).getCantSurt();
-                conectaRecepMultSuc(pro,cc);
+                conectaRecepMultSuc(pro,cc,fecha,hora);
                 if(mensaje.equals("SINCRONIZADO")){
                     eliminarSql("AND PRODUCTO='"+pro+"'");//si se sincroniz´se elimina de la base de datos sqlite del telefono
                     contador++;
                     mensaje="";
                 }//if equals
-            }//for
+            }//forz
             return null;
         }
 
@@ -357,15 +361,16 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
     }//AsynInsertInv
 
 
-    private void conectaRecepMultSuc (String producto, String cant) {
+    private void conectaRecepMultSuc (String producto, String cant,String fecha,String hora) {
         String SOAP_ACTION = "RecepcionMultisucursal";
         String METHOD_NAME = "RecepcionMultisucursal";
         String NAMESPACE = "http://" + strServer + "/WSk75AlmacenesApp/";
         String URL = "http://" + strServer + "/WSk75AlmacenesApp";
         try {
+
             SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
             XMLRecepMultSuc soapEnvelope = new XMLRecepMultSuc(SoapEnvelope.VER11);
-            soapEnvelope.XMLTrasp(strusr, strpass, strbran, producto,cant);
+            soapEnvelope.XMLTrasp(strusr, strpass, strbran, producto,cant,fecha,hora);
             soapEnvelope.dotNet = true;
             soapEnvelope.implicitTypes = true;
             soapEnvelope.setOutputSoapObject(Request);
@@ -393,10 +398,10 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             escaneo=false;
             listaTrasp.clear();
             rvTraspasos.setAdapter(null);
-            @SuppressLint("Recycle") Cursor fila = db.rawQuery("SELECT PRODUCTO,CANTIDAD,SURTIDO FROM INVENTARIO WHERE SUCURSAL='"+strbran+"' ORDER BY PRODUCTO ", null);
+            @SuppressLint("Recycle") Cursor fila = db.rawQuery("SELECT PRODUCTO,CANTIDAD,SURTIDO,UBICACION FROM INVENTARIO WHERE SUCURSAL='"+strbran+"' ORDER BY PRODUCTO ", null);
             if (fila != null && fila.moveToFirst()) {
                 do {
-                    listaTrasp.add(new Traspasos((i++)+"",fila.getString(0),fila.getString(1),fila.getString(2)));
+                    listaTrasp.add(new Traspasos((i++)+"",fila.getString(0),fila.getString(1),fila.getString(2),fila.getString(3)));
                 } while (fila.moveToNext());
                 adapter = new AdaptadorTraspasos(listaTrasp);
                 rvTraspasos.setAdapter(adapter);
@@ -442,7 +447,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         consultaSql();
     }//consultaSql
 
-    public void insertarSql(String prod,String cant,String cantS){
+    public void insertarSql(String prod,String cant,String cantS,String ubi){
         try{
             if(db != null){
                 ContentValues valores = new ContentValues();
@@ -450,6 +455,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                 valores.put("PRODUCTO", prod);
                 valores.put("CANTIDAD", cant);
                 valores.put("SURTIDO", cantS);
+                valores.put("UBICACION", ubi);
                 db.insert("INVENTARIO", null, valores);
             }
         }catch(Exception e){

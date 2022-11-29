@@ -114,6 +114,7 @@ public class ActivityInventarioXfolioComp extends AppCompatActivity {
 
         GridLayoutManager gl = new GridLayoutManager(ActivityInventarioXfolioComp.this, 1);
         rvOrdenCompras.setLayoutManager(gl);
+        txtFolioOrden.requestFocus();
 
         chbUbi.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -212,6 +213,7 @@ public class ActivityInventarioXfolioComp extends AppCompatActivity {
 
                                 txtFolioOrden.setEnabled(true);
                                 txtFolioOrden.setText("");
+                                txtFolioOrden.requestFocus();
                                 txtSumCant.setText("");
                                 txtExistAlm.setText("");
                                 txtCantAcum.setText("");

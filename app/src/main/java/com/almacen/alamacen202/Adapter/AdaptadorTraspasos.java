@@ -35,7 +35,7 @@ public class AdaptadorTraspasos extends RecyclerView.Adapter<AdaptadorTraspasos.
         holder.Cantidad.setText(datos.get(position).getCantidad());
         holder.n.setText(datos.get(position).getNum());
         holder.CantSurt.setText(datos.get(position).getCantSurt());
-
+        holder.ubi.setText(datos.get(position).getUbic());
 
         if(index==position){
             holder.lyaout.setBackgroundResource(R.color.ColorGris);
@@ -59,7 +59,7 @@ public class AdaptadorTraspasos extends RecyclerView.Adapter<AdaptadorTraspasos.
     }
 
     public static class ViewHolderTraspasos extends RecyclerView.ViewHolder {
-        TextView n,Producto, Cantidad,CantSurt;
+        TextView n,Producto, Cantidad,CantSurt,ubi;
         LinearLayout lyaout;
         public ViewHolderTraspasos (View itemView) {
             super(itemView);
@@ -67,6 +67,7 @@ public class AdaptadorTraspasos extends RecyclerView.Adapter<AdaptadorTraspasos.
             Producto =  itemView.findViewById(R.id.Producto);
             Cantidad =  itemView.findViewById(R.id.Cantidad);
             CantSurt = itemView.findViewById(R.id.CantSurt);
+            ubi = itemView.findViewById(R.id.ubi);
             lyaout  = itemView.findViewById(R.id.lyaout);
         }//constructor
     }//AdapterTraspasosViewHolder class
