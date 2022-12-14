@@ -13,11 +13,11 @@ public class ConexionSQLiteHelper extends SQLiteOpenHelper {
             "CANTIDAD INTEGER (11),PRIMARY KEY(PRODUCTO))";
 
     final String CREAR_TABLA_INVENTARIO = "CREATE TABLE INVENTARIO (" +
-            "SUCURSAL VARCHAR (2)," +
+            "EMPRESA VARCHAR (15)," +
             "PRODUCTO VARCHAR (45)," +
             "CANTIDAD INTEGER (11)," +
             "SURTIDO INTEGER (11),"+
-            "UBICACION VARCHAR(45),PRIMARY KEY(SUCURSAL,PRODUCTO))";
+            "UBICACION VARCHAR(45),PRIMARY KEY(EMPRESA,PRODUCTO))";
 
 
 

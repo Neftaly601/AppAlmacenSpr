@@ -17,9 +17,10 @@
             android:onClick="onClickLista">
             <TextView
                 android:id="@+id/tvN"
-                android:layout_width="55dp"
+                android:layout_width="25dp"
                 android:layout_height="wrap_content"
                 android:text="NUM"
+                android:textSize="8dp"
                 android:textStyle="bold"
                 android:maxLines="1"
                 android:padding="5dp"

@@ -98,14 +98,6 @@ public class ActivityInventarioXProd extends AppCompatActivity {
 
         txtFolioProd.setInputType(InputType.TYPE_NULL);
         txtFolioProd.requestFocus();
-        /*txtFolioProd.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if(b==false){
-                    Toast.makeText(ActivityInventarioXProd.this, "Escaner", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });*/
 
         txtFolioProd.addTextChangedListener(new TextWatcher() {
             @Override
@@ -133,7 +125,6 @@ public class ActivityInventarioXProd extends AppCompatActivity {
                         }//for
                     }//else
                 }//if
-
             }//afterTextChange
         });
         /*btnBuscarProd.setOnClickListener(new View.OnClickListener() {
@@ -179,11 +170,6 @@ public class ActivityInventarioXProd extends AppCompatActivity {
         });//btnTrasl
 
     }//onCreate
-    @Override
-    public boolean dispatchKeyEvent(KeyEvent e) {
-        Toast.makeText(this, "Input", Toast.LENGTH_SHORT).show();
-        return false; // prevent default behaviour
-    }
 
     private static boolean isNumeric(String cadena){
         try {

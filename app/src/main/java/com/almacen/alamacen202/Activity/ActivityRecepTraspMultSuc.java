@@ -2,6 +2,7 @@ package com.almacen.alamacen202.Activity;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,6 +10,8 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -61,10 +64,11 @@ import java.util.Locale;
 import dmax.dialog.SpotsDialog;
 
 public class ActivityRecepTraspMultSuc extends AppCompatActivity {
+    private ProgressDialog progressDialog;
     private SharedPreferences preference;
     private boolean escaneo=false;
     private int posicion=0;
-    private String strusr,strpass,strbran,strServer,codeBar,mensaje,Producto="";
+    private String strusr,strpass,strbran,strServer,codeBar,mensaje,Producto="",serv;
     private ArrayList<Traspasos> listaTrasp = new ArrayList<>();
     private EditText txtProd,txtCantidad,txtCantSurt;
     private ImageView ivProd;
@@ -88,8 +92,28 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         strbran = preference.getString("codBra", "null");
         strServer = preference.getString("Server", "null");
         codeBar = preference.getString("codeBar", "null");
+
+        switch (strServer) {
+            case "sprautomotive.servehttp.com:9090":
+                serv="RODATECH";
+                break;
+            case "sprautomotive.servehttp.com:9095":
+                serv="PARTECH";
+                break;
+            case "sprautomotive.servehttp.com:9080":
+                serv="TG";
+                break;
+        }
+
         mDialog = new SpotsDialog.Builder().setContext(ActivityRecepTraspMultSuc.this).
                 setMessage("Espere un momento...").build();
+        mDialog.setCancelable(false);
+
+        progressDialog = new ProgressDialog(ActivityRecepTraspMultSuc.this);//parala barra de
+        progressDialog.setMessage("Procesando....");
+        progressDialog.setIndeterminate(false);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setCancelable(false);
 
         txtProd    = findViewById(R.id.txtProducto);
         txtCantidad = findViewById(R.id.txtCantidad);
@@ -141,17 +165,19 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         btnBuscar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
-                builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Producto="";
-                        new AsyncRecepConsul().execute();
-                    }//onclick
-                });//positive button
-                builder.setNegativeButton("CANCELAR",null);
-                builder.setCancelable(false);
-                builder.setTitle("Aviso").setMessage("Se eliminaran los datos que esten almacenados en el teléfono \n¿Desea continuar?").create().show();
+                if(listaTrasp.size()>0){//si tiene
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
+                    builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Producto="";
+                            new AsyncRecepConsul().execute();
+                        }//onclick
+                    });//positive button
+                    builder.setNegativeButton("CANCELAR",null);
+                    builder.setCancelable(false);
+                    builder.setTitle("Aviso").setMessage("Se eliminaran los datos que esten almacenados en el teléfono \n¿Desea continuar?").create().show();
+                }
             }//onclick
         });//btnGuardar setonclick
 
@@ -159,7 +185,17 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(listaTrasp.size()>0){
-                    new AsyncRecepMultiSuc().execute();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
+                    builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            new AsyncRecepMultiSuc().execute();
+                        }//onclick
+                    });//positive button
+                    builder.setNegativeButton("CANCELAR",null);
+                    builder.setCancelable(false);
+                    builder.setTitle("Confirmación").setMessage("¿Desea sincronizar?").create().show();
+
                 }else{
                     Toast.makeText(ActivityRecepTraspMultSuc.this, "Sin datos para sincronizar", Toast.LENGTH_SHORT).show();
                 }
@@ -189,6 +225,18 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         super.onDestroy();
         db.close();
     }//onDestroy
+
+    public boolean firtMet() {//firtMet
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+        if (networkInfo != null && networkInfo.isConnected()) {//si hay conexion a internet
+            return true;
+        } else {
+            return false;
+        }//else
+    }//FirtMet saber si hay conexion a internet
 
     public void cambiaProd(){
         if(posicion==0){
@@ -249,15 +297,18 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
 
 
     private class AsyncRecepConsul extends AsyncTask<Void, Void, Void> {//WEBSERVICE PARA CONSULTAR LOS PRODUCTOS
+        private boolean conn=true;
         @Override
         protected void onPreExecute() {mDialog.show();}
 
         @Override
         protected Void doInBackground(Void... params) {
-            escaneo=false;
-            eliminarSql("");
-            listaTrasp.clear();
-            conectaRecepCon();
+            if(firtMet()==true){
+                escaneo=false;
+                eliminarSql("");
+                listaTrasp.clear();
+                conectaRecepCon();
+            }else{conn=false;}//else
             return null;
         }
 
@@ -270,8 +321,8 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                     insertarSql(listaTrasp.get(i).getProducto(),listaTrasp.get(i).getCantidad(),listaTrasp.get(i).getCantSurt(),listaTrasp.get(i).getUbic());
                 }//for
                 consultaSql();
-                txtProd.setEnabled(true);
-                txtProd.requestFocus();
+            }else if(conn=false){
+                Toast.makeText(ActivityRecepTraspMultSuc.this, "Sin conexión a internet", Toast.LENGTH_SHORT).show();
             }else{
                 Toast.makeText(ActivityRecepTraspMultSuc.this, "Ningun dato", Toast.LENGTH_SHORT).show();
                 consultaSql();
@@ -309,53 +360,82 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         } catch (Exception ex) {}//catch
     }//conectaListInv
 
-    private class AsyncRecepMultiSuc extends AsyncTask<Void, Void, Void> {//WEBSERVICE PARA ACTUALIZAR DATOS
+    private class AsyncRecepMultiSuc extends AsyncTask<Void, Integer, Void> {//WEBSERVICE PARA ACTUALIZAR DATOS
         private String pro,cc;
         private int contador=0;
+        private int contador2=0;
+        private boolean conn=true;
         @Override
-        protected void onPreExecute() {mDialog.show();}
+        protected void onPreExecute() {progressDialog.show();}
 
         @Override
         protected Void doInBackground(Void... params) {
             escaneo=false;
             mensaje="";
-            String fecha =new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault()).format(new Date());
-            String hora=new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
-            for(int i=0;i<listaTrasp.size();i++){
-                pro=listaTrasp.get(i).getProducto();
-                cc=listaTrasp.get(i).getCantSurt();
-                conectaRecepMultSuc(pro,cc,fecha,hora);
-                if(mensaje.equals("SINCRONIZADO")){
-                    eliminarSql("AND PRODUCTO='"+pro+"'");//si se sincroniz´se elimina de la base de datos sqlite del telefono
-                    contador++;
-                    mensaje="";
-                }//if equals
-            }//forz
+            if(firtMet()==true){//si hay conexión a internet
+                progressDialog.setMax(listaTrasp.size());
+                String fecha =new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault()).format(new Date());
+                String hora=new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+                for(int i=0;i<listaTrasp.size();i++){
+                    try {
+                        pro=listaTrasp.get(i).getProducto();
+                        cc=listaTrasp.get(i).getCantSurt();
+                        conectaRecepMultSuc(pro,cc,fecha,hora);
+                        if(mensaje.equals("SINCRONIZADO")){
+                            eliminarSql("AND PRODUCTO='"+pro+"'");//si se sincroniza se elimina de la base de datos sqlite del telefono
+                            contador++;
+                            mensaje="";
+                        }else{
+                            contador2++;
+                        }
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        return null;
+                    }//catch
+                    progressDialog.setProgress(i);
+                }//for
+            }else{conn=false;}
             return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... progress) {
+            super.onProgressUpdate(progress);
+            progressDialog.setProgress(progress[0]);
         }
 
         @RequiresApi(api = Build.VERSION_CODES.P)
         @Override
         protected void onPostExecute(Void result) {
-            mDialog.dismiss();
+            progressDialog.dismiss();
             if (contador==listaTrasp.size()) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
                 builder.setPositiveButton("OK", null);
                 builder.setCancelable(false);
-                builder.setTitle("Resultado Sincronización").setMessage(contador+" Datos sincronizados").create().show();
+                builder.setTitle("Resultado Sincronización").setMessage(contador+" Datos sincronizados\n"+contador2+" Datos no sincronizados").create().show();
                 txtProd.setText("");
                 consultaSql();
                 tvProd.setText("");
                 txtCantidad.setText("");
                 txtCantSurt.setText("");
+                Picasso.with(getApplicationContext()).
+                        load(R.drawable.aboutlogo)
+                        .error(R.drawable.aboutlogo)
+                        .fit()
+                        .centerInside()
+                        .into(ivProd);
                 btnAdelante.setEnabled(false);
                 btnAtras.setEnabled(false);
                 btnAdelante.setBackgroundTintList(ColorStateList.
                         valueOf(getResources().getColor(R.color.ColorGris)));
                 btnAtras.setBackgroundTintList(ColorStateList.
                         valueOf(getResources().getColor(R.color.ColorGris)));
-            }else{
+            }else if(conn==false){
+                Toast.makeText(ActivityRecepTraspMultSuc.this, "Sin conexión a internet", Toast.LENGTH_SHORT).show();
+            } else{
                 Toast.makeText(ActivityRecepTraspMultSuc.this, "Error al actualizar datos", Toast.LENGTH_SHORT).show();
+                txtProd.setText("");
+                consultaSql();
             }//else
         }//onPostExecute
     }//AsynInsertInv
@@ -398,7 +478,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             escaneo=false;
             listaTrasp.clear();
             rvTraspasos.setAdapter(null);
-            @SuppressLint("Recycle") Cursor fila = db.rawQuery("SELECT PRODUCTO,CANTIDAD,SURTIDO,UBICACION FROM INVENTARIO WHERE SUCURSAL='"+strbran+"' ORDER BY PRODUCTO ", null);
+            @SuppressLint("Recycle") Cursor fila = db.rawQuery("SELECT PRODUCTO,CANTIDAD,SURTIDO,UBICACION FROM INVENTARIO WHERE EMPRESA='"+serv+"' ORDER BY UBICACION ", null);
             if (fila != null && fila.moveToFirst()) {
                 do {
                     listaTrasp.add(new Traspasos((i++)+"",fila.getString(0),fila.getString(1),fila.getString(2),fila.getString(3)));
@@ -412,6 +492,8 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                         break;
                     }//if
                 }//for
+                txtProd.setEnabled(true);
+                txtProd.requestFocus();
                 mostrarDetalleProd();
             }//if
             fila.close();
@@ -425,7 +507,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         try{
             int cant=0,cantS=0;
             @SuppressLint("Recycle") Cursor fila = db.rawQuery(
-                    "SELECT PRODUCTO,CANTIDAD,SURTIDO FROM INVENTARIO WHERE PRODUCTO='"+prod+"' AND SUCURSAL='"+strbran+"'", null);
+                    "SELECT PRODUCTO,CANTIDAD,SURTIDO FROM INVENTARIO WHERE PRODUCTO='"+prod+"' AND EMPRESA='"+serv+"'", null);
             if (fila != null && fila.moveToFirst()) {
                 cant=Integer.parseInt(fila.getString(1));
                 cantS=Integer.parseInt(fila.getString(2));
@@ -451,7 +533,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         try{
             if(db != null){
                 ContentValues valores = new ContentValues();
-                valores.put("SUCURSAL", strbran);
+                valores.put("EMPRESA", serv);
                 valores.put("PRODUCTO", prod);
                 valores.put("CANTIDAD", cant);
                 valores.put("SURTIDO", cantS);
@@ -467,7 +549,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         try{
             ContentValues valores = new ContentValues();
             valores.put("SURTIDO", cantSurt);
-            db.update("INVENTARIO", valores, " PRODUCTO='" + prod+"' AND SUCURSAL='"+strbran+"'", null);
+            db.update("INVENTARIO", valores, " PRODUCTO='" + prod+"' AND EMPRESA='"+serv+"'", null);
         }catch(Exception e){
             Toast.makeText(this, "Problema al actualizar la cantidad del producto", Toast.LENGTH_SHORT).show();
         }
@@ -476,7 +558,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
     public void eliminarSql(String sentProd) {//Se envia (AND PRODUCTO='"+prod+"') si se usa para eliminar un producto, vacio para todos los productos
         try{
             SQLiteDatabase db = conn.getWritableDatabase();
-            db.delete("INVENTARIO","SUCURSAL='"+strbran+"' "+sentProd,null);
+            db.delete("INVENTARIO","EMPRESA='"+serv+"' "+sentProd,null);
         }catch(Exception e){}
     }//eliminarSql
 
