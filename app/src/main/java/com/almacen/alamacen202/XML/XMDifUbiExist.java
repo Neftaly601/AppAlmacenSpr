@@ -5,22 +5,20 @@ import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
 
-public class XMLFolios extends SoapSerializationEnvelope {
+public class XMDifUbiExist extends SoapSerializationEnvelope {
 
     private String usuario;
     private String contrasena;
-    private String suc;
-    private String opClo;
+    private String folio;
 
-    public XMLFolios(int version) {
+    public XMDifUbiExist(int version) {
         super(version);
     }
 
-    public void XMLFol(String usuario, String contrasena,String suc,String opClo) {
+    public void XMLdif(String usuario, String contrasena, String folio) {
         this.usuario = usuario;
         this.contrasena = contrasena;
-        this.suc = suc;
-        this.opClo=opClo;
+        this.folio = folio;
     }//void
 
     @Override
@@ -32,7 +30,7 @@ public class XMLFolios extends SoapSerializationEnvelope {
         writer.setPrefix("", tem);
         writer.startTag(env, "Envelope");
         writer.startTag(env, "Body");
-        writer.startTag(tem, "FoliosRequest");
+        writer.startTag(tem, "DifUbiExistRequest");
 
 
         writer.startTag(tem, "Login");
@@ -45,20 +43,15 @@ public class XMLFolios extends SoapSerializationEnvelope {
         writer.endTag(tem, "Login");
 
 
-        writer.startTag(tem, "Folio");
+        writer.startTag(tem, "DifUE");
 
-        writer.startTag(tem, "k_suc");
-        writer.text(suc);
-        writer.endTag(tem, "k_suc");
+        writer.startTag(tem, "k_folio");
+        writer.text(folio);
+        writer.endTag(tem, "k_folio");
 
-        writer.startTag(tem, "k_opcl");
-        writer.text(opClo);
-        writer.endTag(tem, "k_opcl");
+        writer.endTag(tem, "DifUE");
 
-        writer.endTag(tem, "Folio");
-
-
-        writer.endTag(tem, "FoliosRequest");
+        writer.endTag(tem, "DifUbiExistRequest");
         writer.endTag(env, "Body");
         writer.endTag(env, "Envelope");
         writer.endDocument();

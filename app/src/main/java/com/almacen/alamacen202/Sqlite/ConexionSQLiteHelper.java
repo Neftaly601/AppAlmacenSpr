@@ -19,23 +19,35 @@ public class ConexionSQLiteHelper extends SQLiteOpenHelper {
             "SURTIDO INTEGER (11),"+
             "UBICACION VARCHAR(45),PRIMARY KEY(EMPRESA,PRODUCTO))";
 
+    final String CREAR_TABLA_DIFUBIEXIST = "CREATE TABLE DIFUBIEXIST (" +
+            "EMPRESA VARCHAR (15)," +
+            "PRODUCTO VARCHAR (45)," +
+            "CANTIDAD INTEGER (11)," +
+            "EXISTENCIA INTEGER (11),"+
+            "DIFERENCIA INTEGER (11),"+
+            "UBICACION VARCHAR(45),"+
+            "CONTEO INTEGER (11),"+
+            "PRIMARY KEY(EMPRESA,PRODUCTO))";
+
 
 
     public ConexionSQLiteHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
-    }
+    }//constructor
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREAR_TABLA_INVENTARIOALM);
         db.execSQL(CREAR_TABLA_INVENTARIO);
+        db.execSQL(CREAR_TABLA_DIFUBIEXIST);
 
-    }
+    }//onCreate
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int versionAntigua, int versionNueva) {
         db.execSQL("DROP TABLE IF EXISTS CREAR_TABLA_INVENTARIOALM");
         db.execSQL("DROP TABLE IF EXISTS CREAR_TABLA_INVENTARIO");
+        db.execSQL("DROP TABLE IF EXISTS CREAR_TABLA_DIFUBIEXIST");
         onCreate(db);
-    }
+    }//onUpgrade
 }

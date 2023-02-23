@@ -5,22 +5,20 @@ import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
 
-public class XMLFolios extends SoapSerializationEnvelope {
+public class XMLListProd extends SoapSerializationEnvelope {
 
     private String usuario;
     private String contrasena;
     private String suc;
-    private String opClo;
 
-    public XMLFolios(int version) {
+    public XMLListProd(int version) {
         super(version);
     }
 
-    public void XMLFol(String usuario, String contrasena,String suc,String opClo) {
+    public void XMLlPr(String usuario, String contrasena,String suc) {
         this.usuario = usuario;
         this.contrasena = contrasena;
         this.suc = suc;
-        this.opClo=opClo;
     }//void
 
     @Override
@@ -32,7 +30,7 @@ public class XMLFolios extends SoapSerializationEnvelope {
         writer.setPrefix("", tem);
         writer.startTag(env, "Envelope");
         writer.startTag(env, "Body");
-        writer.startTag(tem, "FoliosRequest");
+        writer.startTag(tem, "ListProdRequest");
 
 
         writer.startTag(tem, "Login");
@@ -45,20 +43,15 @@ public class XMLFolios extends SoapSerializationEnvelope {
         writer.endTag(tem, "Login");
 
 
-        writer.startTag(tem, "Folio");
+        writer.startTag(tem, "ListProdd");
 
         writer.startTag(tem, "k_suc");
         writer.text(suc);
         writer.endTag(tem, "k_suc");
 
-        writer.startTag(tem, "k_opcl");
-        writer.text(opClo);
-        writer.endTag(tem, "k_opcl");
+        writer.endTag(tem, "ListProdd");
 
-        writer.endTag(tem, "Folio");
-
-
-        writer.endTag(tem, "FoliosRequest");
+        writer.endTag(tem, "ListProdRequest");
         writer.endTag(env, "Body");
         writer.endTag(env, "Envelope");
         writer.endDocument();

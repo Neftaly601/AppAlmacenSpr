@@ -6,10 +6,13 @@ import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,12 +20,16 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
@@ -31,17 +38,23 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.almacen.alamacen202.ActivityMenu;
 import com.almacen.alamacen202.Adapter.AdaptadorListProductos;
 import com.almacen.alamacen202.Adapter.AdaptadorListaFolios;
 import com.almacen.alamacen202.Adapter.AdapterInventario;
+import com.almacen.alamacen202.MainActivity;
 import com.almacen.alamacen202.R;
 import com.almacen.alamacen202.SetterandGetters.Folios;
 import com.almacen.alamacen202.SetterandGetters.Inventario;
+import com.almacen.alamacen202.SetterandGetters.ListProAduSandG;
 import com.almacen.alamacen202.Sqlite.ConexionSQLiteHelper;
 import com.almacen.alamacen202.XML.XMLActualizaInv;
 import com.almacen.alamacen202.XML.XMLFolios;
+import com.almacen.alamacen202.XML.XMLValdiSuper;
+import com.almacen.alamacen202.XML.XMLValidEsc;
 import com.almacen.alamacen202.XML.XMLlistInv;
 import com.almacen.alamacen202.includes.MyToolbar;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.SoapFault;
@@ -54,13 +67,14 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 import dmax.dialog.SpotsDialog;
+import pl.droidsonroids.gif.GifImageView;
 
 public class ActivityInventario extends AppCompatActivity {
     private SharedPreferences preference,preferenceF;
     private SharedPreferences.Editor editor;
     private boolean comprobar=false;
     private int posicion=0;
-    private String strusr,strpass,strServer,strbran,codeBar,ProductoAct="",folio="",fecha="",hora="",mensaje;
+    private String strusr,strpass,strServer,strbran,codeBar,ProductoAct="",folio="",fecha="",hora="",mensaje,bandAutori,mensajeAutoriza,UserSuper;
     private ArrayList<Inventario> listaInv = new ArrayList<>();
     private EditText txtFolioInv,txtProductoVi,txtFechaI,txtHoraI,txtProducto,txtCant;
     private ArrayList<Folios>listaFol;
@@ -74,6 +88,8 @@ public class ActivityInventario extends AppCompatActivity {
     private SQLiteDatabase db;
     private RecyclerView rvFolios;//para alertdialog
     private AlertDialog dialog;
+    private LinearLayout lyInsert,lyEscanea;
+    private Button btnAutoriza;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -166,7 +182,7 @@ public class ActivityInventario extends AppCompatActivity {
                         for (int i = 0; i < editable.length(); i++) {
                             char ban;
                             ban = editable.charAt(i);
-                            if (ban == '\n') {
+                            if(ban == '\n'){
                                 if (!chbMan.isChecked()) {//manual no
                                     buscarEnSql(ProductoAct,compararCantidad(ProductoAct)+"");
                                 }else{//manual si
@@ -207,16 +223,7 @@ public class ActivityInventario extends AppCompatActivity {
         btnSincronizar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityInventario.this);
-                builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        new AsyncActualizaInv().execute();
-                    }//onclick
-                });//positive button
-                builder.setNegativeButton("CANCELAR",null);
-                builder.setCancelable(false);
-                builder.setTitle("AVISO").setMessage("¿Desea sincronizar?").create().show();
+                new AsyncActualizaInv().execute();
             }//onclcik
         });//btnSincronizar onclick
 
@@ -228,12 +235,102 @@ public class ActivityInventario extends AppCompatActivity {
             comprobar=true;
             new AsyncFolios().execute();
         }//else
+
+
     }//onCreate
+    public void onClickInv(View v){//cada vez que se seleccione un producto en la lista
+        /*posicion = rvInventario.getChildPosition(rvInventario.findContainingItemView(v));
+        ProductoAct=listaInv.get(posicion).getProducto();
+        if (!chbMan.isChecked()) {//manual no
+            buscarEnSql(ProductoAct,compararCantidad(ProductoAct)+"");
+            txtProducto.setText("");
+        }else{//manual si
+            txtCant.requestFocus();
+            keyboard.showSoftInput(txtCant, InputMethodManager.SHOW_IMPLICIT);
+        }//else
+        */
+    }//onClickLista
+
+    public void alertAutoriza(View v){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_info_autorizacion2, null);
+        alert.setView(dialogView);
+        alert.setCancelable(true);
+        alert.setCancelable(false);
+        alert.setNegativeButton("CANCELAR",null);
+
+        EditText txtEscanUsr,txtClavProdAut;
+        txtEscanUsr =  dialogView.findViewById(R.id.txtEscanUsr);
+        txtClavProdAut = dialogView.findViewById(R.id.txtClavProdAut);
+        lyInsert = dialogView.findViewById(R.id.lyInsert);
+        lyEscanea = dialogView.findViewById(R.id.lyEscanea);
+        btnAutoriza = dialogView.findViewById(R.id.btnAutoriza);
+
+        btnAutoriza.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String claveMan=txtClavProdAut.getText().toString();
+                txtProducto.setText(claveMan);
+                dialog.dismiss();
+            }//onclick
+        });//btnAutoriza
+
+        dialog = alert.create();
+        dialog.show();
+        txtEscanUsr.requestFocus();
+        txtEscanUsr.setInputType(InputType.TYPE_NULL);
+        txtEscanUsr.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (!editable.toString().equals("")) {
+                    if (codeBar.equals("Zebra")) {
+                        String Usuario = editable.toString();
+                        verificarUsuarioSuperv(Usuario);
+                        txtEscanUsr.setText(null);
+                    } else {
+                        for (int i = 0; i < editable.length(); i++) {
+                            char ban;
+                            ban = editable.charAt(i);
+                            if (ban == '\n') {
+                                String Usuario = editable.toString();
+                                Usuario = Usuario.replace("\n", "");
+                                verificarUsuarioSuperv(Usuario);
+                                txtEscanUsr.setText(null);
+                            }//ifBan
+                        }//for
+                    }//else
+                }//if editable
+            }//afterTextChange
+        });//addTextChange
+    }//alertAutoriza
+
+    public void verificarUsuarioSuperv(String usuario) {
+        if (!usuario.equals("")) {
+            new AsyncAutoriza(usuario).execute();
+        }else {
+            AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityInventario.this);
+            alerta.setMessage("Confirme que todos los campos hayan sido llenados").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+                }
+            });
+            AlertDialog titulo = alerta.create();
+            titulo.setTitle("¡ERROR!");
+            titulo.show();
+        }//else
+
+    }//alertAutoriza
 
     public void buscaFolios(View v){
         if(!folio.equals("")){//si ya hay folio guardado
             AlertDialog.Builder builder = new AlertDialog.Builder(ActivityInventario.this);
-            builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
+            builder.setPositiveButton("CANCELAR", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                 }//onclick
@@ -243,6 +340,10 @@ public class ActivityInventario extends AppCompatActivity {
                 public void onClick(DialogInterface dialogInterface, int i) {
                     editor.clear().commit();
                     eliminarSql("");
+                    chbMan.setChecked(false);
+                    txtProducto.setText("");
+                    txtProductoVi.setText("");
+                    txtCant.setText("1");
                     new AsyncFolios().execute();
                 }
             });//negative
@@ -399,7 +500,7 @@ public class ActivityInventario extends AppCompatActivity {
         try {
             SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
             XMLFolios soapEnvelope = new XMLFolios(SoapEnvelope.VER11);
-            soapEnvelope.XMLFol(strusr, strpass,strbran);
+            soapEnvelope.XMLFol(strusr, strpass,strbran,"1");//solo folios abiertos
             soapEnvelope.dotNet = true;
             soapEnvelope.implicitTypes = true;
             soapEnvelope.setOutputSoapObject(Request);
@@ -498,7 +599,19 @@ public class ActivityInventario extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void result) {
             mDialog.dismiss();
-            if (contador==listaInv.size()) {
+            if(mensaje.equals("0")){
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityInventario.this);
+                builder.setMessage("El folio esta cerrado");
+                builder.setCancelable(false);
+                builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                    }
+                });//negative botton
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }else if(contador==listaInv.size()) {
                 listaInv.clear();
                 rvInventario.setAdapter(null);
                 editor.clear().commit();
@@ -515,7 +628,7 @@ public class ActivityInventario extends AppCompatActivity {
 
             }else{
                 AlertDialog.Builder builder = new AlertDialog.Builder(ActivityInventario.this);
-                builder.setMessage("El folio esta cerrado");
+                builder.setMessage("Problemas de sincronización");
                 builder.setCancelable(false);
                 builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
                     @Override
@@ -533,8 +646,8 @@ public class ActivityInventario extends AppCompatActivity {
     private void conectaActualiza (String producto, String cant) {
         String SOAP_ACTION = "ActualizaInv";
         String METHOD_NAME = "ActualizaInv";
-        String NAMESPACE = "http://" + strServer + "/WSk75AlmacenesApp/";
-        String URL = "http://" + strServer + "/WSk75AlmacenesApp";
+        String NAMESPACE = "http://" +strServer+ "/WSk75AlmacenesApp/";
+        String URL = "http://" +strServer+ "/WSk75AlmacenesApp";
         try {
             SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
             XMLActualizaInv soapEnvelope = new XMLActualizaInv(SoapEnvelope.VER11);
@@ -558,6 +671,75 @@ public class ActivityInventario extends AppCompatActivity {
             mensaje=ex.getMessage();
         }//catch
     }//conectaActualiza
+
+    private class AsyncAutoriza extends AsyncTask<Void, Void, Void> {
+        String usuario;
+
+        public AsyncAutoriza(String usuario) {
+            this.usuario = usuario;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            mDialog.show();
+        }
+        @Override
+        protected Void doInBackground(Void... params) {
+            conectaAutoriza(usuario);
+            return null;
+        }//doInbackground
+
+        @RequiresApi(api = Build.VERSION_CODES.P)
+        @Override
+        protected void onPostExecute(Void result) {
+            mDialog.dismiss();
+            if (bandAutori.equals("1")) {
+                lyEscanea.setVisibility(View.GONE);
+                lyInsert.setVisibility(View.VISIBLE);
+            }else {
+                AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityInventario.this);
+                alerta.setMessage(mensajeAutoriza).setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog titulo = alerta.create();
+                titulo.setTitle("¡ERROR!");
+                titulo.show();
+            }//else
+        }//onPostExecute
+    }//AsyncAutoriza
+
+    private void conectaAutoriza(String usuario) {
+        String SOAP_ACTION = "ValdiSuper";
+        String METHOD_NAME = "ValdiSuper";
+        String NAMESPACE = "http://" + strServer + "/WSk75AlmacenesApp/";
+        String URL = "http://" + strServer + "/WSk75AlmacenesApp";
+        try {
+            SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
+            XMLValdiSuper soapEnvelope = new XMLValdiSuper(SoapEnvelope.VER11);
+            soapEnvelope.XMLValdiSuper(strusr, strpass, usuario);
+            soapEnvelope.dotNet = true;
+            soapEnvelope.implicitTypes = true;
+            soapEnvelope.setOutputSoapObject(Request);
+            HttpTransportSE trasport = new HttpTransportSE(URL);
+            trasport.debug = true;
+            trasport.call(SOAP_ACTION, soapEnvelope);
+            SoapObject response = (SoapObject) soapEnvelope.bodyIn;
+            response = (SoapObject) response.getProperty("message");
+            bandAutori = response.getPropertyAsString("k_Val").equals("anyType{}") ? "" : response.getPropertyAsString("k_Val");
+            mensajeAutoriza = response.getPropertyAsString("k_menssage").equals("anyType{}") ? "" : response.getPropertyAsString("k_menssage");
+
+        } catch (SoapFault soapFault) {
+            soapFault.printStackTrace();
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception ex) {}
+    }//conectaAutoriza
 
     public void buscarEnSql(String prod,String cant){
         try{

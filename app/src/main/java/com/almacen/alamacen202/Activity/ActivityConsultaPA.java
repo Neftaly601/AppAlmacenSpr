@@ -100,6 +100,9 @@ public class ActivityConsultaPA extends AppCompatActivity {
         mDialog = new SpotsDialog.Builder().setContext(ActivityConsultaPA.this).setMessage("Espere un momento...").build();
         editor = preference.edit();
 
+        mDialog = new SpotsDialog.Builder().setContext(ActivityConsultaPA.this).
+                setMessage("Espere un momento...").build();
+
         TitutloTable = findViewById(R.id.nomTabla);
         txtDescripcion = findViewById(R.id.txtDescripcion);
         txtLinea = findViewById(R.id.txtLinea);
@@ -123,6 +126,8 @@ public class ActivityConsultaPA extends AppCompatActivity {
         StrServer = preference.getString("Server", "null");
         codeBar = preference.getString("codeBar", "null");
 
+        GridLayoutManager gl = new GridLayoutManager(ActivityConsultaPA.this, 1);
+        recyclerListas.setLayoutManager(gl);
 
         switch (StrServer) {
             case "jacve.dyndns.org:9085":
@@ -259,8 +264,7 @@ public class ActivityConsultaPA extends AppCompatActivity {
                             txtEscaneo.setText(editable);
                             Producto = editable.toString();
                             listaExistencia = new ArrayList<>();
-                            GridLayoutManager gl = new GridLayoutManager(ActivityConsultaPA.this, 1);
-                            recyclerListas.setLayoutManager(gl);
+                            recyclerListas.setAdapter(null);
                             ActivityConsultaPA.DatosPrincipales task = new ActivityConsultaPA.DatosPrincipales();
                             task.execute();
                         } else {
@@ -273,8 +277,7 @@ public class ActivityConsultaPA extends AppCompatActivity {
                                     Producto = editable.toString();
                                     Producto = Producto.replace("\n","");
                                     listaExistencia = new ArrayList<>();
-                                    GridLayoutManager gl = new GridLayoutManager(ActivityConsultaPA.this, 1);
-                                    recyclerListas.setLayoutManager(gl);
+                                    recyclerListas.setAdapter(null);
                                     ActivityConsultaPA.DatosPrincipales task = new ActivityConsultaPA.DatosPrincipales();
                                     task.execute();
                                 }
@@ -329,8 +332,7 @@ public class ActivityConsultaPA extends AppCompatActivity {
             if (!txtEscaneo.getText().equals(null)){
                 Producto = txtEscaneo.getText().toString();
                 listaExistencia = new ArrayList<>();
-                GridLayoutManager gl = new GridLayoutManager(ActivityConsultaPA.this, 1);
-                recyclerListas.setLayoutManager(gl);
+                recyclerListas.setAdapter(null);
                 ActivityConsultaPA.DatosPrincipales task = new ActivityConsultaPA.DatosPrincipales();
                 task.execute();
                 txtEscaneo.setText(null);
@@ -371,7 +373,7 @@ public class ActivityConsultaPA extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-
+            mDialog.show();
         }
 
         @Override
@@ -384,8 +386,6 @@ public class ActivityConsultaPA extends AppCompatActivity {
         @RequiresApi(api = Build.VERSION_CODES.P)
         @Override
         protected void onPostExecute(Void result) {
-
-
             if (!ProductoWeb.equals("") && Producto.equals(ProductoWeb)) {
                 txtDescripcion.setText(Descripcion);
                 txtLinea.setText(Linea);
@@ -397,9 +397,9 @@ public class ActivityConsultaPA extends AppCompatActivity {
                         .fit()
                         .centerInside()
                         .into(imgVi);
-                ActivityConsultaPA.TableExist task = new ActivityConsultaPA.TableExist();
-                task.execute();
+                new TableUbicacion().execute();
             } else {
+                mDialog.dismiss();
                 AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityConsultaPA.this);
                 alerta.setMessage("El articulo que esta buscando no se encuentra").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
@@ -464,7 +464,7 @@ public class ActivityConsultaPA extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-
+            mDialog.show();
         }
 
         @Override
@@ -477,6 +477,7 @@ public class ActivityConsultaPA extends AppCompatActivity {
         @RequiresApi(api = Build.VERSION_CODES.P)
         @Override
         protected void onPostExecute(Void result) {
+            mDialog.dismiss();
             TitutloTable.setText("Comprometidas");
             ToolBarComprometidas.setVisibility(View.VISIBLE);
             ToolBarExistencia.setVisibility(View.GONE);
@@ -545,7 +546,7 @@ public class ActivityConsultaPA extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-
+            mDialog.show();
         }
 
         @Override
@@ -558,6 +559,7 @@ public class ActivityConsultaPA extends AppCompatActivity {
         @RequiresApi(api = Build.VERSION_CODES.P)
         @Override
         protected void onPostExecute(Void result) {
+            mDialog.dismiss();
             TitutloTable.setText("Existencia");
             ToolBarComprometidas.setVisibility(View.GONE);
             ToolBarExistencia.setVisibility(View.VISIBLE);
@@ -623,11 +625,14 @@ public class ActivityConsultaPA extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-
+            if(!mDialog.isShowing()){//si mdialog esta mostrandose
+                mDialog.show();
+            }
         }
 
         @Override
         protected Void doInBackground(Void... params) {
+            listaUbicaciones.clear();
             conectaTableUbicacion();
             return null;
         }
@@ -636,6 +641,7 @@ public class ActivityConsultaPA extends AppCompatActivity {
         @RequiresApi(api = Build.VERSION_CODES.P)
         @Override
         protected void onPostExecute(Void result) {
+            mDialog.dismiss();
             TitutloTable.setText("Ubicación");
             ToolBarComprometidas.setVisibility(View.GONE);
             ToolBarExistencia.setVisibility(View.GONE);
@@ -708,8 +714,7 @@ public class ActivityConsultaPA extends AppCompatActivity {
             listaComprometidas = new ArrayList<>();
             listaExistencia = new ArrayList<>();
             listaUbicaciones = new ArrayList<>();
-            GridLayoutManager gl = new GridLayoutManager(this, 1);
-            recyclerListas.setLayoutManager(gl);
+            recyclerListas.setAdapter(null);
             ActivityConsultaPA.TableCompro task = new ActivityConsultaPA.TableCompro();
             task.execute();
         } else {
@@ -738,8 +743,7 @@ public class ActivityConsultaPA extends AppCompatActivity {
             listaComprometidas = new ArrayList<>();
             listaExistencia = new ArrayList<>();
             listaUbicaciones = new ArrayList<>();
-            GridLayoutManager gl = new GridLayoutManager(this, 1);
-            recyclerListas.setLayoutManager(gl);
+            recyclerListas.setAdapter(null);
             ActivityConsultaPA.TableExist task = new ActivityConsultaPA.TableExist();
             task.execute();
 
@@ -770,8 +774,7 @@ public class ActivityConsultaPA extends AppCompatActivity {
             listaComprometidas = new ArrayList<>();
             listaExistencia = new ArrayList<>();
             listaUbicaciones = new ArrayList<>();
-            GridLayoutManager gl = new GridLayoutManager(this, 1);
-            recyclerListas.setLayoutManager(gl);
+            recyclerListas.setAdapter(null);
             ActivityConsultaPA.TableUbicacion task = new ActivityConsultaPA.TableUbicacion();
             task.execute();
 

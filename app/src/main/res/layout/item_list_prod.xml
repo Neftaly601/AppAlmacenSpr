@@ -5,16 +5,18 @@
     android:orientation="vertical"
     android:background="@color/ColorWhite">
     <LinearLayout
+        android:id="@+id/lyList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@drawable/selector_backgr"
+        android:onClick="onClickP">
 
         <LinearLayout
-            android:id="@+id/lyInv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:onClick="onClickInv">
+            android:gravity="center_vertical">
             <TextView
                 android:id="@+id/tvN"
                 android:layout_width="25dp"
@@ -31,30 +33,34 @@
                 android:layout_height="match_parent"
                 android:background="@color/AzulBack"/>
             <TextView
-                android:id="@+id/Producto"
+                android:id="@+id/tvP"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="1.5"
                 android:text="Producto"
                 android:textStyle="bold"
+                android:textSize="10dp"
                 android:padding="5dp"
                 android:textAlignment="center"
-                android:maxLines="1"
+                android:lines="3"
+                android:maxLines="3"
                 android:textColor="#000000"/>
             <View
                 android:layout_width="2dp"
                 android:layout_height="match_parent"
                 android:background="@color/AzulBack"/>
+
             <TextView
-                android:id="@+id/Cantidad"
+                android:id="@+id/tvDescrip"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:text="Cant"
+                android:layout_weight="1"
+                android:text="Descrip"
                 android:padding="5dp"
-                android:maxLines="1"
-                android:textColor="@color/Amarillo"
+                android:maxLines="3"
+                android:textColor="@color/AzulBack"
                 android:textStyle="bold"
+                android:textSize="10dp"
                 android:textAlignment="center"/>
         </LinearLayout>
         <View

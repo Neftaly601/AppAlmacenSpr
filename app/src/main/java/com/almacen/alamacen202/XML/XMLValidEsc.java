@@ -5,22 +5,22 @@ import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
 
-public class XMLFolios extends SoapSerializationEnvelope {
+public class XMLValidEsc extends SoapSerializationEnvelope {
 
     private String usuario;
     private String contrasena;
-    private String suc;
-    private String opClo;
+    private String producto;
+    private String sucursal;
 
-    public XMLFolios(int version) {
+    public XMLValidEsc(int version) {
         super(version);
     }
 
-    public void XMLFol(String usuario, String contrasena,String suc,String opClo) {
+    public void XMLValid(String usuario, String contrasena,String producto,String sucursal) {
         this.usuario = usuario;
         this.contrasena = contrasena;
-        this.suc = suc;
-        this.opClo=opClo;
+        this.producto = producto;
+        this.sucursal = sucursal;
     }//void
 
     @Override
@@ -32,7 +32,7 @@ public class XMLFolios extends SoapSerializationEnvelope {
         writer.setPrefix("", tem);
         writer.startTag(env, "Envelope");
         writer.startTag(env, "Body");
-        writer.startTag(tem, "FoliosRequest");
+        writer.startTag(tem, "ValidarEscanInvRequest");
 
 
         writer.startTag(tem, "Login");
@@ -45,20 +45,20 @@ public class XMLFolios extends SoapSerializationEnvelope {
         writer.endTag(tem, "Login");
 
 
-        writer.startTag(tem, "Folio");
+        writer.startTag(tem, "ValidarEscanInvv");
 
-        writer.startTag(tem, "k_suc");
-        writer.text(suc);
-        writer.endTag(tem, "k_suc");
+        writer.startTag(tem, "k_Producto");
+        writer.text(producto);
+        writer.endTag(tem, "k_Producto");
 
-        writer.startTag(tem, "k_opcl");
-        writer.text(opClo);
-        writer.endTag(tem, "k_opcl");
+        writer.startTag(tem, "k_Sucursal");
+        writer.text(sucursal);
+        writer.endTag(tem, "k_Sucursal");
 
-        writer.endTag(tem, "Folio");
+        writer.endTag(tem, "ValidarEscanInvv");
 
 
-        writer.endTag(tem, "FoliosRequest");
+        writer.endTag(tem, "ValidarEscanInvRequest");
         writer.endTag(env, "Body");
         writer.endTag(env, "Envelope");
         writer.endDocument();

@@ -19,7 +19,6 @@ import java.util.ArrayList;
 public class AdapterResurtidoPicking extends RecyclerView.Adapter<AdapterResurtidoPicking.ViewHolderResurtidoPicking>{
 
     ArrayList<ResurtidoPicking> datos;
-    private View.OnClickListener listener;
     int index;
     public AdapterResurtidoPicking(ArrayList<ResurtidoPicking> datos) {
         this.datos = datos;
@@ -43,24 +42,30 @@ public class AdapterResurtidoPicking extends RecyclerView.Adapter<AdapterResurti
         holder.tvRack.setText(datos.get(position).getRack());
         holder.tvFecha.setText(datos.get(position).getFecha());
         holder.tvHora.setText(datos.get(position).getHora());
-        if(datos.get(position).isRevisado()==true){
-            holder.ibRevisado.setVisibility(View.VISIBLE);
-        }else{
-            holder.ibRevisado.setVisibility(View.INVISIBLE);
-        }
 
         if(index==position){
+            if(datos.get(position).isRevisado()==true){
+                holder.ibRevisado.setVisibility(View.VISIBLE);
+            }else{
+                holder.ibRevisado.setVisibility(View.INVISIBLE);
+            }
             holder.lyItem.setBackgroundResource(R.color.ColorGris);
         }else{
-            holder.lyItem.setBackgroundColor(0);
-        }
+            if(datos.get(position).isRevisado()==true){
+                holder.ibRevisado.setVisibility(View.VISIBLE);
+                holder.lyItem.setBackgroundResource(R.color.colorAccent);
+            }else{
+                holder.ibRevisado.setVisibility(View.INVISIBLE);
+                holder.lyItem.setBackgroundColor(0);
+            }//else
+        }//else
 
     }//onBindViewHolder
 
     public int index(int index){
         this.index=index;
         return index;
-    }
+    }//index
     @Override
     public int getItemViewType(int position) {
         return super.getItemViewType(position);
@@ -70,11 +75,6 @@ public class AdapterResurtidoPicking extends RecyclerView.Adapter<AdapterResurti
     public int getItemCount() {
         return datos.size();
     }
-
-
-    public void setOnClickListener(View.OnClickListener listener) {
-        this.listener = listener;
-    }//setonClickListener
 
     public class ViewHolderResurtidoPicking extends RecyclerView.ViewHolder {
         TextView tvIdProd,tvDescrip,tvUbica,tvClasif,tvNum,tvRack,tvFecha,tvHora;

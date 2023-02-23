@@ -55,6 +55,14 @@
             android:name=".Activity.ActivityRecepTraspMultSuc"
             android:configChanges="screenSize|orientation"
             android:parentActivityName=".ActivityMenu"/>
+        <activity
+            android:name=".Activity.ActivityDifUbiExi"
+            android:configChanges="screenSize|orientation"
+            android:parentActivityName=".ActivityMenu"/>
+        <activity
+            android:name=".Activity.ActivityRepEtiquetas"
+            android:configChanges="screenSize|orientation"
+            android:parentActivityName=".ActivityMenu"/>
         <activity android:name=".ActivityMenu" />
         <activity android:name=".ActivitySplash" />
         <activity android:name=".MainActivity"

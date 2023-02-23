@@ -20,10 +20,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.almacen.alamacen202.Activity.ActivityConsultaPA;
+import com.almacen.alamacen202.Activity.ActivityDifUbiExi;
 import com.almacen.alamacen202.Activity.ActivityInventario;
 import com.almacen.alamacen202.Activity.ActivityInventarioXProd;
 import com.almacen.alamacen202.Activity.ActivityLiberaciones;
 import com.almacen.alamacen202.Activity.ActivityRecepTraspMultSuc;
+import com.almacen.alamacen202.Activity.ActivityRepEtiquetas;
 import com.almacen.alamacen202.Activity.ActivityResurtidoPicking;
 import com.almacen.alamacen202.Activity.ActivityTrasladoUbi;
 import com.almacen.alamacen202.Activity.ActivityInventarioXfolioComp;
@@ -34,12 +36,12 @@ import com.squareup.picasso.Picasso;
 public class ActivityMenu extends AppCompatActivity {
 
 
-    ImageView imgVi;
-    String StrServer;
-    LinearLayout Conten;
-    private SharedPreferences preference,preferenceF;
-    private SharedPreferences.Editor editor,editor2;
-    String codeBarClave;
+    private ImageView imgVi;
+    private String StrServer;
+    private LinearLayout Conten;
+    private SharedPreferences preference,preferenceF,preferenceD;
+    private SharedPreferences.Editor editor,editor2,editor3;
+    private String codeBarClave;
 
     private ConexionSQLiteHelper conn;
     private SQLiteDatabase db;
@@ -55,8 +57,10 @@ public class ActivityMenu extends AppCompatActivity {
         db = conn.getReadableDatabase();
         preference = getSharedPreferences("Login", Context.MODE_PRIVATE);
         preferenceF = getSharedPreferences("Folio", Context.MODE_PRIVATE);//para guardar folio
+        preferenceD = getSharedPreferences("FolioDif", Context.MODE_PRIVATE);//para guardar folio
         editor = preference.edit();
         editor2 = preferenceF.edit();
+        editor3 = preferenceD.edit();
         Conten = findViewById(R.id.ContImage);
         imgVi = findViewById(R.id.productoImag);
         StrServer = preference.getString("Server", "null");
@@ -173,15 +177,15 @@ public class ActivityMenu extends AppCompatActivity {
 
                 break;
         }
-
-
     }
-    public void eliminarSqlySP(boolean var) {//eliminar bd y shared preferences yani(true cuando tambien se incluya la de inventario)
+    public void eliminarSqlySP() {//eliminar bd y shared preferences yani(true cuando tambien se incluya la de inventario)
         try{
             SQLiteDatabase db = conn.getWritableDatabase();
             db.delete("INVENTARIOALM",null,null);
-            if(var==true){db.delete("INVENTARIO",null,null);}
+            db.delete("INVENTARIO",null,null);
+            db.delete("DIFUBIEXIST",null,null);
             editor2.clear().commit();
+            editor3.clear().commit();
         }catch(Exception e){}
     }//eliminarSql
 
@@ -224,12 +228,20 @@ public class ActivityMenu extends AppCompatActivity {
         Intent intent = new Intent(ActivityMenu.this, ActivityRecepTraspMultSuc.class);
         startActivity(intent);
     }//inventario
+    public void difUbiExis(View v){
+        Intent intent = new Intent(ActivityMenu.this, ActivityDifUbiExi.class);
+        startActivity(intent);
+    }//diferencia entre ubicaciones y existenciasinventario
+    public void repEtiq(View v){
+        Intent intent = new Intent(ActivityMenu.this, ActivityRepEtiquetas.class);
+        startActivity(intent);
+    }//reporte de etiquetas
 
 
 
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menuoverflow, menu);
-       if(StrServer.equals("sprautomotive.servehttp.com:9090")){
+        if(StrServer.equals("sprautomotive.servehttp.com:9090")){
            MenuItem item = menu.findItem(R.id.MenuSPR);
            MenuItem itemRod = menu.findItem(R.id.RodatechMenu);
            MenuItem itemPartech = menu.findItem(R.id.PartechMenu);
@@ -278,7 +290,7 @@ public class ActivityMenu extends AppCompatActivity {
             if (id == R.id.cerrarSe) {
                 editor.clear();
                 editor.commit();
-                eliminarSqlySP(true);
+                eliminarSqlySP();
                 Intent cerrar = new Intent(this, MainActivity.class);
                 startActivity(cerrar);
                 System.exit(0);
@@ -288,7 +300,7 @@ public class ActivityMenu extends AppCompatActivity {
                 StrServer = "sprautomotive.servehttp.com:9090";
                 editor.putString("Server", StrServer);
                 editor.commit();
-                eliminarSqlySP(false);
+                eliminarSqlySP();
                 overridePendingTransition(0, 0);
                 startActivity(getIntent());
                 overridePendingTransition(0, 0);
@@ -297,7 +309,7 @@ public class ActivityMenu extends AppCompatActivity {
                 StrServer = "sprautomotive.servehttp.com:9095";
                 editor.putString("Server", StrServer);
                 editor.commit();
-                eliminarSqlySP(false);
+                eliminarSqlySP();
                 overridePendingTransition(0, 0);
                 startActivity(getIntent());
                 overridePendingTransition(0, 0);
@@ -306,7 +318,7 @@ public class ActivityMenu extends AppCompatActivity {
                 StrServer = "sprautomotive.servehttp.com:9080";
                 editor.putString("Server", StrServer);
                 editor.commit();
-                eliminarSqlySP(false);
+                eliminarSqlySP();
                 overridePendingTransition(0, 0);
                 startActivity(getIntent());
                 overridePendingTransition(0, 0);
@@ -358,9 +370,10 @@ public class ActivityMenu extends AppCompatActivity {
             titulo.setTitle("!ERROR! CONEXION");
             titulo.show();
 
-        }//Eelse
+        }//else
 
 
         return super.onOptionsItemSelected(item);
-    }//onoptionselkect
+    }//OnOptionItemSelected
+
 }//activity menu

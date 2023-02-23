@@ -55,8 +55,8 @@
                         android:textColor="@color/AzulBack"
                         android:textStyle="bold"
                         android:textSize="15dp"/>
-                    <TextView
-                        android:id="@+id/tvOrigenR"
+                    <Spinner
+                        android:id="@+id/spOrigenR"
                         android:layout_width="match_parent"
                         android:layout_height="30dp"
                         android:gravity="center_vertical"

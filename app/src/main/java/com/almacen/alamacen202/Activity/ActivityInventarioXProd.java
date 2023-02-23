@@ -486,6 +486,7 @@ public class ActivityInventarioXProd extends AppCompatActivity {
                 AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityInventarioXProd.this);
                 alerta.setMessage("Hubó un problema al consultar ubicaciones del producto \n"+mensaje).setCancelable(false)
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 habilitaOinhabilita();
@@ -748,7 +749,7 @@ public class ActivityInventarioXProd extends AppCompatActivity {
             e.printStackTrace();
         } catch (IOException e) {
             mDialog.dismiss();
-            mensaje = "No se encontro servidor";
+            mensaje = "No se encontró servidor";
             e.printStackTrace();
         } catch (Exception ex) {
             mDialog.dismiss();

@@ -13,7 +13,7 @@
         android:background="#E1E1E1"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:onClick="seleccionEnAlertFolios">
+        android:onClick="seleccionEnAlertFolios2">
 
 
         <TextView

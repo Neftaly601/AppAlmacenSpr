@@ -510,7 +510,7 @@ public class RecepCompras extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception ex) {
-        }
+        }//incertRace
     }
 
 

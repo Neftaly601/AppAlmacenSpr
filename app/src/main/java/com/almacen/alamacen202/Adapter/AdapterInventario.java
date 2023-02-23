@@ -3,6 +3,7 @@ package com.almacen.alamacen202.Adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -51,12 +52,13 @@ public class AdapterInventario extends RecyclerView.Adapter<AdapterInventario.Vi
 
     public static class ViewHolderInventario extends RecyclerView.ViewHolder {
         TextView n,Producto, Cantidad;
+        LinearLayout lyInv;
         public ViewHolderInventario (View itemView) {
             super(itemView);
             n= itemView.findViewById(R.id.tvN);
             Producto =  itemView.findViewById(R.id.Producto);
             Cantidad =  itemView.findViewById(R.id.Cantidad);
-
+            lyInv = itemView.findViewById(R.id.lyInv);
         }//constructor
     }//AdapterInventarioViewHolder class
 }//principal

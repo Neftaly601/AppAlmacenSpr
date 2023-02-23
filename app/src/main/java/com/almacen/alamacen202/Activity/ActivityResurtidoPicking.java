@@ -83,7 +83,7 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
     private ArrayList<String>listaCantUbic = new ArrayList<>();
     private AdapterResurtidoPicking adapter = new AdapterResurtidoPicking(listPick);
     private ArrayList<ComprometidasSandG> listaComprometidas = new ArrayList<>();
-    private boolean var=false;//para saber si se selecciona ubicaciones o para el traspaso entre ubicaciones
+    private boolean pendientes=false;//saber si hay pendientes o no
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,8 +147,7 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
                 boolean var=true;
                 if(listPick.size()>0){
                     AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityResurtidoPicking.this);
-                    alerta.setMessage("Aun existen datos que no ha terminado de revisar,"
-                    +"\n¿Desea continuar?").setCancelable(false).
+                    alerta.setMessage("¿Desea volver a consultar datos?").setCancelable(false).
                             setPositiveButton("Aceptar",new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -158,11 +157,11 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
                                     dialogInterface.cancel();
                                 }//onClick
                             }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.cancel();
-                        }//onClick
-                    });//Alert
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.cancel();
+                                }//onClick
+                            });//Alert
                     AlertDialog titulo = alerta.create();
                     titulo.setTitle("Aviso");
                     titulo.show();
@@ -216,11 +215,11 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
                                 dialogInterface.cancel();
                             }//onClick
                         }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.cancel();
-                    }//onClick
-                });//Alert
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }//onClick
+                        });//Alert
                 AlertDialog titulo = alerta.create();
                 titulo.setTitle("Confirmar");
                 titulo.show();
@@ -236,17 +235,34 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
 
         if (networkInfo != null && networkInfo.isConnected()) {//si hay conexion a internet
             listPick.clear();
+            tvClvProdPick.setText("");
+            tvDescPick.setText("");
+            txtUbicPick.setText("");
+            txtSumUbiPick.setText("");
+            txtSumAlmPick.setText("");
+            txtMax.setText("");
+            txtMin.setText("");
+            txtCantUbicPick.setText("");
+            tvCantEmpq.setText("");
             rvPicking.setAdapter(null);
+            ivProdPick.setImageResource(R.drawable.aboutlogo);
+            Picasso.with(getApplicationContext()).
+                    load("https://vazlo.com.mx/assets/img/productos/chica/jpg/" +
+                            tvClvProdPick.getText().toString() + ".jpg")
+                    .error(R.drawable.aboutlogo)
+                    .fit()
+                    .centerInside()
+                    .into(ivProdPick);
             new AsynCallConsulResPick().execute();
         } else {
             AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityResurtidoPicking.this);
             alerta.setMessage("NO HAY CONEXIÓN A INTERNET").setCancelable(false).
                     setNegativeButton("Ok", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    dialogInterface.cancel();
-                }//onClick
-            });//Alert
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }//onClick
+                    });//Alert
 
             AlertDialog titulo = alerta.create();
             titulo.setTitle("¡ERROR DE CONEXIÓN!");
@@ -274,7 +290,7 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
         final TextView tvCantEmpq = dialogView.findViewById(R.id.tvCantEmpq);
         final EditText txtDestEmpq=dialogView.findViewById(R.id.txtDestEmpq);
         final TextView tvNecesidad = dialogView.findViewById(R.id.tvNecesidad);
-        final TextView tvOrigenR = dialogView.findViewById(R.id.tvOrigenR);
+        final Spinner spOrigenR = dialogView.findViewById(R.id.spOrigenR);
 
         tvClvProdDial.setText(tvClvProdPick.getText().toString());
         tvDescProdDial.setText(tvDescPick.getText().toString());
@@ -283,7 +299,7 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
         tvNecesidad.setText(nec+"");
 
         //spinner--------------------------------------------------------
-        for(int i=0;i<listaUbic.size();i++){
+        /*for(int i=0;i<listaUbic.size();i++){
             if(listaUbic.get(i).equals(listPick.get(posicion).getRack())){
                 tvOrigenR.setText(listaUbic.get(i));
                 tvCantOrig.setText(listaCantUbic.get(i));
@@ -291,6 +307,30 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
                 break;
             }//if
         }//for
+        */
+
+        ArrayList<String>listaUbicString= new ArrayList<>();//Listas String para los spinner
+        ArrayList<String>listaCantString= new ArrayList<>();//una lista para ubicaciones y otra para guardar la cantidad
+        for(int i=0;i<listaUbic.size();i++){
+            char chara=listaUbic.get(i).charAt(0);
+            if(chara!='P' && chara!='Q'){//evitar ubicaciones de picking
+                listaUbicString.add(listaUbic.get(i));
+                listaCantString.add(listaCantUbic.get(i));
+            }
+        }//acomodar en lista string las ubicaciones
+        spOrigenR.setAdapter(new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item,listaUbicString));
+        spOrigenR.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
+                tvCantOrig.setText(listaCantString.get(pos));
+            }//onItemselected
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                tvCantOrig.setText(listaCantString.get(0));
+            }//onNothingselected
+        });//spOrigentsetonitemselected
+        spOrigenR.setSelection(listaUbicString.indexOf(listPick.get(posicion).getRack()));//posicionarse en el rack
 
         builder.setCancelable(false);
         builder.setPositiveButton("Aceptar",null);
@@ -308,7 +348,7 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(isNumeric(txtDestEmpq.getText().toString())==false || tvOrigenR.getText().toString().equals("")){
+                        if(isNumeric(txtDestEmpq.getText().toString())==false || spOrigenR.getSelectedItem().toString().equals("")){
                             Toast.makeText(ActivityResurtidoPicking.this, "Campos vacios o en cero", Toast.LENGTH_SHORT).show();
                         }else {
                             if(Integer.parseInt(tvCantOrig.getText().toString())<Integer.parseInt(txtDestEmpq.getText().toString())){
@@ -318,7 +358,7 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
                                 Toast.makeText(ActivityResurtidoPicking.this, "Cantidad excede a necesidad",
                                         Toast.LENGTH_SHORT).show();
                             }else{
-                                new AsyncModificarUbicDestino(tvOrigenR.getText().toString(),"EMPAQUE",
+                                new AsyncModificarUbicDestino(spOrigenR.getSelectedItem().toString(),"EMPAQUE",
                                         tvClvProdDial.getText().toString(),txtDestEmpq.getText().toString(),dialogInterface).execute();
                             }//else if
                         }//else
@@ -426,24 +466,43 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
         @RequiresApi(api = Build.VERSION_CODES.P)
         @Override
         protected void onPostExecute(Void result) {
-            mDialog.dismiss();
-            if (listPick.size()>0) {
+            if(pendientes==true){
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityResurtidoPicking.this);
+                builder.setPositiveButton("Mostrar pendientes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        fechaReg="";horaReg="";
+                        mostrarProductos();
+                    }
+                });//positive
+                builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                    }
+                });//negative
+                builder.setCancelable(false);
+                builder.setTitle("AVISO").setMessage("Existen registros sin terminar, no podrá consultar nuevos hasta que termine los pendientes\n¿Desea verlos?").create().show();
+            }
+            else if(listPick.size()>0) {
                 fechaReg="";horaReg="";
                 mostrarProductos();
             }else {
+                mDialog.dismiss();
                 AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityResurtidoPicking.this);
                 alerta.setMessage(mensaje).setCancelable(false).
                         setNegativeButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.cancel();
-                    }//onclick
-                });//alertDialogBuilder
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }//onclick
+                        });//alertDialogBuilder
 
                 AlertDialog titulo = alerta.create();
-                titulo.setTitle("Atención");
+                titulo.setTitle("AVISO");
                 titulo.show();
             }//else
+            pendientes=false;
         }//OnpostEjecute
     }//class AsynCall
 
@@ -468,6 +527,8 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
             for (int i = 0; i < response.getPropertyCount(); i++) {
                 SoapObject response0 = (SoapObject) soapEnvelope.bodyIn;
                 response0 = (SoapObject) response0.getProperty(i);
+                mensaje=(response0.getPropertyAsString("k_mensaje").equals("anyType{}") ? " " : response0.getPropertyAsString("k_mensaje"));
+                if(mensaje.equals("PENDIENTE")){pendientes=true;}
                 listPick.add(new ResurtidoPicking(""+(i+1),
                         (response0.getPropertyAsString("k_clvProd").equals("anyType{}") ? " " : response0.getPropertyAsString("k_clvProd")),
                         (response0.getPropertyAsString("k_descrip").equals("anyType{}") ? " " : response0.getPropertyAsString("k_descrip")),
@@ -484,7 +545,7 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
         } catch (IOException e) {
             mensaje = "No se encontró servidor";
         } catch (Exception ex) {
-            mensaje = "Hubó un problema";
+            mensaje = "Ningún dato";
         }//catch
     }//conecta
 
@@ -504,7 +565,9 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-            mDialog.show();
+            if(mDialog.isShowing()==false){
+                mDialog.show();
+            }
         }//onPreexecute
 
         @Override
@@ -520,12 +583,12 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
         @RequiresApi(api = Build.VERSION_CODES.P)
         @Override
         protected void onPostExecute(Void result) {
-            mDialog.dismiss();
             if(mensaje.equals("LA UBICACION A SIDO INSERTADO") || mensaje.equals("LA UBICACION A SIDO ACTUALIZADA")){
                 dialogInterface.dismiss();
                 Toast.makeText(ActivityResurtidoPicking.this, "Cantidad de ubicacion EMPAQUE ha sido modificada", Toast.LENGTH_SHORT).show();
                 new AsynCallConsulXPicking().execute();
             }else{
+                mDialog.dismiss();
                 Toast.makeText(ActivityResurtidoPicking.this, mensaje, Toast.LENGTH_SHORT).show();
             }
         }//onPosteExecute
@@ -651,7 +714,9 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
     private class AsynCallConsulXPicking extends AsyncTask<Void, Void, Void> {
         @Override
         protected void onPreExecute() {
-            mDialog.show();
+            if(mDialog.isShowing()==false){
+                mDialog.show();
+            }
         }//onPreejecute
 
         @Override
@@ -668,7 +733,6 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
         @RequiresApi(api = Build.VERSION_CODES.P)
         @Override
         protected void onPostExecute(Void result) {
-            mDialog.dismiss();
             if (mensaje.equals("")) {
                 mostrarDetalleProd();
             }else {
@@ -677,6 +741,7 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
                     posicion=posGuard;
                     mostrarDetalleProd();
                 }else{
+                    mDialog.dismiss();
                     Toast.makeText(ActivityResurtidoPicking.this, "Hubó un problema al actualizar datos del producto", Toast.LENGTH_SHORT).show();
                 }//else
             }//else
@@ -792,7 +857,9 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-            mDialog.show();
+            if(mDialog.isShowing()==false){
+                mDialog.show();
+            }
         }//onPreejecute
 
         @Override

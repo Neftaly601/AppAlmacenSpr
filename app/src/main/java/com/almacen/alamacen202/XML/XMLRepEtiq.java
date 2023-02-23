@@ -5,22 +5,24 @@ import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
 
-public class XMLFolios extends SoapSerializationEnvelope {
+public class XMLRepEtiq extends SoapSerializationEnvelope {
 
     private String usuario;
     private String contrasena;
-    private String suc;
-    private String opClo;
+    private String producto;
+    private String sucursal;
+    private String cont;
 
-    public XMLFolios(int version) {
+    public XMLRepEtiq(int version) {
         super(version);
     }
 
-    public void XMLFol(String usuario, String contrasena,String suc,String opClo) {
+    public void XMLRep(String usuario, String contrasena,String producto,String sucursal,String cont) {
         this.usuario = usuario;
         this.contrasena = contrasena;
-        this.suc = suc;
-        this.opClo=opClo;
+        this.producto = producto;
+        this.sucursal = sucursal;
+        this.cont = cont;
     }//void
 
     @Override
@@ -32,7 +34,7 @@ public class XMLFolios extends SoapSerializationEnvelope {
         writer.setPrefix("", tem);
         writer.startTag(env, "Envelope");
         writer.startTag(env, "Body");
-        writer.startTag(tem, "FoliosRequest");
+        writer.startTag(tem, "ReporteEtiqRequest");
 
 
         writer.startTag(tem, "Login");
@@ -45,20 +47,28 @@ public class XMLFolios extends SoapSerializationEnvelope {
         writer.endTag(tem, "Login");
 
 
-        writer.startTag(tem, "Folio");
+        writer.startTag(tem, "ReporteEtiqq");
+
+        writer.startTag(tem, "k_prod");
+        writer.text(producto);
+        writer.endTag(tem, "k_prod");
 
         writer.startTag(tem, "k_suc");
-        writer.text(suc);
+        writer.text(sucursal);
         writer.endTag(tem, "k_suc");
 
-        writer.startTag(tem, "k_opcl");
-        writer.text(opClo);
-        writer.endTag(tem, "k_opcl");
+        writer.startTag(tem, "k_usu");
+        writer.text(usuario);
+        writer.endTag(tem, "k_usu");
 
-        writer.endTag(tem, "Folio");
+        writer.startTag(tem, "k_cont");
+        writer.text(cont);
+        writer.endTag(tem, "k_cont");
+
+        writer.endTag(tem, "ReporteEtiqq");
 
 
-        writer.endTag(tem, "FoliosRequest");
+        writer.endTag(tem, "ReporteEtiqRequest");
         writer.endTag(env, "Body");
         writer.endTag(env, "Envelope");
         writer.endDocument();

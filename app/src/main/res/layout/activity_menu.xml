@@ -435,7 +435,85 @@
 
 
                     </LinearLayout>
-                    <!-- Si se agrega otro modulo use el siguiente linear layout que esta oculto-->
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/roundbutton"
+                        android:backgroundTint="@color/AzulBack"
+                        android:gravity="center"
+                        android:layout_margin="5dp"
+                        android:orientation="vertical"
+                        android:onClick="difUbiExis">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="5dp"
+                            android:lines="2"
+                            android:maxLines="2"
+                            android:padding="5dp"
+                            android:textAlignment="center"
+                            android:textColor="@color/ColorWhite"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:text="Diferencias entre ubicaciones y existencias"/>
+
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="35dp"
+                            android:layout_margin="5dp"
+                            android:contentDescription="Manos"
+                            android:src="@drawable/icon_dif" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="horizontal"
+                    android:visibility="visible">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/roundbutton"
+                        android:backgroundTint="@color/AzulBack"
+                        android:gravity="center"
+                        android:layout_margin="5dp"
+                        android:orientation="vertical"
+                        android:onClick="repEtiq">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="5dp"
+                            android:lines="2"
+                            android:maxLines="2"
+                            android:padding="5dp"
+                            android:textAlignment="center"
+                            android:text="Reporte de incidencias de etiquetas"
+                            android:textColor="@color/ColorWhite"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="35dp"
+                            android:layout_margin="5dp"
+                            android:contentDescription="Manos"
+                            android:src="@drawable/icons8_error_52" />
+
+
+                    </LinearLayout>
+
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -457,7 +535,8 @@
                             android:textAlignment="center"
                             android:textColor="@color/ColorWhite"
                             android:textSize="12sp"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            android:text="Diferencias entre ubicaciones y existencias"/>
 
 
                         <ImageView
@@ -465,12 +544,9 @@
                             android:layout_height="35dp"
                             android:layout_margin="5dp"
                             android:contentDescription="Manos"
-                            android:src="@drawable/icon_inventario" />
-
-
+                            android:src="@drawable/icon_dif" />
                     </LinearLayout>
                 </LinearLayout>
-
 
                 <!--
                                 <LinearLayout
