@@ -17,7 +17,7 @@
             android:onClick="onClickInv">
             <TextView
                 android:id="@+id/tvN"
-                android:layout_width="25dp"
+                android:layout_width="60dp"
                 android:layout_height="wrap_content"
                 android:text="NUM"
                 android:textStyle="bold"

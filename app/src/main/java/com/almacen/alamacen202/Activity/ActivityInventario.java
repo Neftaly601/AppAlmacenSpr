@@ -429,7 +429,6 @@ public class ActivityInventario extends AppCompatActivity {
         @RequiresApi(api = Build.VERSION_CODES.P)
         @Override
         protected void onPostExecute(Void result) {
-            mDialog.dismiss();
             if(comprobar==true){//comprobar si folio esta abierto
                 comprobar=false;
                 if (listaFol.size()>0) {//ahora busca en la lista de folios disponibles
@@ -458,6 +457,7 @@ public class ActivityInventario extends AppCompatActivity {
                         AlertDialog dialog = builder.create();
                         dialog.show();
                     }//else
+                    mDialog.dismiss();
                 }else{//como no hay folios disponibles el folio no esta abierto
                     AlertDialog.Builder builder = new AlertDialog.Builder(ActivityInventario.this);
                     builder.setMessage("Folio cerrado");
@@ -470,8 +470,10 @@ public class ActivityInventario extends AppCompatActivity {
                     });//negative botton
                     AlertDialog dialog = builder.create();
                     dialog.show();
+                    mDialog.dismiss();
                 }//else
             }else{//cuando no se quiere comprobar el folio
+                mDialog.dismiss();
                 if (listaFol.size()>0) {
                     listaFolio();
                 }else{

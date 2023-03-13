@@ -73,6 +73,10 @@ public class XMLActualizaDif extends SoapSerializationEnvelope {
         writer.text(ubic);
         writer.endTag(tem, "k_ubic");
 
+        writer.startTag(tem, "k_usu");
+        writer.text(usuario);
+        writer.endTag(tem, "k_usu");
+
 
         writer.endTag(tem, "ActualizaDife");
 

@@ -8,9 +8,10 @@ public class DifUbiExist {
     private String diferencia;
     private String ubicacion;
     private String conteo;
+    private String estatus;
 
     public DifUbiExist(String num, String producto, String cantidad, String existencia,
-                       String diferencia, String ubicacion, String conteo) {
+                       String diferencia, String ubicacion, String conteo,String estatus) {
         this.num = num;
         this.producto = producto;
         this.cantidad = cantidad;
@@ -18,6 +19,7 @@ public class DifUbiExist {
         this.diferencia = diferencia;
         this.ubicacion = ubicacion;
         this.conteo = conteo;
+        this.estatus=estatus;
     }//constructor
 
     public String getNum() {
@@ -74,5 +76,13 @@ public class DifUbiExist {
 
     public void setConteo(String conteo) {
         this.conteo = conteo;
+    }
+
+    public String getEstatus() {
+        return estatus;
+    }
+
+    public void setEstatus(String estatus) {
+        this.estatus = estatus;
     }
 }//clase

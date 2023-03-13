@@ -27,6 +27,7 @@ public class ConexionSQLiteHelper extends SQLiteOpenHelper {
             "DIFERENCIA INTEGER (11),"+
             "UBICACION VARCHAR(45),"+
             "CONTEO INTEGER (11),"+
+            "ESTATUS INTEGER,"+//CONTADOS 1 NO CONTADOS 0
             "PRIMARY KEY(EMPRESA,PRODUCTO))";
 
 

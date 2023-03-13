@@ -72,7 +72,6 @@ public class ActivityDifUbiExi extends AppCompatActivity {
     private SharedPreferences.Editor editor;
     private int posicion=0;
     private String strusr,strpass,strServer,strbran,codeBar,ProductoAct="",folio="",fecha="",hora="",mensaje,serv="",where=" AND CONTEO>0 ";
-    private ArrayList<DifUbiExist> lista = new ArrayList<>();
     private ArrayList<DifUbiExist> lista2 = new ArrayList<>();
     private ArrayList<Almacenes> listaAlm = new ArrayList<>();
     private EditText txtFolioInv,txtProductoVi,txtFechaI,txtHoraI,txtProducto,txtCant,txtContF,txtExistS,txtDif,txtUbb;
@@ -299,7 +298,6 @@ public class ActivityDifUbiExi extends AppCompatActivity {
             new AsyncFolios().execute();
         }else{
             seleccionaFol();
-            consultaTodos();
             contados();
         }//else
     }//onCreate
@@ -324,7 +322,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
         txtExistS.setText("");
         txtDif.setText("");
         txtUbb.setText("");
-        where=" AND CONTEO>0 ";
+        where=" AND ESTATUS=1 ";
         consultaSql();
     }//contados
 
@@ -339,7 +337,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
         txtExistS.setText("");
         txtDif.setText("");
         txtUbb.setText("");
-        where=" AND CONTEO<=0 ";
+        where=" AND ESTATUS=0 ";
         consultaSql();
     }//noContados
 
@@ -505,17 +503,17 @@ public class ActivityDifUbiExi extends AppCompatActivity {
         @RequiresApi(api = Build.VERSION_CODES.P)
         @Override
         protected void onPostExecute(Void result) {
-            mDialog.dismiss();
             chbMan.setChecked(false);
             if (lista2.size()>0) {
                 for(int i=0;i<lista2.size();i++){
                     insertarSql(lista2.get(i).getProducto(),lista2.get(i).getCantidad(),
                             lista2.get(i).getExistencia(),lista2.get(i).getDiferencia(),
-                            lista2.get(i).getUbicacion());
+                            lista2.get(i).getUbicacion(),lista2.get(i).getEstatus());
                 }//for
                 contados();
-                consultaTodos();
+                mDialog.dismiss();
             }else{
+                mDialog.dismiss();
                 Toast.makeText(ActivityDifUbiExi.this, "Ningún dato", Toast.LENGTH_SHORT).show();
             }
             txtProducto.setText("");
@@ -549,7 +547,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                         (response0.getPropertyAsString("EXISTENCIA").equals("anyType{}") ? " " : response0.getPropertyAsString("EXISTENCIA")),
                         (response0.getPropertyAsString("DIFERENCIA").equals("anyType{}") ? " " : response0.getPropertyAsString("DIFERENCIA")),
                         (response0.getPropertyAsString("UBICACION").equals("anyType{}") ? " " : response0.getPropertyAsString("UBICACION")),
-                        "0"));
+                        "0",(response0.getPropertyAsString("ESTATUS").equals("anyType{}") ? "" : response0.getPropertyAsString("ESTATUS"))));
             }//for
         } catch (Exception ex) {}//catch
     }//conectaListInv
@@ -620,6 +618,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                 });//negative botton
                 AlertDialog dialog = builder.create();
                 dialog.show();
+                contados();
             }//else
         }//onPostExecute
     }//AsynInsertInv
@@ -691,7 +690,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                 txtProducto.requestFocus();
             }
         }
-        contados();
+        consultaSql();
     }//buscar
 
     private class AsyncalListAlm extends AsyncTask<Void, Void, Void> {
@@ -723,7 +722,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                 GridLayoutManager gl = new GridLayoutManager(ActivityDifUbiExi.this, 1);
                 rvAlmacenes.setLayoutManager(gl);
 
-                adapter= new AdapterDifUbiExi(lista);
+                adapter= new AdapterDifUbiExi(lista2);
                 rvDifUbiExi.setAdapter(adapter);
 
                 AdaptadorListAlmacenes adapAlm = new AdaptadorListAlmacenes(listaAlm);
@@ -790,13 +789,13 @@ public class ActivityDifUbiExi extends AppCompatActivity {
     }//onClickLista
 
     public void detalle(int posi){//detalle del producto seleccionado
-        ProductoAct=lista.get(posi).getProducto();
+        ProductoAct=lista2.get(posi).getProducto();
         txtProductoVi.setText(ProductoAct);
-        txtContF.setText(lista.get(posi).getCantidad());
-        txtExistS.setText(lista.get(posi).getExistencia());
-        txtDif.setText(lista.get(posi).getDiferencia());
-        txtUbb.setText(lista.get(posi).getUbicacion());
-        txtCant.setText(lista.get(posi).getConteo());
+        txtContF.setText(lista2.get(posi).getCantidad());
+        txtExistS.setText(lista2.get(posi).getExistencia());
+        txtDif.setText(lista2.get(posi).getDiferencia());
+        txtUbb.setText(lista2.get(posi).getUbicacion());
+        txtCant.setText(lista2.get(posi).getConteo());
     }//detalle
     public void detalleProd(String prod){//se busca el detalle en todos lo productos ya sea contados o no contados
         for(int i=0;i<lista2.size();i++){
@@ -814,22 +813,22 @@ public class ActivityDifUbiExi extends AppCompatActivity {
     public void consultaSql(){
         try{
             boolean var=true;
-            lista.clear();
+            lista2.clear();
             int j=0;
             rvDifUbiExi.setAdapter(null);
             posicion=0;
             @SuppressLint("Recycle") Cursor fila = db.rawQuery("SELECT PRODUCTO,CANTIDAD,EXISTENCIA,DIFERENCIA,"+
-                    "UBICACION,CONTEO FROM DIFUBIEXIST WHERE EMPRESA='"+serv+"' "+where+" ORDER BY UBICACION,PRODUCTO ", null);
+                    "UBICACION,CONTEO,ESTATUS FROM DIFUBIEXIST WHERE EMPRESA='"+serv+"' "+where+" ORDER BY UBICACION,PRODUCTO ", null);
             if (fila != null && fila.moveToFirst()) {
                 do {
                     j++;
                     if(ProductoAct.equals(fila.getString(0))){
                         posicion=j-1;
                     }
-                    lista.add(new DifUbiExist(j+"",fila.getString(0),fila.getString(1),fila.getString(2),
-                            fila.getString(3),fila.getString(4),fila.getString(5)));
+                    lista2.add(new DifUbiExist(j+"",fila.getString(0),fila.getString(1),fila.getString(2),
+                            fila.getString(3),fila.getString(4),fila.getString(5),fila.getString(6)));
                 } while (fila.moveToNext());
-                adapter= new AdapterDifUbiExi(lista);
+                adapter= new AdapterDifUbiExi(lista2);
                 rvDifUbiExi.setAdapter(adapter);
             }//if
             if(!ProductoAct.equals("")){
@@ -841,24 +840,8 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                     "Error al consultar datos de la base de datos interna", Toast.LENGTH_SHORT).show();
         }//catch
     }//consultaSql
-    public void consultaTodos(){//pone en lista2 todos ya sea contados o no contados
-        try{
-            int j=0;
-            lista2.clear();
-            @SuppressLint("Recycle") Cursor fila = db.rawQuery("SELECT PRODUCTO,CANTIDAD,EXISTENCIA,DIFERENCIA,"+
-                    "UBICACION,CONTEO FROM DIFUBIEXIST WHERE EMPRESA='"+serv+"' ORDER BY UBICACION,PRODUCTO ", null);
-            if (fila != null && fila.moveToFirst()) {
-                do {
-                    j++;
-                    lista2.add(new DifUbiExist(j+"",fila.getString(0),fila.getString(1),fila.getString(2),
-                            fila.getString(3),fila.getString(4),fila.getString(5)));
-                } while (fila.moveToNext());
-            }//if
-            fila.close();
-        }catch(Exception e){}//catch
-    }//consultaSqlExist
 
-    public void insertarSql(String prod,String cant,String exist,String dif,String ubi){
+    public void insertarSql(String prod,String cant,String exist,String dif,String ubi,String estatus){
         try{
             if(db != null){
                 ContentValues valores = new ContentValues();
@@ -869,6 +852,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                 valores.put("UBICACION", ubi);
                 valores.put("CONTEO", "0");
                 valores.put("EMPRESA", serv);
+                valores.put("ESTATUS", estatus);
                 db.insert("DIFUBIEXIST", null, valores);
             }
         }catch(Exception e){
