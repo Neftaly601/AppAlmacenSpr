@@ -68,6 +68,7 @@ public class ActivityInventarioXProd extends AppCompatActivity {
     private ArrayList<UbicacionSandG> listaUbicaciones = new ArrayList<>();
     private ArrayList<ComprometidasSandG> listaComprometidas = new ArrayList<>();
     boolean v=false;
+    private String urlImagenes,extImg;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_invent_por_prod);
@@ -79,6 +80,8 @@ public class ActivityInventarioXProd extends AppCompatActivity {
         strbran = preference.getString("codBra", "null");
         strServer = preference.getString("Server", "null");
         codeBar = preference.getString("codeBar", "null");
+        urlImagenes=preference.getString("urlImagenes", "null");
+        extImg=preference.getString("ext", "null");
 
         mDialog = new SpotsDialog.Builder().setContext(ActivityInventarioXProd.this).
                 setMessage("Espere un momento...").build();
@@ -375,7 +378,7 @@ public class ActivityInventarioXProd extends AppCompatActivity {
                 new AsynCallCompromeAlma().execute();
 
                 Picasso.with(getApplicationContext()).
-                        load("https://vazlo.com.mx/assets/img/productos/chica/jpg/" +clvProducto+".jpg")
+                        load(urlImagenes+clvProducto+extImg)
                         .error(R.drawable.aboutlogo)
                         .fit()
                         .centerInside()

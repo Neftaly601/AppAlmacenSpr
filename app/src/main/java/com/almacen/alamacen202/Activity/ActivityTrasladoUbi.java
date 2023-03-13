@@ -83,6 +83,7 @@ public class ActivityTrasladoUbi extends AppCompatActivity {
     String Linea;
     String Disponibilidad;
     String ProductoWeb="";
+    private String urlImagenes,extImg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,6 +129,9 @@ public class ActivityTrasladoUbi extends AppCompatActivity {
         strcodBra = preference.getString("codBra", "null");
         StrServer = preference.getString("Server", "null");
         codeBar =preference.getString("codeBar","null");
+        urlImagenes=preference.getString("urlImagenes", "null");
+        extImg=preference.getString("ext", "null");
+
         EDProducto.requestFocus();
         EDProducto.setInputType(InputType.TYPE_NULL);
         EDUbicacionDest.setInputType(InputType.TYPE_NULL);
@@ -152,7 +156,7 @@ public class ActivityTrasladoUbi extends AppCompatActivity {
                         Ubicacionorigenlinear.setVisibility(View.VISIBLE);
                         EDProducto.setText(null);
                         Picasso.with(getApplicationContext()).
-                                load("https://vazlo.com.mx/assets/img/productos/chica/jpg/" + Producto + ".jpg")
+                                load(urlImagenes+Producto+extImg)
                                 .error(R.drawable.aboutlogo)
                                 .fit()
                                 .centerInside()
@@ -175,7 +179,7 @@ public class ActivityTrasladoUbi extends AppCompatActivity {
                                 TXTUBICAORIVISI.setVisibility(View.VISIBLE);
                                 EDProducto.setText(null);
                                 Picasso.with(getApplicationContext()).
-                                        load("https://vazlo.com.mx/assets/img/productos/chica/jpg/" + Producto + ".jpg")
+                                        load(urlImagenes+Producto+extImg)
                                         .error(R.drawable.aboutlogo)
                                         .fit()
                                         .centerInside()
@@ -863,7 +867,7 @@ public class ActivityTrasladoUbi extends AppCompatActivity {
                     Ubicacionorigenlinear.setVisibility(View.VISIBLE);
                     EDProducto.setText(null);
                     Picasso.with(getApplicationContext()).
-                            load("https://vazlo.com.mx/assets/img/productos/chica/jpg/" + Producto + ".jpg")
+                            load(urlImagenes+Producto+extImg)
                             .error(R.drawable.aboutlogo)
                             .fit()
                             .centerInside()

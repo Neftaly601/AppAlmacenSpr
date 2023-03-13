@@ -63,32 +63,32 @@ public class ActivityConsultaPA extends AppCompatActivity {
 
     private SharedPreferences preference;
     private SharedPreferences.Editor editor;
-
-    TextView TitutloTable;
-
-    RecyclerView recyclerListas;
+    private TextView TitutloTable;
+    private RecyclerView recyclerListas;
 
     //Layaout
-    LinearLayout ToolBarExistencia, ToolBarComprometidas, ToolBarUbicacion;
-    AlertDialog mDialog;
+    private LinearLayout ToolBarExistencia, ToolBarComprometidas, ToolBarUbicacion;
+    private AlertDialog mDialog;
 
     //Variables
-    String strusr, strpass, strname, strlname, strtype, strbran, strma, strcodBra, StrServer, codeBar;
-    String Producto, Sucursal, mensaje;
-    String Descripcion;
-    String Linea;
-    String Disponibilidad;
-    String ProductoWeb="";
-    TextView txtDescripcion, txtLinea, txtDisponibilidad;
-    EditText ETProducto;
-    EditText txtEscaneo;
-    ImageView imgVi;
+    private String strusr, strpass, strname, strlname, strtype, strbran, strma, strcodBra, StrServer, codeBar;
+    private String Producto, Sucursal, mensaje;
+    private String Descripcion;
+    private String Linea;
+    private String Disponibilidad;
+    private String ProductoWeb="";
+    private TextView txtDescripcion, txtLinea, txtDisponibilidad;
+    private EditText ETProducto;
+    private EditText txtEscaneo;
+    private ImageView imgVi;
 
 
     //Listas
-    ArrayList<ComprometidasSandG> listaComprometidas = new ArrayList<>();
-    ArrayList<ExistenciaSandG> listaExistencia = new ArrayList<>();
-    ArrayList<UbicacionSandG> listaUbicaciones = new ArrayList<>();
+    private ArrayList<ComprometidasSandG> listaComprometidas = new ArrayList<>();
+    private ArrayList<ExistenciaSandG> listaExistencia = new ArrayList<>();
+    private ArrayList<UbicacionSandG> listaUbicaciones = new ArrayList<>();
+
+    private String urlImagenes,extImg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +125,8 @@ public class ActivityConsultaPA extends AppCompatActivity {
         strcodBra = preference.getString("codBra", "null");
         StrServer = preference.getString("Server", "null");
         codeBar = preference.getString("codeBar", "null");
+        urlImagenes=preference.getString("urlImagenes", "null");
+        extImg=preference.getString("ext", "null");
 
         GridLayoutManager gl = new GridLayoutManager(ActivityConsultaPA.this, 1);
         recyclerListas.setLayoutManager(gl);
@@ -392,7 +394,7 @@ public class ActivityConsultaPA extends AppCompatActivity {
                 txtDisponibilidad.setText(Disponibilidad);
 
                 Picasso.with(getApplicationContext()).
-                        load("https://vazlo.com.mx/assets/img/productos/chica/jpg/" + Producto + ".jpg")
+                        load(urlImagenes+Producto+extImg)
                         .error(R.drawable.aboutlogo)
                         .fit()
                         .centerInside()
@@ -401,7 +403,7 @@ public class ActivityConsultaPA extends AppCompatActivity {
             } else {
                 mDialog.dismiss();
                 AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityConsultaPA.this);
-                alerta.setMessage("El articulo que esta buscando no se encuentra").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                alerta.setMessage("El artículo que está buscando no se encuentra").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.cancel();
@@ -409,7 +411,7 @@ public class ActivityConsultaPA extends AppCompatActivity {
                 });
 
                 AlertDialog titulo = alerta.create();
-                titulo.setTitle("NO SE ENCONTRO ");
+                titulo.setTitle("Aviso");
                 titulo.show();
             }
 

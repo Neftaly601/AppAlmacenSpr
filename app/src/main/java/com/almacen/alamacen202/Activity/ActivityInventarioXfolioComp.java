@@ -76,6 +76,7 @@ public class ActivityInventarioXfolioComp extends AppCompatActivity {
     private ArrayList<String> listcantUbi = new ArrayList<>();
     private ArrayList<ComprometidasSandG> listaComprometidas = new ArrayList<>();
     private boolean var=false;//para saber si se selecciona ubicaciones o para el traspaso entre ubicaciones
+    private String urlImagenes,extImg;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,6 +88,8 @@ public class ActivityInventarioXfolioComp extends AppCompatActivity {
         strpass = preference.getString("pass", "null");
         strbran = preference.getString("codBra", "null");
         strServer = preference.getString("Server", "null");
+        urlImagenes=preference.getString("urlImagenes", "null");
+        extImg=preference.getString("ext", "null");
 
         mDialog = new SpotsDialog.Builder().setContext(ActivityInventarioXfolioComp.this).
                 setMessage("Espere un momento...").build();
@@ -522,8 +525,7 @@ public class ActivityInventarioXfolioComp extends AppCompatActivity {
         txtCantProdOrd.setText(listProd.get(posicion).getCantidad());
         cambiaProd();
         Picasso.with(getApplicationContext()).
-                load("https://vazlo.com.mx/assets/img/productos/chica/jpg/" +
-                        tvClvProdOrden.getText().toString() + ".jpg")
+                load(urlImagenes+tvClvProdOrden.getText().toString()+extImg)
                 .error(R.drawable.aboutlogo)
                 .fit()
                 .centerInside()

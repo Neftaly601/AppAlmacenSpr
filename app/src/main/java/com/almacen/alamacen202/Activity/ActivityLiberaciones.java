@@ -200,6 +200,8 @@ public class ActivityLiberaciones extends AppCompatActivity {
     private SharedPreferences preference;
     private SharedPreferences.Editor editor;
 
+    private String urlImagenes,extImg;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -248,6 +250,8 @@ public class ActivityLiberaciones extends AppCompatActivity {
         StrServer = preference.getString("Server", "null");
         codeBar = preference.getString("codeBar", "null");
         impresora = preference.getString("Impresora", "null");
+        urlImagenes=preference.getString("urlImagenes", "null");
+        extImg=preference.getString("ext", "null");
         Filtro = "0";
         FiltroAscDesc = "0";
 
@@ -702,7 +706,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                                             txtProducto.setText(listaProduAduana.get(contlis).getProducto());
                                             txtCantidad.setText(listaProduAduana.get(contlis).getCantidad() + " " + listaProduAduana.get(contlis).getUnidad());
                                             Picasso.with(getApplicationContext()).
-                                                    load("https://vazlo.com.mx/assets/img/productos/chica/jpg/" + listaProduAduana.get(contlis).getProducto() + ".jpg")
+                                                    load(urlImagenes + listaProduAduana.get(contlis).getProducto() + extImg)
                                                     .error(R.drawable.aboutlogo)
                                                     .fit()
                                                     .centerInside()
@@ -3487,7 +3491,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                         txtProducto.setText(listaProduAduana.get(contlis).getProducto());
                         txtCantidad.setText(listaProduAduana.get(contlis).getCantidad() + " " + listaProduAduana.get(contlis).getUnidad());
                         Picasso.with(getApplicationContext()).
-                                load("https://vazlo.com.mx/assets/img/productos/chica/jpg/" + listaProduAduana.get(contlis).getProducto() + ".jpg")
+                                load(urlImagenes+ listaProduAduana.get(contlis).getProducto() +extImg)
                                 .error(R.drawable.aboutlogo)
                                 .fit()
                                 .centerInside()
@@ -3603,7 +3607,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                     txtCantidad.setText(listaProduAduana.get(contlis).getCantidad() + " " + listaProduAduana.get(contlis).getUnidad());
 
                     Picasso.with(getApplicationContext()).
-                            load("https://vazlo.com.mx/assets/img/productos/chica/jpg/" + listaProduAduana.get(contlis).getProducto() + ".jpg")
+                            load(urlImagenes + listaProduAduana.get(contlis).getProducto() + extImg)
                             .error(R.drawable.aboutlogo)
                             .fit()
                             .centerInside()
@@ -3701,7 +3705,7 @@ private class ActualizaSurtidoLista extends AsyncTask<Void, Void, Void> {
             txtProducto.setText(listaProduAduana.get(contlis).getProducto());
             txtCantidad.setText(listaProduAduana.get(contlis).getCantidad() + " " + listaProduAduana.get(contlis).getUnidad());
             Picasso.with(getApplicationContext()).
-                    load("https://vazlo.com.mx/assets/img/productos/chica/jpg/" + listaProduAduana.get(contlis).getProducto() + ".jpg")
+                    load(urlImagenes + listaProduAduana.get(contlis).getProducto() + extImg)
                     .error(R.drawable.aboutlogo)
                     .fit()
                     .centerInside()
@@ -3818,7 +3822,7 @@ private class ActualizaSurtidoLista extends AsyncTask<Void, Void, Void> {
                     txtProducto.setText(listaProduAduana.get(contlis).getProducto());
                     txtCantidad.setText(listaProduAduana.get(contlis).getCantidad() + " " + listaProduAduana.get(contlis).getUnidad());
                     Picasso.with(getApplicationContext()).
-                            load("https://vazlo.com.mx/assets/img/productos/chica/jpg/" + listaProduAduana.get(contlis).getProducto() + ".jpg")
+                            load(urlImagenes + listaProduAduana.get(contlis).getProducto() + extImg)
                             .error(R.drawable.aboutlogo)
                             .fit()
                             .centerInside()
@@ -3857,7 +3861,7 @@ private class ActualizaSurtidoLista extends AsyncTask<Void, Void, Void> {
                     txtCantidad.setText(listaProduAduana.get(contlis).getCantidad() + " " + listaProduAduana.get(contlis).getUnidad());
 
                     Picasso.with(getApplicationContext()).
-                            load("https://vazlo.com.mx/assets/img/productos/chica/jpg/" + listaProduAduana.get(contlis).getProducto() + ".jpg")
+                            load(urlImagenes+ listaProduAduana.get(contlis).getProducto() +extImg)
                             .error(R.drawable.aboutlogo)
                             .fit()
                             .centerInside()
@@ -4102,7 +4106,7 @@ private class ActualizaSurtidoLista extends AsyncTask<Void, Void, Void> {
                                         txtProducto.setText(listaProduAduana.get(contlis).getProducto());
                                         txtCantidad.setText(listaProduAduana.get(contlis).getCantidad() + " " + listaProduAduana.get(contlis).getUnidad());
                                         Picasso.with(getApplicationContext()).
-                                                load("https://vazlo.com.mx/assets/img/productos/chica/jpg/" + listaProduAduana.get(contlis).getProducto() + ".jpg")
+                                                load(urlImagenes + listaProduAduana.get(contlis).getProducto() + extImg)
                                                 .error(R.drawable.aboutlogo)
                                                 .fit()
                                                 .centerInside()
@@ -5011,7 +5015,7 @@ private class ActualizaSurtidoLista extends AsyncTask<Void, Void, Void> {
                 txtProducto.setText(listaProduAduana.get(contlis).getProducto());
                 txtCantidad.setText(listaProduAduana.get(contlis).getCantidad() + " " + listaProduAduana.get(contlis).getUnidad());
                 Picasso.with(getApplicationContext()).
-                        load("https://vazlo.com.mx/assets/img/productos/chica/jpg/" + listaProduAduana.get(contlis).getProducto() + ".jpg")
+                        load(urlImagenes+ listaProduAduana.get(contlis).getProducto() +extImg)
                         .error(R.drawable.aboutlogo)
                         .fit()
                         .centerInside()
@@ -5156,7 +5160,7 @@ private class ActualizaSurtidoLista extends AsyncTask<Void, Void, Void> {
             txtCantidadSurtida.setText(listaProduAduana.get(0).getCantidadSurtida() + " " + listaProduAduana.get(0).getUnidad());
             imgVi.setBackgroundColor(Color.rgb(255, 255, 255));
             Picasso.with(getApplicationContext()).
-                    load("https://vazlo.com.mx/assets/img/productos/chica/jpg/" + listaProduAduana.get(0).getProducto() + ".jpg")
+                    load(urlImagenes +listaProduAduana.get(0).getProducto() + extImg)
                     .error(R.drawable.aboutlogo)
                     .fit()
                     .centerInside()
@@ -5454,7 +5458,7 @@ private class ActualizaSurtidoLista extends AsyncTask<Void, Void, Void> {
                         txtProducto.setText(listaProduAduana.get(contlis).getProducto());
                         txtCantidad.setText(listaProduAduana.get(contlis).getCantidad() + " " + listaProduAduana.get(contlis).getUnidad());
                         Picasso.with(getApplicationContext()).
-                                load("https://vazlo.com.mx/assets/img/productos/chica/jpg/" + listaProduAduana.get(contlis).getProducto() + ".jpg")
+                                load(urlImagenes + listaProduAduana.get(contlis).getProducto() +extImg)
                                 .error(R.drawable.aboutlogo)
                                 .fit()
                                 .centerInside()

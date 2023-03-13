@@ -41,10 +41,11 @@ public class ActivityMenu extends AppCompatActivity {
     private LinearLayout Conten;
     private SharedPreferences preference,preferenceF,preferenceD;
     private SharedPreferences.Editor editor,editor2,editor3;
-    private String codeBarClave;
+    private String codeBarClave,urlImagenes,extIm;;
 
     private ConexionSQLiteHelper conn;
     private SQLiteDatabase db;
+    private LinearLayout lyAdicSPR;
 
 
     @Override
@@ -65,7 +66,10 @@ public class ActivityMenu extends AppCompatActivity {
         imgVi = findViewById(R.id.productoImag);
         StrServer = preference.getString("Server", "null");
 
+        urlImagenes=getString(R.string.urlImagenesGeneral);
+        extIm=getString(R.string.ext);
 
+        lyAdicSPR = findViewById(R.id.lyAdicSPR);
 
         switch (StrServer) {
             case "jacve.dyndns.org:9085":
@@ -75,6 +79,7 @@ public class ActivityMenu extends AppCompatActivity {
                         .fit()
                         .centerInside()
                         .into(imgVi);
+                lyAdicSPR.setVisibility(View.GONE);
                 break;
             case "sprautomotive.servehttp.com:9085":
                 Picasso.with(getApplicationContext()).
@@ -83,6 +88,7 @@ public class ActivityMenu extends AppCompatActivity {
                         .fit()
                         .centerInside()
                         .into(imgVi);
+                lyAdicSPR.setVisibility(View.GONE);
                 break;
             case "cecra.ath.cx:9085":
 
@@ -92,7 +98,7 @@ public class ActivityMenu extends AppCompatActivity {
                         .fit()
                         .centerInside()
                         .into(imgVi);
-
+                lyAdicSPR.setVisibility(View.GONE);
                 break;
             case "guvi.ath.cx:9085":
 
@@ -102,7 +108,7 @@ public class ActivityMenu extends AppCompatActivity {
                         .fit()
                         .centerInside()
                         .into(imgVi);
-
+                lyAdicSPR.setVisibility(View.GONE);
                 break;
             case "cedistabasco.ddns.net:9085":
 
@@ -112,7 +118,7 @@ public class ActivityMenu extends AppCompatActivity {
                         .fit()
                         .centerInside()
                         .into(imgVi);
-
+                lyAdicSPR.setVisibility(View.GONE);
                 break;
             case "autodis.ath.cx:9085":
 
@@ -122,10 +128,9 @@ public class ActivityMenu extends AppCompatActivity {
                         .fit()
                         .centerInside()
                         .into(imgVi);
-
+                lyAdicSPR.setVisibility(View.GONE);
                 break;
             case "sprautomotive.servehttp.com:9090":
-
                 Conten.setBackgroundColor(Color.rgb(4, 59, 114));
                 Picasso.with(getApplicationContext()).
                         load(R.drawable.roda)
@@ -133,39 +138,37 @@ public class ActivityMenu extends AppCompatActivity {
                         .fit()
                         .centerInside()
                         .into(imgVi);
-
+                urlImagenes=getString(R.string.urlImagenesSPR)+"rodatech/";
+                extIm=getString(R.string.ext);
                 break;
             case "sprautomotive.servehttp.com:9095":
-
                 Picasso.with(getApplicationContext()).
                         load(R.drawable.partech)
                         .error(R.drawable.logokepler)
                         .fit()
                         .centerInside()
                         .into(imgVi);
-
+                urlImagenes=getString(R.string.urlImagenesSPR)+"partech/";
+                extIm=getString(R.string.ext);
                 break;
             case "sprautomotive.servehttp.com:9080":
-
-
                 Picasso.with(getApplicationContext()).
                         load(R.drawable.shark)
                         .error(R.drawable.logokepler)
                         .fit()
                         .centerInside()
                         .into(imgVi);
-
+                urlImagenes=getString(R.string.urlImagenesSPR)+"shark/";
+                extIm=getString(R.string.ext);
                 break;
             case "vazlocolombia.dyndns.org:9085":
-
                 Picasso.with(getApplicationContext()).
                         load(R.drawable.bhp)
                         .error(R.drawable.logokepler)
                         .fit()
                         .centerInside()
                         .into(imgVi);
-
-
+                lyAdicSPR.setVisibility(View.GONE);
                 break;
             default:
                 Picasso.with(getApplicationContext()).
@@ -174,9 +177,12 @@ public class ActivityMenu extends AppCompatActivity {
                         .fit()
                         .centerInside()
                         .into(imgVi);
-
+                lyAdicSPR.setVisibility(View.GONE);
                 break;
-        }
+        }//switch
+        editor.putString("urlImagenes",urlImagenes);
+        editor.putString("ext", extIm);
+        editor.commit();
     }
     public void eliminarSqlySP() {//eliminar bd y shared preferences yani(true cuando tambien se incluya la de inventario)
         try{
@@ -299,6 +305,8 @@ public class ActivityMenu extends AppCompatActivity {
             }else if (id == R.id.RodatechMenu){
                 StrServer = "sprautomotive.servehttp.com:9090";
                 editor.putString("Server", StrServer);
+                editor.putString("urlImagenes",urlImagenes);
+                editor.putString("ext", extIm);
                 editor.commit();
                 eliminarSqlySP();
                 overridePendingTransition(0, 0);
@@ -308,6 +316,8 @@ public class ActivityMenu extends AppCompatActivity {
             }else if (id == R.id.PartechMenu){
                 StrServer = "sprautomotive.servehttp.com:9095";
                 editor.putString("Server", StrServer);
+                editor.putString("urlImagenes",urlImagenes);
+                editor.putString("ext", extIm);
                 editor.commit();
                 eliminarSqlySP();
                 overridePendingTransition(0, 0);
@@ -317,6 +327,8 @@ public class ActivityMenu extends AppCompatActivity {
             }else if (id == R.id.SharkMenu){
                 StrServer = "sprautomotive.servehttp.com:9080";
                 editor.putString("Server", StrServer);
+                editor.putString("urlImagenes",urlImagenes);
+                editor.putString("ext", extIm);
                 editor.commit();
                 eliminarSqlySP();
                 overridePendingTransition(0, 0);

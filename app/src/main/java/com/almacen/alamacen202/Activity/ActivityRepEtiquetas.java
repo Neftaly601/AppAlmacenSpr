@@ -58,6 +58,8 @@ public class ActivityRepEtiquetas extends AppCompatActivity {
     private ImageView ivProd,ivCloseSearch;
     private Button btnEnviar;
     private int posicion=0;
+    private String urlImagenes,extImg;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +75,8 @@ public class ActivityRepEtiquetas extends AppCompatActivity {
         strbran = preference.getString("codBra", "null");
         strServer = preference.getString("Server", "null");
         codeBar = preference.getString("codeBar", "null");
+        urlImagenes=preference.getString("urlImagenes", "null");
+        extImg=preference.getString("ext", "null");
 
         txtProdE= findViewById(R.id.txtProdE);
         txtNomProd= findViewById(R.id.txtNomProd);
@@ -204,8 +208,8 @@ public class ActivityRepEtiquetas extends AppCompatActivity {
         txtCantEtiq.setText("0");
 
         Picasso.with(getApplicationContext()).
-                load("https://vazlo.com.mx/assets/img/productos/chica/jpg/" +
-                        txtNomProd.getText().toString() + ".jpg")
+                load(urlImagenes+
+                        txtNomProd.getText().toString() + extImg)
                 .error(R.drawable.aboutlogo)
                 .fit()
                 .centerInside()

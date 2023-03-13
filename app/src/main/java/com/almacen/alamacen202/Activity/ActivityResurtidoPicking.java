@@ -84,6 +84,7 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
     private AdapterResurtidoPicking adapter = new AdapterResurtidoPicking(listPick);
     private ArrayList<ComprometidasSandG> listaComprometidas = new ArrayList<>();
     private boolean pendientes=false;//saber si hay pendientes o no
+    private String urlImagenes,extImg;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,6 +96,8 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
         strpass = preference.getString("pass", "null");
         strbran = preference.getString("codBra", "null");
         strServer = preference.getString("Server", "null");
+        urlImagenes=preference.getString("urlImagenes", "null");
+        extImg=preference.getString("ext", "null");
 
         mDialog = new SpotsDialog.Builder().setContext(ActivityResurtidoPicking.this).
                 setMessage("Espere un momento...").build();
@@ -247,8 +250,8 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
             rvPicking.setAdapter(null);
             ivProdPick.setImageResource(R.drawable.aboutlogo);
             Picasso.with(getApplicationContext()).
-                    load("https://vazlo.com.mx/assets/img/productos/chica/jpg/" +
-                            tvClvProdPick.getText().toString() + ".jpg")
+                    load(urlImagenes +
+                            tvClvProdPick.getText().toString() + extImg)
                     .error(R.drawable.aboutlogo)
                     .fit()
                     .centerInside()
@@ -409,8 +412,8 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
         new AsynCallCompromeAlma().execute();
 
         Picasso.with(getApplicationContext()).
-                load("https://vazlo.com.mx/assets/img/productos/chica/jpg/" +
-                        tvClvProdPick.getText().toString() + ".jpg")
+                load(urlImagenes +
+                        tvClvProdPick.getText().toString() + extImg)
                 .error(R.drawable.aboutlogo)
                 .fit()
                 .centerInside()

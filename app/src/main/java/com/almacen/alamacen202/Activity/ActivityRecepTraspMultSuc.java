@@ -80,6 +80,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
     private ConexionSQLiteHelper conn;
     private SQLiteDatabase db;
     private InputMethodManager keyboard;
+    private String urlImagenes,extImg;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,6 +93,8 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         strbran = preference.getString("codBra", "null");
         strServer = preference.getString("Server", "null");
         codeBar = preference.getString("codeBar", "null");
+        urlImagenes=preference.getString("urlImagenes", "null");
+        extImg=preference.getString("ext", "null");
 
         switch (strServer) {
             case "sprautomotive.servehttp.com:9090":
@@ -299,8 +302,8 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         }
         cambiaProd();
         Picasso.with(getApplicationContext()).
-                load("https://vazlo.com.mx/assets/img/productos/chica/jpg/" +
-                        tvProd.getText().toString() + ".jpg")
+                load(urlImagenes +
+                        tvProd.getText().toString() + extImg)
                 .error(R.drawable.aboutlogo)
                 .fit()
                 .centerInside()
