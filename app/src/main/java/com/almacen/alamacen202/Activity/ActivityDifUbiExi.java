@@ -73,6 +73,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
     private int posicion=0;
     private String strusr,strpass,strServer,strbran,codeBar,ProductoAct="",folio="",fecha="",hora="",mensaje,serv="",where=" AND CONTEO>0 ";
     private ArrayList<DifUbiExist> lista2 = new ArrayList<>();
+    private ArrayList<DifUbiExist> listaPSincro = new ArrayList<>();
     private ArrayList<Almacenes> listaAlm = new ArrayList<>();
     private EditText txtFolioInv,txtProductoVi,txtFechaI,txtHoraI,txtProducto,txtCant,txtContF,txtExistS,txtDif,txtUbb;
     private ArrayList<Folios>listaFol;
@@ -252,16 +253,25 @@ public class ActivityDifUbiExi extends AppCompatActivity {
         btnSincronizar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityDifUbiExi.this);
-                builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        new AsyncActualiza().execute();
-                    }//onclick
-                });//positive button
-                builder.setNegativeButton("CANCELAR",null);
-                builder.setCancelable(false);
-                builder.setTitle("AVISO").setMessage("¿Desea sincronizar?").create().show();
+                consultaPSincro();
+                int tam=listaPSincro.size();
+                if(tam>0){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityDifUbiExi.this);
+                    builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            new AsyncActualiza().execute();
+                        }//onclick
+                    });//positive button
+                    builder.setNegativeButton("CANCELAR",null);
+                    builder.setCancelable(false);
+                    builder.setTitle("AVISO").setMessage("Existen "+tam+" datos para sincronizar ¿Desea continuar?").create().show();
+                }else{
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityDifUbiExi.this);
+                    builder.setPositiveButton("ACEPTAR", null);//positive button
+                    builder.setCancelable(false);
+                    builder.setTitle("AVISO").setMessage("Sin datos para sincronizar").create().show();
+                }//else
             }//onclcik
         });//btnSincronizar onclick
 
@@ -560,13 +570,13 @@ public class ActivityDifUbiExi extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            progressDialog.setMax(lista2.size());
-            for(int j=0;j<lista2.size();j++){//for para los registros de cada servidor
+            progressDialog.setMax(listaPSincro.size());
+            for(int j=0;j<listaPSincro.size();j++){
                 try {
                     mensaje="";
-                    pro=lista2.get(j).getProducto();
-                    cc=lista2.get(j).getConteo();
-                    ubic=lista2.get(j).getUbicacion();
+                    pro=listaPSincro.get(j).getProducto();
+                    cc=listaPSincro.get(j).getConteo();
+                    ubic=listaPSincro.get(j).getUbicacion();
                     conectaActualiza(pro,cc,ubic);
                     if(mensaje.equals("Actualizado")){
                         eliminarSql("AND PRODUCTO='"+pro+"' ");
@@ -591,7 +601,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void result) {
             progressDialog.dismiss();
-            if (contador==lista2.size()) {
+            if (contador==listaPSincro.size()) {
                 lista2.clear();
                 rvDifUbiExi.setAdapter(null);
                 editor.clear().commit();
@@ -838,6 +848,24 @@ public class ActivityDifUbiExi extends AppCompatActivity {
         }catch(Exception e){
             Toast.makeText(ActivityDifUbiExi.this,
                     "Error al consultar datos de la base de datos interna", Toast.LENGTH_SHORT).show();
+        }//catch
+    }//consultaSql
+
+    public void consultaPSincro(){
+        try{
+            listaPSincro.clear();
+            @SuppressLint("Recycle") Cursor fila = db.rawQuery("SELECT PRODUCTO,"+
+                    "UBICACION,CONTEO FROM DIFUBIEXIST WHERE EMPRESA='"+serv+"' AND CONTEO>0 ORDER BY UBICACION,PRODUCTO ", null);
+            if (fila != null && fila.moveToFirst()) {
+                do {
+                    listaPSincro.add(new DifUbiExist("",fila.getString(0),"","",
+                            "",fila.getString(1),fila.getString(2),""));
+                } while (fila.moveToNext());
+            }//if
+            fila.close();
+        }catch(Exception e){
+            Toast.makeText(ActivityDifUbiExi.this,
+                    "Error al consultar datos para sincronizar", Toast.LENGTH_SHORT).show();
         }//catch
     }//consultaSql
 

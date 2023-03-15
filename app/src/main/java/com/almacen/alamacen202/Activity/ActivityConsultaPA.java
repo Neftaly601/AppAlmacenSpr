@@ -427,7 +427,6 @@ public class ActivityConsultaPA extends AppCompatActivity {
 
 
         try {
-
             SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
             XMLConPrincipal soapEnvelope = new XMLConPrincipal(SoapEnvelope.VER11);
             soapEnvelope.XMLConPrincipal(strusr, strpass, Producto, strcodBra);

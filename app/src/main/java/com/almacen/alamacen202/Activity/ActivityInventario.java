@@ -11,6 +11,8 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -90,6 +92,8 @@ public class ActivityInventario extends AppCompatActivity {
     private AlertDialog dialog;
     private LinearLayout lyInsert,lyEscanea;
     private Button btnAutoriza;
+    private int sonido_de_reproduccion1;
+    private SoundPool bepp;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,6 +127,8 @@ public class ActivityInventario extends AppCompatActivity {
         btnSincronizar  = findViewById(R.id.btnSincronizar);
         chbMan          = findViewById(R.id.chbMan);
         rvInventario    = findViewById(R.id.rvInventario);
+        bepp = new SoundPool(1, AudioManager.STREAM_MUSIC, 1);
+        sonido_de_reproduccion1 = bepp.load(ActivityInventario.this, R.raw.error, 1);
 
         conn = new ConexionSQLiteHelper(ActivityInventario.this, "bd_INVENTARIO", null, 1);
         db = conn.getReadableDatabase();
@@ -235,7 +241,6 @@ public class ActivityInventario extends AppCompatActivity {
             comprobar=true;
             new AsyncFolios().execute();
         }//else
-
 
     }//onCreate
     public void onClickInv(View v){//cada vez que se seleccione un producto en la lista
@@ -744,19 +749,38 @@ public class ActivityInventario extends AppCompatActivity {
     }//conectaAutoriza
 
     public void buscarEnSql(String prod,String cant){
-        try{
-            @SuppressLint("Recycle") Cursor fila = db.rawQuery(
-                    "SELECT PRODUCTO,CANTIDAD from INVENTARIOALM WHERE PRODUCTO='"+prod+"'", null);
-            if (fila != null && fila.moveToFirst()) {
-                actualizarSql(prod,Integer.parseInt(cant)+"");
-            }else{
-                insertarSql(prod,cant);
-            }
-            fila.close();
-        }catch(Exception e){
-            Toast.makeText(ActivityInventario.this,e+"", Toast.LENGTH_SHORT).show();
-        }//catch
-        consultaSql();
+        String nuevo=prod.substring(0,3)+"";
+        if(nuevo.equals("P01") || nuevo.equals("P02") || nuevo.equals("P03") || nuevo.equals("P04") || nuevo.equals("P05")
+                || nuevo.equals("P06") || nuevo.equals("P07") || nuevo.equals("8") || nuevo.equals("P09") || nuevo.equals("P10")
+                || nuevo.equals("P11") || nuevo.equals("P12") || prod.substring(0,4).equals("http") || prod.substring(0,4).equals("HTTP")){
+            bepp.play(sonido_de_reproduccion1, 1, 1, 1, 0, 0);
+            AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityInventario.this);
+            alerta.setMessage("Producto no válido").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+                }
+            });
+            AlertDialog titulo = alerta.create();
+            titulo.setTitle("¡ERROR!");
+            titulo.show();
+        }else{
+            try{
+                @SuppressLint("Recycle") Cursor fila = db.rawQuery(
+                        "SELECT PRODUCTO,CANTIDAD from INVENTARIOALM WHERE PRODUCTO='"+prod+"'", null);
+                if (fila != null && fila.moveToFirst()) {
+                    actualizarSql(prod,Integer.parseInt(cant)+"");
+                }else{
+                    insertarSql(prod,cant);
+                }
+                fila.close();
+            }catch(Exception e){
+                Toast.makeText(ActivityInventario.this,e+"", Toast.LENGTH_SHORT).show();
+            }//catch
+            consultaSql();
+        }//else
+
+
     }//consultaSql
 
 
