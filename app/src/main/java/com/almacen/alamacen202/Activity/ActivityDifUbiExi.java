@@ -531,12 +531,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void result) {
             chbMan.setChecked(false);
-            if (lista2.size()>0) {
-                for(int i=0;i<lista2.size();i++){
-                    insertarSql(lista2.get(i).getProducto(),lista2.get(i).getCantidad(),
-                            lista2.get(i).getExistencia(),lista2.get(i).getDiferencia(),
-                            lista2.get(i).getUbicacion(),lista2.get(i).getEstatus());
-                }//for
+            if (mensaje.equals("Guardados")) {
                 contados();
                 mDialog.dismiss();
             }else{
@@ -564,17 +559,18 @@ public class ActivityDifUbiExi extends AppCompatActivity {
             trasport.debug = true;
             trasport.call(SOAP_ACTION, soapEnvelope);
             SoapObject response = (SoapObject) soapEnvelope.bodyIn;
+            String clave,cant,exist,dif,ubi,est;
             for (int i = 0; i < response.getPropertyCount(); i++) {
                 SoapObject response0 = (SoapObject) soapEnvelope.bodyIn;
                 response0 = (SoapObject) response0.getProperty(i);
-                lista2.add(new DifUbiExist(
-                        (i+1)+"",
-                        (response0.getPropertyAsString("CLAVE").equals("anyType{}") ? " " : response0.getPropertyAsString("CLAVE")),
-                        (response0.getPropertyAsString("CANTIDAD").equals("anyType{}") ? " " : response0.getPropertyAsString("CANTIDAD")),
-                        (response0.getPropertyAsString("EXISTENCIA").equals("anyType{}") ? " " : response0.getPropertyAsString("EXISTENCIA")),
-                        (response0.getPropertyAsString("DIFERENCIA").equals("anyType{}") ? " " : response0.getPropertyAsString("DIFERENCIA")),
-                        (response0.getPropertyAsString("UBICACION").equals("anyType{}") ? " " : response0.getPropertyAsString("UBICACION")),
-                        "0",(response0.getPropertyAsString("ESTATUS").equals("anyType{}") ? "" : response0.getPropertyAsString("ESTATUS"))));
+                clave=(response0.getPropertyAsString("CLAVE").equals("anyType{}") ? " " : response0.getPropertyAsString("CLAVE"));
+                cant=(response0.getPropertyAsString("CANTIDAD").equals("anyType{}") ? " " : response0.getPropertyAsString("CANTIDAD"));
+                exist=(response0.getPropertyAsString("EXISTENCIA").equals("anyType{}") ? " " : response0.getPropertyAsString("EXISTENCIA"));
+                dif=(response0.getPropertyAsString("DIFERENCIA").equals("anyType{}") ? " " : response0.getPropertyAsString("DIFERENCIA"));
+                ubi=(response0.getPropertyAsString("UBICACION").equals("anyType{}") ? " " : response0.getPropertyAsString("UBICACION"));
+                est=(response0.getPropertyAsString("ESTATUS").equals("anyType{}") ? "" : response0.getPropertyAsString("ESTATUS"));
+                insertarSql(clave,cant, exist,dif, ubi,est);
+                mensaje="Guardados";
             }//for
         } catch (Exception ex) {}//catch
     }//conectaListInv
@@ -839,7 +835,6 @@ public class ActivityDifUbiExi extends AppCompatActivity {
 
     public void consultaSql(){
         try{
-            boolean var=true;
             lista2.clear();
             int j=0;
             rvDifUbiExi.setAdapter(null);
@@ -912,6 +907,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
             valores.put("UBICACION", ubi);
             valores.put("EXISTENCIA", exist);
             valores.put("DIFERENCIA", Integer.parseInt(dif));
+            valores.put("ESTATUS", "1");
             db.update("DIFUBIEXIST", valores, "PRODUCTO='"+prod+"' AND EMPRESA='"+serv+"'", null);
         }catch(Exception e){
             Toast.makeText(this, "Problema al actualizar la cantidad del producto", Toast.LENGTH_SHORT).show();

@@ -66,7 +66,7 @@ import dmax.dialog.SpotsDialog;
 public class ActivityRecepTraspMultSuc extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private SharedPreferences preference;
-    private boolean escaneo=false;
+    private boolean escaneo=false,datos=false;
     private int posicion=0,datPSinc=0;//para contar los registros que se escanearon y se van a sincronizar
     private String strusr,strpass,strbran,strServer,codeBar,mensaje,Producto="",serv;
     private ArrayList<Traspasos> listaTrasp = new ArrayList<>();
@@ -320,6 +320,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
+            datos=false;
             if(firtMet()==true){
                 escaneo=false;
                 eliminarSql("");
@@ -344,10 +345,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                 builder.setPositiveButton("ACEPTAR",null);
                 builder.setCancelable(false);
                 builder.setTitle("AVISO").setMessage("Existen productos pendientes por procesar en kepler, para continuar valide en kepler").create().show();
-            }else if(listaTrasp.size()>0) {
-                for (int i=0;i<listaTrasp.size();i++){//guardar datos
-                    insertarSql(listaTrasp.get(i).getProducto(),listaTrasp.get(i).getCantidad(),listaTrasp.get(i).getCantSurt(),listaTrasp.get(i).getUbic());
-                }//for
+            }else if(datos==true) {
                 consultaSql();
                 mDialog.dismiss();
             }else{
@@ -384,12 +382,12 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                 mensaje=(response0.getPropertyAsString("MENSAJE").equals("anyType{}") ? "": response0.getPropertyAsString("MENSAJE"));
                 if(mensaje.equals("PENDIENTES")){break;}
 
+                String clave=(response0.getPropertyAsString("PRODUCTO").equals("anyType{}") ? " " : response0.getPropertyAsString("PRODUCTO"));
                 String can=(response0.getPropertyAsString("CANTIDAD").equals("anyType{}") ? "" : response0.getPropertyAsString("CANTIDAD"));
                 String ub=(response0.getPropertyAsString("UBICACION").equals("anyType{}") ? "" : response0.getPropertyAsString("UBICACION"));
                 String surt="0";
-                listaTrasp.add(new Traspasos(
-                        "",(response0.getPropertyAsString("PRODUCTO").equals("anyType{}") ? " " : response0.getPropertyAsString("PRODUCTO")),
-                        can,surt,ub));
+                insertarSql(clave, can,surt,ub);
+                datos=true;
             }//for
         } catch (Exception ex) {mensaje="";}//catch
     }//conectaListInv
