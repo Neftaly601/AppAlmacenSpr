@@ -148,6 +148,22 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="10dp"/>
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRefr"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:text="Refrescar"
+                android:lines="2"
+                android:maxLines="2"
+                android:background="@drawable/roundbutton"
+                android:backgroundTint="@color/colorPrimary"
+                android:textColor="@color/ColorWhite"
+                android:textSize="14sp"
+                app:icon="@drawable/icon_actualizar"
+                app:iconSize="25dp"
+                app:iconTint="@color/ColorWhite"/>
 
 
             <LinearLayout

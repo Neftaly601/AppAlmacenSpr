@@ -77,7 +77,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
     private ArrayList<Almacenes> listaAlm = new ArrayList<>();
     private EditText txtFolioInv,txtProductoVi,txtFechaI,txtHoraI,txtProducto,txtCant,txtContF,txtExistS,txtDif,txtUbb;
     private ArrayList<Folios>listaFol;
-    private Button btnGuardar,btnSincronizar,btnCont,btnNoCont,btnAlma;
+    private Button btnGuardar,btnSincronizar,btnCont,btnNoCont,btnAlma,btnRefr;
     private CheckBox chbMan;
     private RecyclerView rvDifUbiExi;
     private AdapterDifUbiExi adapter;
@@ -144,6 +144,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
         btnCont         = findViewById(R.id.btnCont);
         btnNoCont       = findViewById(R.id.btnNoCont);
         btnAlma         = findViewById(R.id.btnAlma);
+        btnRefr         = findViewById(R.id.btnRefr);
 
         conn = new ConexionSQLiteHelper(ActivityDifUbiExi.this, "bd_INVENTARIO", null, 1);
         db = conn.getReadableDatabase();
@@ -302,6 +303,22 @@ public class ActivityDifUbiExi extends AppCompatActivity {
             }//onclick
         });//btnAlma onclick
 
+        btnRefr.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                chbMan.setChecked(false);
+                lista2.clear();
+                rvDifUbiExi.setAdapter(null);
+                eliminarSql("");
+                txtProductoVi.setText("");
+                txtContF.setText("");
+                txtExistS.setText("");
+                txtDif.setText("");
+                txtUbb.setText("");
+                txtCant.setText("");
+                new AsyncDifUbiExist().execute();
+            }//onclick
+        });//btnRefr
 
         //FOLIO
         if(folio.equals("")){//si no hay folio guardado

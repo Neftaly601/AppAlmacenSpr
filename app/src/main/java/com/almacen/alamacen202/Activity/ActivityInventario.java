@@ -3,6 +3,7 @@ package com.almacen.alamacen202.Activity;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -72,12 +73,14 @@ import dmax.dialog.SpotsDialog;
 import pl.droidsonroids.gif.GifImageView;
 
 public class ActivityInventario extends AppCompatActivity {
+    private ProgressDialog progressDialog;
     private SharedPreferences preference,preferenceF;
     private SharedPreferences.Editor editor;
     private boolean comprobar=false;
     private int posicion=0;
     private String strusr,strpass,strServer,strbran,codeBar,ProductoAct="",folio="",fecha="",hora="",mensaje,bandAutori,mensajeAutoriza,UserSuper;
     private ArrayList<Inventario> listaInv = new ArrayList<>();
+    private ArrayList<Inventario> listaPSincro = new ArrayList<>();
     private EditText txtFolioInv,txtProductoVi,txtFechaI,txtHoraI,txtProducto,txtCant;
     private ArrayList<Folios>listaFol;
     private Button btnGuardar,btnSincronizar;
@@ -116,6 +119,12 @@ public class ActivityInventario extends AppCompatActivity {
         codeBar = preference.getString("codeBar", "null");
         mDialog = new SpotsDialog.Builder().setContext(ActivityInventario.this).
                 setMessage("Espere un momento...").build();
+
+        progressDialog = new ProgressDialog(ActivityInventario.this);//parala barra de
+        progressDialog.setMessage("Procesando datos....");
+        progressDialog.setIndeterminate(false);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setCancelable(false);
 
         txtFolioInv     = findViewById(R.id.txtFolioInv);
         txtFechaI       = findViewById(R.id.txtFechaI);
@@ -229,7 +238,25 @@ public class ActivityInventario extends AppCompatActivity {
         btnSincronizar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new AsyncActualizaInv().execute();
+                consultaPSincro();
+                int tam=listaPSincro.size();
+                if(tam>0){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityInventario.this);
+                    builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            new AsyncActualizaInv().execute();
+                        }//onclick
+                    });//positive button
+                    builder.setNegativeButton("CANCELAR",null);
+                    builder.setCancelable(false);
+                    builder.setTitle("AVISO").setMessage("Existen "+tam+" datos para sincronizar ¿Desea continuar?").create().show();
+                }else{
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityInventario.this);
+                    builder.setPositiveButton("ACEPTAR", null);//positive button
+                    builder.setCancelable(false);
+                    builder.setTitle("AVISO").setMessage("Sin datos para sincronizar").create().show();
+                }//else
             }//onclcik
         });//btnSincronizar onclick
 
@@ -581,31 +608,44 @@ public class ActivityInventario extends AppCompatActivity {
         } catch (Exception ex) {}//catch
     }//conectaListInv
 
-    private class AsyncActualizaInv extends AsyncTask<Void, Void, Void> {
+    private class AsyncActualizaInv extends AsyncTask<Void, Integer, Void> {
         private String pro,cc;
         private int contador=0;
         @Override
-        protected void onPreExecute() {mDialog.show();}
+        protected void onPreExecute() {progressDialog.show();}
 
         @Override
         protected Void doInBackground(Void... params) {
-            for(int j=0;j<listaInv.size();j++){//for para los registros de cada servidor
-                mensaje="";
-                pro=listaInv.get(j).getProducto();
-                cc=listaInv.get(j).getCantidad();
-                conectaActualiza(pro,cc);
-                if(mensaje.equals("1")){
-                    eliminarSql(" PRODUCTO='"+pro+"'");
-                    contador++;
-                }//if
+            progressDialog.setMax(listaPSincro.size());
+            for(int j=0;j<listaPSincro.size();j++){//for para los registros de cada servidor
+                try {
+                    mensaje="";
+                    pro=listaPSincro.get(j).getProducto();
+                    cc=listaPSincro.get(j).getCantidad();
+                    conectaActualiza(pro,cc);
+                    if(mensaje.equals("1")){
+                        eliminarSql(" PRODUCTO='"+pro+"'");
+                        contador++;
+                    }//if
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    return null;
+                }//catch
+                progressDialog.setProgress(j);
             }//for
             return null;
         }//doinbackground
 
+        @Override
+        protected void onProgressUpdate(Integer... progress) {
+            super.onProgressUpdate(progress);
+            progressDialog.setProgress(progress[0]);
+        }
+
         @RequiresApi(api = Build.VERSION_CODES.P)
         @Override
         protected void onPostExecute(Void result) {
-            mDialog.dismiss();
+            progressDialog.dismiss();
             if(mensaje.equals("0")){
                 AlertDialog.Builder builder = new AlertDialog.Builder(ActivityInventario.this);
                 builder.setMessage("El folio esta cerrado");
@@ -618,7 +658,7 @@ public class ActivityInventario extends AppCompatActivity {
                 });//negative botton
                 AlertDialog dialog = builder.create();
                 dialog.show();
-            }else if(contador==listaInv.size()) {
+            }else if(contador==listaPSincro.size()) {
                 listaInv.clear();
                 rvInventario.setAdapter(null);
                 editor.clear().commit();
@@ -645,6 +685,7 @@ public class ActivityInventario extends AppCompatActivity {
                 });//negative botton
                 AlertDialog dialog = builder.create();
                 dialog.show();
+                consultaSql();
             }//else
         }//onPostExecute
     }//AsynInsertInv
@@ -813,6 +854,22 @@ public class ActivityInventario extends AppCompatActivity {
                     "Error al consultar datos de la base de datos interna", Toast.LENGTH_SHORT).show();
         }//catch
     }//consultaSql
+
+    public void consultaPSincro(){
+        try{
+            listaPSincro.clear();
+            @SuppressLint("Recycle") Cursor fila = db.rawQuery("SELECT PRODUCTO,CANTIDAD FROM INVENTARIOALM WHERE CANTIDAD>0 ORDER BY PRODUCTO ", null);
+            if (fila != null && fila.moveToFirst()) {
+                do {
+                    listaPSincro.add(new Inventario("",fila.getString(0),fila.getString(1)));
+                } while (fila.moveToNext());
+            }//if
+            fila.close();
+        }catch(Exception e){
+            Toast.makeText(ActivityInventario.this,
+                    "Error al consultar datos de la base de datos interna", Toast.LENGTH_SHORT).show();
+        }//catch
+    }//consultaPSincro
 
     public void insertarSql(String prod,String cant){
         try{
