@@ -27,6 +27,7 @@ import com.almacen.alamacen202.Activity.ActivityLiberaciones;
 import com.almacen.alamacen202.Activity.ActivityRecepTraspMultSuc;
 import com.almacen.alamacen202.Activity.ActivityRepEtiquetas;
 import com.almacen.alamacen202.Activity.ActivityResurtidoPicking;
+import com.almacen.alamacen202.Activity.ActivitySurtSuc;
 import com.almacen.alamacen202.Activity.ActivityTrasladoUbi;
 import com.almacen.alamacen202.Activity.ActivityInventarioXfolioComp;
 import com.almacen.alamacen202.Sqlite.ConexionSQLiteHelper;
@@ -238,6 +239,10 @@ public class ActivityMenu extends AppCompatActivity {
         Intent intent = new Intent(ActivityMenu.this, ActivityDifUbiExi.class);
         startActivity(intent);
     }//diferencia entre ubicaciones y existenciasinventario
+    public void surtSuc(View v){
+        Intent intent = new Intent(ActivityMenu.this, ActivitySurtSuc.class);
+        startActivity(intent);
+    }//reporte de etiquetas
     public void repEtiq(View v){
         Intent intent = new Intent(ActivityMenu.this, ActivityRepEtiquetas.class);
         startActivity(intent);
@@ -294,13 +299,25 @@ public class ActivityMenu extends AppCompatActivity {
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             if (id == R.id.cerrarSe) {
-                editor.clear();
-                editor.commit();
-                eliminarSqlySP();
-                Intent cerrar = new Intent(this, MainActivity.class);
-                startActivity(cerrar);
-                System.exit(0);
-                finish();
+                AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityMenu.this);
+                alerta.setMessage("¿Desea cerrar sesión?").setCancelable(false).setNegativeButton("CANCELAR", null);
+                alerta.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        editor.clear();
+                        editor.commit();
+                        eliminarSqlySP();
+                        Intent cerrar = new Intent(ActivityMenu.this, MainActivity.class);
+                        startActivity(cerrar);
+                        System.exit(0);
+                        finish();
+                    }//onclick
+                });
+                AlertDialog titulo = alerta.create();
+                titulo.setTitle("Aviso");
+                titulo.show();
+
+
 
             }else if (id == R.id.RodatechMenu){
                 StrServer = "sprautomotive.servehttp.com:9090";

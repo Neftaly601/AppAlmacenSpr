@@ -35,6 +35,7 @@ import com.almacen.alamacen202.R;
 import com.almacen.alamacen202.SetterandGetters.ComprometidasSandG;
 import com.almacen.alamacen202.SetterandGetters.ListProdxFolOrdComp;
 import com.almacen.alamacen202.SetterandGetters.ResurtidoPicking;
+import com.almacen.alamacen202.SetterandGetters.UbicacionSandG;
 import com.almacen.alamacen202.XML.XMLActualizaOrdenCompra;
 import com.almacen.alamacen202.XML.XMLActualizaPick;
 import com.almacen.alamacen202.XML.XMLCLArticulo;
@@ -69,7 +70,7 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
 
     private String strusr,strpass,strbran,strServer,mensaje="",fechaReg,horaReg;
     private String totUbi,totAlm,max,min,cant,cantEmpq,clavProd,descProd,ubic,cantAlm;
-    private int posicion=0,posGuard=0,ord=1;
+    private int posicion=0,posGuard=0,ord=1,necesidad=0;
     private Button btnBuscar,btnResurtir,btnAdelante,btnAtras,btnFinalizar;
     private CheckBox chbUbic,chbPFech;
     private TextView tvClvProdPick,tvDescPick,tvCantEmpq;
@@ -79,12 +80,12 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
     private SharedPreferences preference;
     private AlertDialog mDialog;
     private ArrayList<ResurtidoPicking> listPick = new ArrayList<>();
-    private ArrayList<String>listaUbic = new ArrayList<>();
-    private ArrayList<String>listaCantUbic = new ArrayList<>();
+    private ArrayList<UbicacionSandG>listaUbic = new ArrayList<>();
     private AdapterResurtidoPicking adapter = new AdapterResurtidoPicking(listPick);
     private ArrayList<ComprometidasSandG> listaComprometidas = new ArrayList<>();
     private boolean pendientes=false;//saber si hay pendientes o no
     private String urlImagenes,extImg;
+    private TextView tvOrigenR,tvCantOrig,tvNecesidad;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -281,47 +282,22 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
         }
     }//isNumeric
 
-    public void resurtir(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        LayoutInflater inflater = this.getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_resurtido, null);
-        builder.setView(dialogView);
-
-        final TextView tvClvProdDial = dialogView.findViewById(R.id.tvClvProdDial);
-        final TextView tvDescProdDial = dialogView.findViewById(R.id.tvDescProdDial);
-        final TextView tvCantOrig = dialogView.findViewById(R.id.tvCantOrig);
-        final TextView tvCantEmpq = dialogView.findViewById(R.id.tvCantEmpq);
-        final EditText txtDestEmpq=dialogView.findViewById(R.id.txtDestEmpq);
-        final TextView tvNecesidad = dialogView.findViewById(R.id.tvNecesidad);
-        final Spinner spOrigenR = dialogView.findViewById(R.id.spOrigenR);
-
-        tvClvProdDial.setText(tvClvProdPick.getText().toString());
-        tvDescProdDial.setText(tvDescPick.getText().toString());
-        tvCantEmpq.setText(cantEmpq);
-        int nec=Integer.parseInt(max)-Integer.parseInt(cant)-Integer.parseInt(cantEmpq);
-        tvNecesidad.setText(nec+"");
-
-        //spinner--------------------------------------------------------
-        /*for(int i=0;i<listaUbic.size();i++){
-            if(listaUbic.get(i).equals(listPick.get(posicion).getRack())){
-                tvOrigenR.setText(listaUbic.get(i));
-                tvCantOrig.setText(listaCantUbic.get(i));
-                txtDestEmpq.setText(listaCantUbic.get(i));
-                break;
-            }//if
-        }//for
-        */
-
-        ArrayList<String>listaUbicString= new ArrayList<>();//Listas String para los spinner
-        ArrayList<String>listaCantString= new ArrayList<>();//una lista para ubicaciones y otra para guardar la cantidad
+    public void insertarDatosResurtir(){
+        tvOrigenR.setText("SIN IDENTIFICAR");
+        tvCantOrig.setText("0");
+        //ArrayList<String>listaUbicString= new ArrayList<>();//Listas String para los spinner
+        //ArrayList<String>listaCantString= new ArrayList<>();//una lista para ubicaciones y otra para guardar la cantidad
         for(int i=0;i<listaUbic.size();i++){
-            char chara=listaUbic.get(i).charAt(0);
-            if(chara!='P' && chara!='Q'){//evitar ubicaciones de picking
-                listaUbicString.add(listaUbic.get(i));
-                listaCantString.add(listaCantUbic.get(i));
+            char chara=listaUbic.get(i).getUbicacion().charAt(0);
+            if(!listaUbic.get(i).getUbicacion().equals("EMPAQUE") && chara!='P' && chara!='Q' && Integer.parseInt(listaUbic.get(i).getCantidad())>0){//evitar ubicaciones de picking
+                //listaUbicString.add(listaUbic.get(i).getUbicacion());
+                // listaCantString.add(listaUbic.get(i).getCantidad());
+                tvOrigenR.setText(listaUbic.get(i).getUbicacion());
+                tvCantOrig.setText(listaUbic.get(i).getCantidad());
+                break;
             }
         }//acomodar en lista string las ubicaciones
-        spOrigenR.setAdapter(new ArrayAdapter<String>(this,
+        /*spOrigenR.setAdapter(new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item,listaUbicString));
         spOrigenR.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -334,6 +310,45 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
             }//onNothingselected
         });//spOrigentsetonitemselected
         spOrigenR.setSelection(listaUbicString.indexOf(listPick.get(posicion).getRack()));//posicionarse en el rack
+        */
+        necesidad=Integer.parseInt(max)-Integer.parseInt(cant)-Integer.parseInt(cantEmpq);
+        tvCantEmpq.setText(cantEmpq);
+        //int nec=Integer.parseInt(max)-Integer.parseInt(cant)-Integer.parseInt(cantEmpq);
+        tvNecesidad.setText(necesidad+"");
+    }
+
+    public void resurtir(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_resurtido, null);
+        builder.setView(dialogView);
+
+        final TextView tvClvProdDial = dialogView.findViewById(R.id.tvClvProdDial);
+        final TextView tvDescProdDial = dialogView.findViewById(R.id.tvDescProdDial);
+        tvCantOrig = dialogView.findViewById(R.id.tvCantOrig);
+        final TextView tvCantEmpq = dialogView.findViewById(R.id.tvCantEmpq);
+        final EditText txtDestEmpq=dialogView.findViewById(R.id.txtDestEmpq);
+        tvNecesidad = dialogView.findViewById(R.id.tvNecesidad);
+        tvOrigenR = dialogView.findViewById(R.id.tvOrigenR);
+
+        tvClvProdDial.setText(tvClvProdPick.getText().toString());
+        tvDescProdDial.setText(tvDescPick.getText().toString());
+
+        insertarDatosResurtir();
+
+        //spinner--------------------------------------------------------
+        /*for(int i=0;i<listaUbic.size();i++){
+            if(listaUbic.get(i).equals(listPick.get(posicion).getRack())){
+                tvOrigenR.setText(listaUbic.get(i));
+                tvCantOrig.setText(listaCantUbic.get(i));
+                txtDestEmpq.setText(listaCantUbic.get(i));
+                break;
+            }//if
+        }//for
+        */
+
+
+
 
         builder.setCancelable(false);
         builder.setPositiveButton("Aceptar",null);
@@ -351,7 +366,7 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(isNumeric(txtDestEmpq.getText().toString())==false || spOrigenR.getSelectedItem().toString().equals("")){
+                        if(isNumeric(txtDestEmpq.getText().toString())==false || tvOrigenR.getText().equals("")){
                             Toast.makeText(ActivityResurtidoPicking.this, "Campos vacios o en cero", Toast.LENGTH_SHORT).show();
                         }else {
                             if(Integer.parseInt(tvCantOrig.getText().toString())<Integer.parseInt(txtDestEmpq.getText().toString())){
@@ -361,7 +376,7 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
                                 Toast.makeText(ActivityResurtidoPicking.this, "Cantidad excede a necesidad",
                                         Toast.LENGTH_SHORT).show();
                             }else{
-                                new AsyncModificarUbicDestino(spOrigenR.getSelectedItem().toString(),"EMPAQUE",
+                                new AsyncModificarUbicDestino(tvOrigenR.getText().toString(),"EMPAQUE",
                                         tvClvProdDial.getText().toString(),txtDestEmpq.getText().toString(),dialogInterface).execute();
                             }//else if
                         }//else
@@ -409,7 +424,7 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
         txtMin.setText(min);
         txtCantUbicPick.setText(cant);
         tvCantEmpq.setText(cantEmpq);
-        new AsynCallCompromeAlma().execute();
+        necesidad=Integer.parseInt(max)-Integer.parseInt(cant)-Integer.parseInt(cantEmpq);
 
         Picasso.with(getApplicationContext()).
                 load(urlImagenes +
@@ -527,19 +542,20 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
             trasport.debug = true;
             trasport.call(SOAP_ACTION, soapEnvelope);
             SoapObject response = (SoapObject) soapEnvelope.bodyIn;
+            String claveProd,descrip,fecha,hora,pick,clasf,rack;
             for (int i = 0; i < response.getPropertyCount(); i++) {
                 SoapObject response0 = (SoapObject) soapEnvelope.bodyIn;
                 response0 = (SoapObject) response0.getProperty(i);
                 mensaje=(response0.getPropertyAsString("k_mensaje").equals("anyType{}") ? " " : response0.getPropertyAsString("k_mensaje"));
                 if(mensaje.equals("PENDIENTE")){pendientes=true;}
-                listPick.add(new ResurtidoPicking(""+(i+1),
-                        (response0.getPropertyAsString("k_clvProd").equals("anyType{}") ? " " : response0.getPropertyAsString("k_clvProd")),
-                        (response0.getPropertyAsString("k_descrip").equals("anyType{}") ? " " : response0.getPropertyAsString("k_descrip")),
-                        (response0.getPropertyAsString("k_fecha").equals("anyType{}") ? " " : response0.getPropertyAsString("k_fecha")),
-                        (response0.getPropertyAsString("k_hora").equals("anyType{}") ? " " : response0.getPropertyAsString("k_hora")),
-                        (response0.getPropertyAsString("k_picking").equals("anyType{}") ? " " : response0.getPropertyAsString("k_picking")),
-                        (response0.getPropertyAsString("k_clasif").equals("anyType{}") ? " " : response0.getPropertyAsString("k_clasif")),
-                        (response0.getPropertyAsString("k_rack").equals("anyType{}") ? " " : response0.getPropertyAsString("k_rack")),false));
+                claveProd=(response0.getPropertyAsString("k_clvProd").equals("anyType{}") ? " " : response0.getPropertyAsString("k_clvProd"));
+                descrip=(response0.getPropertyAsString("k_descrip").equals("anyType{}") ? " " : response0.getPropertyAsString("k_descrip"));
+                fecha=(response0.getPropertyAsString("k_fecha").equals("anyType{}") ? " " : response0.getPropertyAsString("k_fecha"));
+                hora=(response0.getPropertyAsString("k_hora").equals("anyType{}") ? " " : response0.getPropertyAsString("k_hora"));
+                pick=(response0.getPropertyAsString("k_picking").equals("anyType{}") ? " " : response0.getPropertyAsString("k_picking"));
+                clasf=(response0.getPropertyAsString("k_clasif").equals("anyType{}") ? " " : response0.getPropertyAsString("k_clasif"));
+                rack=(response0.getPropertyAsString("k_rack").equals("anyType{}") ? " " : response0.getPropertyAsString("k_rack"));
+                listPick.add(new ResurtidoPicking(""+(i+1), claveProd, descrip, fecha, hora,pick, clasf, rack,false));
             }//for
         } catch (SoapFault soapFault) {
             mensaje = "Error :"+soapFault.getMessage();
@@ -578,7 +594,7 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
             mensaje="";
             int c=Integer.parseInt(Cantidad);
             Cantidad=c+"";
-            consultaUbicacionMod(UbicacionOrigen,UbicacionDestino,Producto,Cantidad);
+            //consultaUbicacionMod(UbicacionOrigen,UbicacionDestino,Producto,Cantidad);
             return null;
         }//doInBackground
 
@@ -586,14 +602,17 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
         @RequiresApi(api = Build.VERSION_CODES.P)
         @Override
         protected void onPostExecute(Void result) {
+            mDialog.dismiss();
             if(mensaje.equals("LA UBICACION A SIDO INSERTADO") || mensaje.equals("LA UBICACION A SIDO ACTUALIZADA")){
-                dialogInterface.dismiss();
                 Toast.makeText(ActivityResurtidoPicking.this, "Cantidad de ubicacion EMPAQUE ha sido modificada", Toast.LENGTH_SHORT).show();
                 new AsynCallConsulXPicking().execute();
+                if(necesidad>0){
+                    insertarDatosResurtir();
+                }else{dialogInterface.dismiss();}
             }else{
-                mDialog.dismiss();
+                dialogInterface.dismiss();
                 Toast.makeText(ActivityResurtidoPicking.this, mensaje, Toast.LENGTH_SHORT).show();
-            }
+            }//else
         }//onPosteExecute
     }//AsynModificar
 
@@ -638,14 +657,15 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-            mDialog.show();
+            if(mDialog.isShowing()==false){
+                mDialog.show();
+            }
         }//onPreejecute
 
         @Override
         protected Void doInBackground(Void... params) {
             mensaje="";
             listaUbic.clear();
-            listaCantUbic.clear();
             conectaUbicaciones();
             return null;
         }//doInBackground
@@ -656,6 +676,13 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
         protected void onPostExecute(Void result) {
             mDialog.dismiss();
             if (listaUbic.size()>0) {
+                Collections.sort(listaUbic, new Comparator<UbicacionSandG>() {
+                    @Override
+                    public int compare(UbicacionSandG ubicacionSandG, UbicacionSandG t1) {
+                        return ubicacionSandG.getFecha().compareTo(t1.getFecha());
+                    }
+                });
+                Collections.reverse(listaUbic);
                 resurtir();
             }else {
                 AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityResurtidoPicking.this);
@@ -696,19 +723,22 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
             for (int i = 0; i < response.getPropertyCount(); i++) {
                 SoapObject response0 = (SoapObject) soapEnvelope.bodyIn;
                 response0 = (SoapObject) response0.getProperty(i);
-                listaUbic.add(response0.getPropertyAsString("k_Ubicacion").equals("anyType{}") ? " " : response0.getPropertyAsString("k_Ubicacion"));
-                listaCantUbic.add(response0.getPropertyAsString("k_Cantidad").equals("anyType{}") ? " " : response0.getPropertyAsString("k_Cantidad"));
+                listaUbic.add(new UbicacionSandG((response0.getPropertyAsString("k_Ubicacion").equals("anyType{}") ? " " : response0.getPropertyAsString("k_Ubicacion")),
+                        (response0.getPropertyAsString("k_Cantidad").equals("anyType{}") ? "0" : response0.getPropertyAsString("k_Cantidad")),
+                        (response0.getPropertyAsString("k_Fecha").equals("anyType{}") ? " " : response0.getPropertyAsString("k_Fecha")),
+                        (response0.getPropertyAsString("k_Tipo").equals("anyType{}") ? " " : response0.getPropertyAsString("k_Tipo"))));
+
             }//for
-        } catch (SoapFault soapFault) {
+        }catch (SoapFault soapFault) {
             mensaje = "Error:" + soapFault.getMessage();
             soapFault.printStackTrace();
-        } catch (XmlPullParserException e) {
+        }catch (XmlPullParserException e) {
             mensaje = "Error:" + e.getMessage();
             e.printStackTrace();
-        } catch (IOException e) {
+        }catch (IOException e) {
             mensaje = "No se encontró servidor";
             e.printStackTrace();
-        } catch (Exception ex) {
+        }catch (Exception ex) {
             mensaje = "Hubó un problema";
         }//catch
     }//AsynCall
@@ -724,7 +754,7 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            mensaje="";totUbi="0";totAlm="0";max="0";min="0";cant="0";cantEmpq="0";cantAlm="0";
+            mensaje="";totUbi="0";totAlm="0";max="0";min="0";cant="0";cantEmpq="0";cantAlm="0";necesidad=0;
             clavProd=listPick.get(posicion).getClaveProd();
             descProd=listPick.get(posicion).getDescrip();
             ubic=listPick.get(posicion).getPicking();
@@ -737,12 +767,12 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void result) {
             if (mensaje.equals("")) {
-                mostrarDetalleProd();
+                new AsynCallCompromeAlma().execute();
             }else {
                 if(listPick.size()>0){
                     Toast.makeText(ActivityResurtidoPicking.this, "No fue posible obtener detalles del producto", Toast.LENGTH_SHORT).show();
                     posicion=posGuard;
-                    mostrarDetalleProd();
+                    new AsynCallCompromeAlma().execute();
                 }else{
                     mDialog.dismiss();
                     Toast.makeText(ActivityResurtidoPicking.this, "Hubó un problema al actualizar datos del producto", Toast.LENGTH_SHORT).show();
@@ -777,6 +807,7 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
             cant=response.getPropertyAsString("k_cant").equals("anyType{}") ? "0" : response.getPropertyAsString("k_cant");
             cantEmpq=response.getPropertyAsString("k_cantEmp").equals("anyType{}") ? "0" : response.getPropertyAsString("k_cantEmp");
             cantAlm=(response.getPropertyAsString("k_existProc").equals("anyType{}") ? "0" : response.getPropertyAsString("k_existProc"));
+            necesidad=Integer.parseInt(max)-Integer.parseInt(cant)-Integer.parseInt(cantEmpq);
         } catch (SoapFault soapFault) {
             mensaje = "Error: " + soapFault.getMessage();
             soapFault.printStackTrace();
@@ -882,6 +913,7 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
             }//for
             int r=Integer.parseInt(cantAlm)+contador;
             txtCantAcum.setText(r+"");
+            mostrarDetalleProd();
         }//onPostExecuted
     }//AsynCallCompromeAlma
 

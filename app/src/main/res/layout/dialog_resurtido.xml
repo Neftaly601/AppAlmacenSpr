@@ -51,12 +51,12 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="UBICACIONES"
+                        android:text="UBICACIÓN"
                         android:textColor="@color/AzulBack"
                         android:textStyle="bold"
                         android:textSize="15dp"/>
-                    <Spinner
-                        android:id="@+id/spOrigenR"
+                    <TextView
+                        android:id="@+id/tvOrigenR"
                         android:layout_width="match_parent"
                         android:layout_height="30dp"
                         android:gravity="center_vertical"

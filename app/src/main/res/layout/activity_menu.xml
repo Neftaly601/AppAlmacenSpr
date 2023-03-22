@@ -483,6 +483,42 @@
                         android:layout_gravity="center"
                         android:orientation="horizontal"
                         android:visibility="visible">
+
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@drawable/roundbutton"
+                            android:backgroundTint="@color/AzulBack"
+                            android:gravity="center"
+                            android:layout_margin="5dp"
+                            android:orientation="vertical"
+                            android:onClick="surtSuc">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5dp"
+                                android:lines="2"
+                                android:maxLines="2"
+                                android:padding="5dp"
+                                android:textAlignment="center"
+                                android:textColor="@color/ColorWhite"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                android:text="Surtido Sucursales"/>
+
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="35dp"
+                                android:layout_margin="5dp"
+                                android:contentDescription="Manos"
+                                android:src="@drawable/icon_dif" />
+                        </LinearLayout>
+
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -518,39 +554,6 @@
 
                         </LinearLayout>
 
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:background="@drawable/roundbutton"
-                            android:backgroundTint="@color/AzulBack"
-                            android:gravity="center"
-                            android:layout_margin="5dp"
-                            android:orientation="vertical"
-                            android:visibility="invisible">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_margin="5dp"
-                                android:lines="2"
-                                android:maxLines="2"
-                                android:padding="5dp"
-                                android:textAlignment="center"
-                                android:textColor="@color/ColorWhite"
-                                android:textSize="12sp"
-                                android:textStyle="bold"
-                                android:text="Diferencias entre ubicaciones y existencias"/>
-
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="35dp"
-                                android:layout_margin="5dp"
-                                android:contentDescription="Manos"
-                                android:src="@drawable/icon_dif" />
-                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
 
