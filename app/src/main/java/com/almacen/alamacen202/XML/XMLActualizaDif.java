@@ -1,9 +1,12 @@
 package com.almacen.alamacen202.XML;
 
+import com.almacen.alamacen202.SetterandGetters.DifUbiExist;
+
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class XMLActualizaDif extends SoapSerializationEnvelope {
 
@@ -11,23 +14,19 @@ public class XMLActualizaDif extends SoapSerializationEnvelope {
     private String contrasena;
     private String folio;
     private String sucursal;
-    private String producto;
-    private String cont;
-    private String ubic;
+    private ArrayList<DifUbiExist> datos;
 
     public XMLActualizaDif(int version) {
         super(version);
     }
 
     public void XMLAct(String usuario, String contrasena, String folio, String sucursal,
-                                  String producto, String cont,String ubic) {
+                                  ArrayList<DifUbiExist> datos) {
         this.usuario = usuario;
         this.contrasena = contrasena;
         this.folio = folio;
         this.sucursal = sucursal;
-        this.producto = producto;
-        this.cont = cont;
-        this.ubic = ubic;
+        this.datos=datos;
     }//void
 
     @Override
@@ -51,7 +50,6 @@ public class XMLActualizaDif extends SoapSerializationEnvelope {
         writer.endTag(tem, "pass");
         writer.endTag(tem, "Login");
 
-
         writer.startTag(tem, "ActualizaDife");
         writer.startTag(tem, "k_folio");
         writer.text(folio);
@@ -61,22 +59,27 @@ public class XMLActualizaDif extends SoapSerializationEnvelope {
         writer.text(sucursal);
         writer.endTag(tem, "k_suc");
 
-        writer.startTag(tem, "k_prod");
-        writer.text(producto);
-        writer.endTag(tem, "k_prod");
-
-        writer.startTag(tem, "k_cont");
-        writer.text(cont);
-        writer.endTag(tem, "k_cont");
-
-        writer.startTag(tem, "k_ubic");
-        writer.text(ubic);
-        writer.endTag(tem, "k_ubic");
-
         writer.startTag(tem, "k_usu");
         writer.text(usuario);
         writer.endTag(tem, "k_usu");
 
+        for(int i=0;i<datos.size();i++){
+            writer.startTag(tem, "Datos");
+
+            writer.startTag(tem, "k_prod");
+            writer.text(datos.get(i).getProducto());
+            writer.endTag(tem, "k_prod");
+
+            writer.startTag(tem, "k_cont");
+            writer.text(datos.get(i).getConteo());
+            writer.endTag(tem, "k_cont");
+
+            writer.startTag(tem, "k_ubi");
+            writer.text(datos.get(i).getUbicacion());
+            writer.endTag(tem, "k_ubi");
+
+            writer.endTag(tem, "Datos");
+        }//for
 
         writer.endTag(tem, "ActualizaDife");
 

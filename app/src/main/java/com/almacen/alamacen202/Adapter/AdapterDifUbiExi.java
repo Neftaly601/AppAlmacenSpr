@@ -41,11 +41,11 @@ public class AdapterDifUbiExi extends RecyclerView.Adapter<AdapterDifUbiExi.View
         holder.tvU.setText(datos.get(position).getUbicacion());*/
         holder.tvCC.setText(datos.get(position).getConteo());
 
-        /*if(index==position){
+        if(index==position){
             holder.lyDif.setBackgroundResource(R.color.ColorGris);
         }else{
             holder.lyDif.setBackgroundColor(0);
-        }*/
+        }
     }//onBindViewHolder
 
     public int index(int index){

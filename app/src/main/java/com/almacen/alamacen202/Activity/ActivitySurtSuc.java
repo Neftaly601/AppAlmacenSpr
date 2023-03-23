@@ -480,7 +480,7 @@ public class ActivitySurtSuc extends AppCompatActivity {
 
             SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
             XMLRecepMultSuc soapEnvelope = new XMLRecepMultSuc(SoapEnvelope.VER11);
-            soapEnvelope.XMLTrasp(strusr, strpass, strbran, producto,cant,fecha,hora);
+            soapEnvelope.XMLTrasp(strusr, strpass, strbran,listaTrasp);
             soapEnvelope.dotNet = true;
             soapEnvelope.implicitTypes = true;
             soapEnvelope.setOutputSoapObject(Request);
