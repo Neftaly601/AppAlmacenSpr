@@ -34,6 +34,12 @@ public class AdapterInventario extends RecyclerView.Adapter<AdapterInventario.Vi
         holder.Producto.setText(datos.get(position).getProducto());
         holder.Cantidad.setText(datos.get(position).getCantidad());
         holder.n.setText(datos.get(position).getNum());
+
+        if(index==position){
+            holder.lyInv.setBackgroundResource(R.color.ColorGris);
+        }else{
+            holder.lyInv.setBackgroundColor(0);
+        }
     }//onBindViewHolder
 
     public int index(int index){

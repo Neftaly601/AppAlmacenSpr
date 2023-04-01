@@ -54,7 +54,7 @@ import java.util.Locale;
 
 import dmax.dialog.SpotsDialog;
 
-public class ActivitySurtSuc extends AppCompatActivity {
+public class ActivityRecepConten extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private SharedPreferences preference;
     private boolean escaneo=false,datos=false;
@@ -75,7 +75,7 @@ public class ActivitySurtSuc extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recep_trasp_mult_suc);
+        setContentView(R.layout.activity_recep_conten);
 
         MyToolbar.show(this, "Recepción Traspasos Multisucursal", true);
         preference = getSharedPreferences("Login", Context.MODE_PRIVATE);
@@ -99,11 +99,11 @@ public class ActivitySurtSuc extends AppCompatActivity {
                 break;
         }
 
-        mDialog = new SpotsDialog.Builder().setContext(ActivitySurtSuc.this).
+        mDialog = new SpotsDialog.Builder().setContext(ActivityRecepConten.this).
                 setMessage("Espere un momento...").build();
         mDialog.setCancelable(false);
 
-        progressDialog = new ProgressDialog(ActivitySurtSuc.this);//parala barra de
+        progressDialog = new ProgressDialog(ActivityRecepConten.this);//parala barra de
         progressDialog.setMessage("Procesando datos....");
         progressDialog.setIndeterminate(false);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
@@ -119,12 +119,12 @@ public class ActivitySurtSuc extends AppCompatActivity {
         btnSincro   = findViewById(R.id.btnSincro);
         ivProd      = findViewById(R.id.ivProd);
 
-        conn = new ConexionSQLiteHelper(ActivitySurtSuc.this, "bd_INVENTARIO", null, 1);
+        conn = new ConexionSQLiteHelper(ActivityRecepConten.this, "bd_INVENTARIO", null, 1);
         db = conn.getReadableDatabase();//apertura de la base de datos interna
         rvTraspasos    = findViewById(R.id.rvTraspasos);
-        rvTraspasos.setLayoutManager(new LinearLayoutManager(ActivitySurtSuc.this));
+        rvTraspasos.setLayoutManager(new LinearLayoutManager(ActivityRecepConten.this));
         adapter = new AdaptadorTraspasos(listaTrasp);
-        keyboard = (InputMethodManager) getSystemService(ActivitySurtSuc.INPUT_METHOD_SERVICE);
+        keyboard = (InputMethodManager) getSystemService(ActivityRecepConten.INPUT_METHOD_SERVICE);
 
         txtProd.setInputType(InputType.TYPE_NULL);
         //txtProd.requestFocus();
@@ -160,7 +160,7 @@ public class ActivitySurtSuc extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(listaTrasp.size()>0){//si tiene
-                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivitySurtSuc.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepConten.this);
                     builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
@@ -183,7 +183,7 @@ public class ActivitySurtSuc extends AppCompatActivity {
             public void onClick(View view) {
                 datPSinc=datPSincro();
                 if(listaTrasp.size()>0 && datPSinc>0){
-                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivitySurtSuc.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepConten.this);
                     builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
@@ -194,7 +194,7 @@ public class ActivitySurtSuc extends AppCompatActivity {
                     builder.setCancelable(false);
                     builder.setTitle("Confirmación").setMessage(datPSinc+" productos escaneados ¿Desea sincronizar?").create().show();
                 }else{
-                    Toast.makeText(ActivitySurtSuc.this, "Sin datos para sincronizar", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ActivityRecepConten.this, "Sin datos para sincronizar", Toast.LENGTH_SHORT).show();
                 }
             }//onclick
         });//btnSincro setonclick
@@ -326,13 +326,13 @@ public class ActivitySurtSuc extends AppCompatActivity {
         protected void onPostExecute(Void result) {
             if(conn=false){
                 mDialog.dismiss();
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivitySurtSuc.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepConten.this);
                 builder.setPositiveButton("ACEPTAR",null);
                 builder.setCancelable(false);
                 builder.setTitle("AVISO").setMessage("Sin conexión a internet").create().show();
             }else if(mensaje.equals("PENDIENTES")){
                 mDialog.dismiss();
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivitySurtSuc.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepConten.this);
                 builder.setPositiveButton("ACEPTAR",null);
                 builder.setCancelable(false);
                 builder.setTitle("AVISO").setMessage("Existen productos pendientes por procesar en kepler, para continuar valide en kepler").create().show();
@@ -340,7 +340,7 @@ public class ActivitySurtSuc extends AppCompatActivity {
                 consultaSql();
                 mDialog.dismiss();
             }else{
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivitySurtSuc.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepConten.this);
                 builder.setPositiveButton("ACEPTAR",null);
                 builder.setCancelable(false);
                 builder.setTitle("AVISO").setMessage("Ningun Dato").create().show();
@@ -438,7 +438,7 @@ public class ActivitySurtSuc extends AppCompatActivity {
         protected void onPostExecute(Void result) {
             progressDialog.dismiss();
             if (contador==datPSincro()) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivitySurtSuc.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepConten.this);
                 builder.setPositiveButton("OK", null);
                 builder.setCancelable(false);
                 builder.setTitle("Resultado Sincronización").setMessage("Total de productos escaneados: "+datPSinc+"\n"+" Datos sincronizados: "+contador+"\n"+" Datos no sincronizados: "+contador2).create().show();
@@ -461,9 +461,9 @@ public class ActivitySurtSuc extends AppCompatActivity {
                         valueOf(getResources().getColor(R.color.ColorGris)));
                 datPSinc=0;
             }else if(conn==false){
-                Toast.makeText(ActivitySurtSuc.this, "Sin conexión a internet", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ActivityRecepConten.this, "Sin conexión a internet", Toast.LENGTH_SHORT).show();
             }else{
-                Toast.makeText(ActivitySurtSuc.this, "Error al actualizar datos", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ActivityRecepConten.this, "Error al actualizar datos", Toast.LENGTH_SHORT).show();
                 txtProd.setText("");
                 consultaSql();
             }//else
@@ -528,7 +528,7 @@ public class ActivitySurtSuc extends AppCompatActivity {
             }//if
             fila.close();
         }catch(Exception e){
-            Toast.makeText(ActivitySurtSuc.this,
+            Toast.makeText(ActivityRecepConten.this,
                     "Error al consultar datos de la base de datos interna", Toast.LENGTH_SHORT).show();
         }//catch
     }//consultaSql
@@ -553,7 +553,7 @@ public class ActivitySurtSuc extends AppCompatActivity {
             }
             fila.close();
         }catch(Exception e){
-            Toast.makeText(ActivitySurtSuc.this,
+            Toast.makeText(ActivityRecepConten.this,
                     e+"", Toast.LENGTH_SHORT).show();
         }//catch
         consultaSql();

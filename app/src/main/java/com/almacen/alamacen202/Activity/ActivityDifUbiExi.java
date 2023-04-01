@@ -649,14 +649,14 @@ public class ActivityDifUbiExi extends AppCompatActivity {
             trasport.debug = true;
             trasport.call(SOAP_ACTION, soapEnvelope);
             SoapObject response = (SoapObject) soapEnvelope.bodyIn;
-            int n=response.getPropertyCount()-1;
+            int n=response.getPropertyCount();
             for (int i = 0; i <n;i++) {
                 try {
                     progressDialog.setProgress(i);
                     mensaje="";
-                    SoapObject response0 = (SoapObject) soapEnvelope.bodyIn;
+                    SoapObject response0 = (SoapObject) response.getProperty(i);
                     //response0 = (SoapObject) response0.getProperty(i);
-                    mensaje=(response0.getPropertyAsString("Actualizado").equals("anyType{}") ? " " : response0.getPropertyAsString("Actualizado"));
+                    mensaje=(response0.getPropertyAsString("k_res").equals("anyType{}") ? " " : response0.getPropertyAsString("k_res"));
                     eliminarSql("AND PRODUCTO='"+mensaje+"' ");
                     if(!mensaje.equals("")){contador++;}
                     Thread.sleep(100);

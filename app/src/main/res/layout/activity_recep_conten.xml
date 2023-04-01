@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".Activity.ActivitySurtSuc">
+    tools:context=".Activity.ActivityRecepConten">
     <include layout="@layout/action_bar_toolbar"/>
 
     <ScrollView
@@ -87,6 +87,62 @@
             </LinearLayout>
 
 
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/chbMan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/modo_manual"
+                android:textSize="12dp"
+                android:buttonTint="@color/AzulBack"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="10dp"
+                    android:hint="Escaneados"
+                    app:hintTextColor="@color/colorPrimary"
+                    android:maxLines="1"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusTopStart="10dp"
+                    app:startIconTint="@null">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/txtCantidad"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="phone"
+                        android:digits="0123456789"
+                        android:clickable="true"
+                        android:maxLines="1"
+                        android:textSize="15dp"
+                        android:textColor="@color/AzulBack"
+                        android:enabled="false"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.button.MaterialButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:layout_gravity="center"
+                    android:background="@drawable/roundbutton"
+                    android:text="@string/guardar"
+                    android:textColor="@color/ColorWhite"
+                    android:textSize="14sp"
+                    android:backgroundTint="@color/colorPrimary"/>
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/AzulBack"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"/>
+
             <!--<LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -131,6 +187,8 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
 
+
+
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
@@ -138,27 +196,23 @@
                         android:layout_weight="1"
                         android:layout_marginStart="5dp"
                         android:layout_marginEnd="10dp"
-                        android:hint="@string/cantidad"
-                        app:hintTextColor="@color/colorPrimary"
-                        android:maxLines="1"
+                        android:hint="Sucursal Destino"
                         app:boxBackgroundMode="outline"
                         app:boxCornerRadiusTopEnd="10dp"
                         app:boxCornerRadiusTopStart="10dp"
                         app:startIconTint="@null">
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/txtCantidad"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="phone"
                             android:digits="0123456789"
                             android:clickable="true"
+                            android:maxLength="5"
                             android:maxLines="1"
+                            android:imeOptions="actionDone"
                             android:textSize="15dp"
-                            android:textColor="@color/AzulBack"
-                            android:enabled="false"/>
-
+                            android:enabled="false" />
                     </com.google.android.material.textfield.TextInputLayout>
-
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
@@ -166,13 +220,12 @@
                         android:layout_weight="1"
                         android:layout_marginStart="5dp"
                         android:layout_marginEnd="10dp"
-                        android:hint="Surtido"
+                        android:hint="Cantidad "
                         app:boxBackgroundMode="outline"
                         app:boxCornerRadiusTopEnd="10dp"
                         app:boxCornerRadiusTopStart="10dp"
                         app:startIconTint="@null">
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/txtCantSurt"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="phone"
@@ -195,49 +248,6 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="10dp">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnAtras"
-                    android:layout_width="21dp"
-                    android:layout_height="match_parent"
-                    android:layout_margin="3dp"
-                    android:layout_weight="1.5"
-                    android:background="@drawable/roundbutton"
-                    android:backgroundTint="@color/ColorGris"
-                    android:enabled="false"
-                    android:maxLines="1"
-                    android:text="Anterior"
-                    android:textAlignment="textStart"
-                    android:textColor="@color/cardview_light_background"
-                    android:textSize="8dp"
-                    app:icon="@drawable/ic_baseline_arrow_back_24"
-                    app:iconGravity="start"
-                    app:iconTint="@null" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnAdelante"
-                    android:layout_width="21dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1.5"
-                    android:maxLines="1"
-                    android:layout_margin="3dp"
-                    android:background="@drawable/roundbutton"
-                    android:textSize="8dp"
-                    android:text="Siguiente"
-                    android:textColor="@color/cardview_light_background"
-                    android:textAlignment="textStart"
-                    app:icon="@drawable/ic_baseline_arrow_forward_24"
-                    app:iconTint="@null"
-                    app:iconGravity="start"
-                    android:backgroundTint="@color/ColorGris"
-                    android:enabled="false"/>
-            </LinearLayout>
-
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSincro"
                 android:layout_width="match_parent"
@@ -246,10 +256,10 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/roundbutton"
-                android:text="@string/sincronizar"
+                android:text="@string/terminar"
                 android:textColor="@color/ColorWhite"
                 android:textSize="14sp"
-                android:backgroundTint="@color/Amarillo"/>
+                android:backgroundTint="@color/colorAccent"/>
 
             <LinearLayout
                 android:layout_width="match_parent"

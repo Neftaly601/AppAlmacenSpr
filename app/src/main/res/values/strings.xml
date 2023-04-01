@@ -32,6 +32,7 @@
     <string name="fechaI">Fecha Inicio</string>
     <string name="horaI">Hora Inicio</string>
     <string name="termina">Cerrar Folio</string>
+    <string name="terminar">Terminar</string>
     <!-- https://vazlo.com.mx/assets/img/productos/chica/jpg/-->
     <string name="urlImagenesGeneral">https://www.jacve.mx/es-mx/img/products/xl/</string><!--URL genereal imagenes -->
     <string name="urlImagenesSPR">https://sprautomotive.com/es_MX/res/img/products/md/</string><!--URL SPR imagenes -->

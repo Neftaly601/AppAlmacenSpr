@@ -1,7 +1,6 @@
 package com.almacen.alamacen202;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -27,7 +26,7 @@ import com.almacen.alamacen202.Activity.ActivityLiberaciones;
 import com.almacen.alamacen202.Activity.ActivityRecepTraspMultSuc;
 import com.almacen.alamacen202.Activity.ActivityRepEtiquetas;
 import com.almacen.alamacen202.Activity.ActivityResurtidoPicking;
-import com.almacen.alamacen202.Activity.ActivitySurtSuc;
+import com.almacen.alamacen202.Activity.ActivityRecepConten;
 import com.almacen.alamacen202.Activity.ActivityTrasladoUbi;
 import com.almacen.alamacen202.Activity.ActivityInventarioXfolioComp;
 import com.almacen.alamacen202.Sqlite.ConexionSQLiteHelper;
@@ -46,7 +45,7 @@ public class ActivityMenu extends AppCompatActivity {
 
     private ConexionSQLiteHelper conn;
     private SQLiteDatabase db;
-    private LinearLayout lyAdicSPR;
+    private LinearLayout lyAdicSPR,lyInv;
 
 
     @Override
@@ -71,6 +70,7 @@ public class ActivityMenu extends AppCompatActivity {
         extIm=getString(R.string.ext);
 
         lyAdicSPR = findViewById(R.id.lyAdicSPR);
+        lyInv= findViewById(R.id.lyInv);
 
         switch (StrServer) {
             case "jacve.dyndns.org:9085":
@@ -90,6 +90,7 @@ public class ActivityMenu extends AppCompatActivity {
                         .centerInside()
                         .into(imgVi);
                 lyAdicSPR.setVisibility(View.GONE);
+                lyInv.setVisibility(View.VISIBLE);
                 break;
             case "cecra.ath.cx:9085":
 
@@ -239,8 +240,8 @@ public class ActivityMenu extends AppCompatActivity {
         Intent intent = new Intent(ActivityMenu.this, ActivityDifUbiExi.class);
         startActivity(intent);
     }//diferencia entre ubicaciones y existenciasinventario
-    public void surtSuc(View v){
-        Intent intent = new Intent(ActivityMenu.this, ActivitySurtSuc.class);
+    public void recepCont(View v){
+        Intent intent = new Intent(ActivityMenu.this, ActivityRecepConten.class);
         startActivity(intent);
     }//reporte de etiquetas
     public void repEtiq(View v){

@@ -76,9 +76,9 @@ public class ActivityInventario extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private SharedPreferences preference,preferenceF;
     private SharedPreferences.Editor editor;
-    private boolean comprobar=false;
-    private int posicion=0;
-    private String strusr,strpass,strServer,strbran,codeBar,ProductoAct="",folio="",fecha="",hora="",mensaje,bandAutori,mensajeAutoriza,UserSuper;
+    private boolean comprobar=false,folioB=false;
+    private int posicion=0,contador=0;
+    private String strusr,strpass,strServer,strbran,codeBar,ProductoAct="",folio="",fecha="",hora="",mensaje,bandAutori,mensajeAutoriza;
     private ArrayList<Inventario> listaInv = new ArrayList<>();
     private ArrayList<Inventario> listaPSincro = new ArrayList<>();
     private EditText txtFolioInv,txtProductoVi,txtFechaI,txtHoraI,txtProducto,txtCant;
@@ -153,6 +153,9 @@ public class ActivityInventario extends AppCompatActivity {
                 txtProducto.setText("");
                 txtProducto.requestFocus();
                 txtProductoVi.setText("");
+                posicion=-1;
+                adapter.index(posicion);
+                adapter.notifyDataSetChanged();
                 if (b){
                     //keyboard.showSoftInput(txtProducto, InputMethodManager.SHOW_IMPLICIT);
                     txtCant.setEnabled(true);
@@ -193,7 +196,7 @@ public class ActivityInventario extends AppCompatActivity {
                             txtCant.requestFocus();
                             keyboard.showSoftInput(txtCant, InputMethodManager.SHOW_IMPLICIT);
                         }//else
-                    } else{
+                    }else{
                         for (int i = 0; i < editable.length(); i++) {
                             char ban;
                             ban = editable.charAt(i);
@@ -271,16 +274,14 @@ public class ActivityInventario extends AppCompatActivity {
 
     }//onCreate
     public void onClickInv(View v){//cada vez que se seleccione un producto en la lista
-        /*posicion = rvInventario.getChildPosition(rvInventario.findContainingItemView(v));
+        posicion = rvInventario.getChildPosition(rvInventario.findContainingItemView(v));
         ProductoAct=listaInv.get(posicion).getProducto();
-        if (!chbMan.isChecked()) {//manual no
-            buscarEnSql(ProductoAct,compararCantidad(ProductoAct)+"");
-            txtProducto.setText("");
-        }else{//manual si
-            txtCant.requestFocus();
-            keyboard.showSoftInput(txtCant, InputMethodManager.SHOW_IMPLICIT);
-        }//else
-        */
+
+        adapter.index(posicion);
+        adapter.notifyDataSetChanged();
+        rvInventario.scrollToPosition(posicion);
+        txtProductoVi.setText(ProductoAct);
+        txtCant.setText(listaInv.get(posicion).getCantidad());
     }//onClickLista
 
     public void alertAutoriza(View v){
@@ -569,9 +570,6 @@ public class ActivityInventario extends AppCompatActivity {
         protected void onPostExecute(Void result) {
             mDialog.dismiss();
             if (listaInv.size()>0) {
-                for(int i=0;i<listaInv.size();i++){
-                    insertarSql(listaInv.get(i).getProducto(),listaInv.get(i).getCantidad());
-                }//for
                 consultaSql();
             }else{
                 Toast.makeText(ActivityInventario.this, "Ningun dato", Toast.LENGTH_SHORT).show();
@@ -597,42 +595,28 @@ public class ActivityInventario extends AppCompatActivity {
             trasport.debug = true;
             trasport.call(SOAP_ACTION, soapEnvelope);
             SoapObject response = (SoapObject) soapEnvelope.bodyIn;
+            String producto,cantidad;
             for (int i = 0; i < response.getPropertyCount(); i++) {
                 SoapObject response0 = (SoapObject) soapEnvelope.bodyIn;
                 response0 = (SoapObject) response0.getProperty(i);
-                listaInv.add(new Inventario(
-                        (i+1)+"",
-                        (response0.getPropertyAsString("k_prod").equals("anyType{}") ? " " : response0.getPropertyAsString("k_prod")),
-                        (response0.getPropertyAsString("k_cant").equals("anyType{}") ? " " : response0.getPropertyAsString("k_cant"))));
+                producto=(response0.getPropertyAsString("k_prod").equals("anyType{}") ? " " : response0.getPropertyAsString("k_prod"));
+                cantidad=(response0.getPropertyAsString("k_cant").equals("anyType{}") ? " " : response0.getPropertyAsString("k_cant"));
+                listaInv.add(new Inventario((i+1)+"", producto, cantidad));
+                insertarSql(producto,cantidad);
             }//for
         } catch (Exception ex) {}//catch
     }//conectaListInv
 
     private class AsyncActualizaInv extends AsyncTask<Void, Integer, Void> {
-        private String pro,cc;
-        private int contador=0;
         @Override
         protected void onPreExecute() {progressDialog.show();}
 
         @Override
         protected Void doInBackground(Void... params) {
             progressDialog.setMax(listaPSincro.size());
-            for(int j=0;j<listaPSincro.size();j++){//for para los registros de cada servidor
-                try {
-                    mensaje="";
-                    pro=listaPSincro.get(j).getProducto();
-                    cc=listaPSincro.get(j).getCantidad();
-                    conectaActualiza(pro,cc);
-                    if(mensaje.equals("1")){
-                        eliminarSql(" PRODUCTO='"+pro+"'");
-                        contador++;
-                    }//if
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    return null;
-                }//catch
-                progressDialog.setProgress(j);
-            }//for
+            folioB=false;
+            contador=0;
+            conectaActualiza();
             return null;
         }//doinbackground
 
@@ -646,7 +630,7 @@ public class ActivityInventario extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void result) {
             progressDialog.dismiss();
-            if(mensaje.equals("0")){
+            if(folioB==false){
                 AlertDialog.Builder builder = new AlertDialog.Builder(ActivityInventario.this);
                 builder.setMessage("El folio esta cerrado");
                 builder.setCancelable(false);
@@ -663,6 +647,9 @@ public class ActivityInventario extends AppCompatActivity {
                 rvInventario.setAdapter(null);
                 editor.clear().commit();
                 eliminarSql("");
+                txtFolioInv.setText("");
+                txtFechaI.setText("");
+                txtHoraI.setText("");
                 AlertDialog.Builder builder = new AlertDialog.Builder(ActivityInventario.this);
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
@@ -685,13 +672,14 @@ public class ActivityInventario extends AppCompatActivity {
                 });//negative botton
                 AlertDialog dialog = builder.create();
                 dialog.show();
+                txtProducto.setText("");
                 consultaSql();
             }//else
         }//onPostExecute
     }//AsynInsertInv
 
 
-    private void conectaActualiza (String producto, String cant) {
+    private void conectaActualiza () {
         String SOAP_ACTION = "ActualizaInv";
         String METHOD_NAME = "ActualizaInv";
         String NAMESPACE = "http://" +strServer+ "/WSk75AlmacenesApp/";
@@ -699,7 +687,7 @@ public class ActivityInventario extends AppCompatActivity {
         try {
             SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
             XMLActualizaInv soapEnvelope = new XMLActualizaInv(SoapEnvelope.VER11);
-            soapEnvelope.XMLActInv(strusr, strpass, folio, strbran, producto,cant);
+            soapEnvelope.XMLActInv(strusr, strpass, folio, strbran,listaPSincro);
             soapEnvelope.dotNet = true;
             soapEnvelope.implicitTypes = true;
             soapEnvelope.setOutputSoapObject(Request);
@@ -707,15 +695,33 @@ public class ActivityInventario extends AppCompatActivity {
             trasport.debug = true;
             trasport.call(SOAP_ACTION, soapEnvelope);
             SoapObject response = (SoapObject) soapEnvelope.bodyIn;
-            mensaje=response.getPropertyAsString("k_estatus");
-            //mensaje=(response.getPropertyAsString("k_estatus").equals("anyType{}") ? null : response.getPropertyAsString("k_estatus"));
-        } catch (SoapFault soapFault) {
+            int n=response.getPropertyCount()-1;
+            for (int i = 0; i <n;i++) {
+                SoapObject response0 = (SoapObject) soapEnvelope.bodyIn;
+                response0 = (SoapObject) response0.getProperty(i);
+                try {
+                    String estatus=(response0.getPropertyAsString("k_res").equals("anyType{}") ? "" : response0.getPropertyAsString("k_res"));
+                    if(!estatus.equals("1")){
+                        folioB=true;
+                        progressDialog.setProgress(i);
+                        mensaje=estatus;
+                        eliminarSql("AND PRODUCTO='"+mensaje+"' ");
+                        if(!mensaje.equals("")){contador++;}
+                        Thread.sleep(100);
+                        mensaje="";
+                    }else{
+                        break;
+                    }
+                } catch (InterruptedException e) {}//catch
+            }//for
+
+        }catch (SoapFault soapFault) {
             mensaje=soapFault.getMessage();
-        } catch (XmlPullParserException e) {
+        }catch (XmlPullParserException e) {
             mensaje=e.getMessage();
-        } catch (IOException e) {
+        }catch (IOException e) {
             mensaje=e.getMessage();
-        } catch (Exception ex) {
+        }catch (Exception ex) {
             mensaje=ex.getMessage();
         }//catch
     }//conectaActualiza
@@ -831,6 +837,7 @@ public class ActivityInventario extends AppCompatActivity {
             listaInv.clear();
             rvInventario.setAdapter(null);
             int j=0;
+            posicion=-1;
             @SuppressLint("Recycle") Cursor fila = db.rawQuery("SELECT PRODUCTO,CANTIDAD FROM INVENTARIOALM ORDER BY PRODUCTO ", null);
             if (fila != null && fila.moveToFirst()) {
                 do {
@@ -845,6 +852,7 @@ public class ActivityInventario extends AppCompatActivity {
                 rvInventario.setAdapter(null);
                 adapter= new AdapterInventario(listaInv);
                 rvInventario.setAdapter(adapter);
+                adapter.index(posicion);
                 adapter.notifyDataSetChanged();
                 rvInventario.scrollToPosition(posicion);
             }//if
