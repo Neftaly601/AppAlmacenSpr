@@ -1,12 +1,9 @@
 package com.almacen.alamacen202.XML;
 
-import com.almacen.alamacen202.SetterandGetters.Inventario;
-
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class XMLActualizaInv extends SoapSerializationEnvelope {
 
@@ -14,19 +11,21 @@ public class XMLActualizaInv extends SoapSerializationEnvelope {
     private String contrasena;
     private String folio;
     private String sucursal;
-    private ArrayList<Inventario> datos;
+    private String producto;
+    private String cant;
 
     public XMLActualizaInv(int version) {
         super(version);
     }
 
     public void XMLActInv(String usuario, String contrasena, String folio, String sucursal,
-                                  ArrayList<Inventario> datos) {
+                          String producto, String cant) {
         this.usuario = usuario;
         this.contrasena = contrasena;
         this.folio = folio;
         this.sucursal = sucursal;
-        this.datos = datos;
+        this.producto = producto;
+        this.cant = cant;
     }//void
 
     @Override
@@ -60,22 +59,20 @@ public class XMLActualizaInv extends SoapSerializationEnvelope {
         writer.text(sucursal);
         writer.endTag(tem, "k_suc");
 
+        writer.startTag(tem, "k_prod");
+        writer.text(producto);
+        writer.endTag(tem, "k_prod");
+
+        writer.startTag(tem, "k_cant");
+        writer.text(cant);
+        writer.endTag(tem, "k_cant");
+
         writer.startTag(tem, "k_usu");
         writer.text(usuario);
         writer.endTag(tem, "k_usu");
 
-        for(int i=0;i<datos.size();i++){
-            writer.startTag(tem, "Datos");
-            writer.startTag(tem, "k_prod");
-            writer.text(datos.get(i).getProducto());
-            writer.endTag(tem, "k_prod");
-
-            writer.startTag(tem, "k_cant");
-            writer.text(datos.get(i).getCantidad());
-            writer.endTag(tem, "k_cant");
-            writer.endTag(tem, "Datos");
-        }//for
         writer.endTag(tem, "ActualizaInve");
+
 
         writer.endTag(tem, "ActualizaInvRequest");
         writer.endTag(env, "Body");

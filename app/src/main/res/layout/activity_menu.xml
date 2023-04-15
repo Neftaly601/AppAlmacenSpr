@@ -477,123 +477,222 @@
 
                     </LinearLayout>
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@drawable/roundbutton"
+                            android:backgroundTint="@color/AzulBack"
+                            android:gravity="center"
+                            android:layout_margin="5dp"
+                            android:orientation="vertical"
+                            android:onClick="recepCont">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5dp"
+                                android:lines="2"
+                                android:maxLines="2"
+                                android:padding="5dp"
+                                android:textAlignment="center"
+                                android:text="Recepción Contenedores por producto"
+                                android:textColor="@color/ColorWhite"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="35dp"
+                                android:layout_margin="5dp"
+                                android:src="@drawable/contenedor" />
+
+
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@drawable/roundbutton"
+                            android:backgroundTint="@color/AzulBack"
+                            android:gravity="center"
+                            android:layout_margin="5dp"
+                            android:orientation="vertical"
+                            android:visibility="invisible">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5dp"
+                                android:lines="2"
+                                android:maxLines="2"
+                                android:padding="5dp"
+                                android:textAlignment="center"
+                                android:textColor="@color/ColorWhite"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                android:text=""/>
+
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="35dp"
+                                android:layout_margin="5dp"
+                                android:contentDescription="Manos"
+                                android:src="@drawable/icon_dif" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
 
                 </LinearLayout>
 
-
-
-                <!--
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:orientation="horizontal"
-                                    android:padding="10dp">
-
-                                    <Button
-                                        android:layout_width="0dp"
-                                        android:layout_height="139dp"
-                                        android:layout_margin="10dp"
-                                        android:layout_weight="1"
-                                        android:background="@drawable/roundbutton"
-                                        android:backgroundTint="@color/AzulBack"
-                                        android:padding="5dp"
-                                        android:text="Construccion"
-                                        android:textColor="@color/ColorWhite"
-                                        android:textSize="15sp"></Button>
-
-                                    <Button
-                                        android:layout_width="0dp"
-                                        android:layout_height="139dp"
-                                        android:layout_margin="10dp"
-                                        android:layout_weight="1"
-                                        android:background="@drawable/roundbutton"
-                                        android:backgroundTint="@color/AzulBack"
-                                        android:padding="5dp"
-                                        android:text="Construccion"
-                                        android:textColor="@color/ColorWhite"
-                                        android:textSize="15sp"></Button>
-                                </LinearLayout>
-                  -->
-
+                <!--PARA MOSTRAR EN VIPLA -->
                 <LinearLayout
-                    android:id="@+id/lyInv"
+                    android:id="@+id/ly2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:orientation="horizontal"
-                    android:visibility="visible">
-
-
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@drawable/roundbutton"
-                        android:backgroundTint="@color/AzulBack"
-                        android:gravity="center"
-                        android:layout_margin="5dp"
-                        android:orientation="vertical"
-                        android:onClick="inventario">
-
-
-                        <TextView
-                            android:layout_width="wrap_content"
+                        android:layout_gravity="center"
+                        android:orientation="horizontal">
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@drawable/roundbutton"
+                            android:backgroundTint="@color/AzulBack"
+                            android:gravity="center"
                             android:layout_margin="5dp"
-                            android:lines="2"
-                            android:maxLines="2"
-                            android:padding="5dp"
-                            android:text="Inventario"
-                            android:textAlignment="center"
-                            android:textColor="@color/ColorWhite"
-                            android:textSize="12sp"
-                            android:textStyle="bold" />
+                            android:orientation="vertical"
+                            android:onClick="inventario">
 
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="35dp"
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5dp"
+                                android:lines="2"
+                                android:maxLines="2"
+                                android:padding="5dp"
+                                android:text="Inventario"
+                                android:textAlignment="center"
+                                android:textColor="@color/ColorWhite"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="35dp"
+                                android:layout_margin="5dp"
+                                android:contentDescription="Manos"
+                                android:src="@drawable/icon_inventario" />
+
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@drawable/roundbutton"
+                            android:backgroundTint="@color/AzulBack"
+                            android:gravity="center"
                             android:layout_margin="5dp"
-                            android:contentDescription="Manos"
-                            android:src="@drawable/icon_inventario" />
+                            android:orientation="vertical"
+                            android:onClick="difUbiExis">
 
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5dp"
+                                android:lines="2"
+                                android:maxLines="2"
+                                android:padding="5dp"
+                                android:textAlignment="center"
+                                android:textColor="@color/ColorWhite"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                android:text="Diferencias entre ubicaciones y existencias"/>
+
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="35dp"
+                                android:layout_margin="5dp"
+                                android:contentDescription="Manos"
+                                android:src="@drawable/icon_dif" />
+                        </LinearLayout>
 
                     </LinearLayout>
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@drawable/roundbutton"
-                        android:backgroundTint="@color/AzulBack"
-                        android:gravity="center"
-                        android:layout_margin="5dp"
-                        android:orientation="vertical"
-                        android:onClick="difUbiExis">
-
-                        <TextView
-                            android:layout_width="wrap_content"
+                        android:layout_gravity="center"
+                        android:orientation="horizontal"
+                        android:visibility="visible">
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@drawable/roundbutton"
+                            android:backgroundTint="@color/AzulBack"
+                            android:gravity="center"
                             android:layout_margin="5dp"
-                            android:lines="2"
-                            android:maxLines="2"
-                            android:padding="5dp"
-                            android:textAlignment="center"
-                            android:textColor="@color/ColorWhite"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            android:text="Diferencias entre ubicaciones y existencias"/>
+                            android:orientation="vertical"
+                            android:onClick="traspasos">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5dp"
+                                android:lines="2"
+                                android:maxLines="2"
+                                android:padding="5dp"
+                                android:textAlignment="center"
+                                android:text="Recepción de traspasos multisucursal"
+                                android:textColor="@color/ColorWhite"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
 
 
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="35dp"
-                            android:layout_margin="5dp"
-                            android:contentDescription="Manos"
-                            android:src="@drawable/icon_dif" />
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="35dp"
+                                android:layout_margin="5dp"
+                                android:contentDescription="Manos"
+                                android:src="@drawable/icon_traspaso" />
+
+
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:visibility="invisible">
+
+
+                        </LinearLayout>
+
                     </LinearLayout>
 
                 </LinearLayout>
+
 
             </LinearLayout>
 

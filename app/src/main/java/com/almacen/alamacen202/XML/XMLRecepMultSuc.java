@@ -1,29 +1,32 @@
 package com.almacen.alamacen202.XML;
 
-import com.almacen.alamacen202.SetterandGetters.Traspasos;
-
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class XMLRecepMultSuc extends SoapSerializationEnvelope {
 
     private String usuario;
     private String contrasena;
     private String suc;
-    private ArrayList<Traspasos> datos;
+    private String prod;
+    private String cant;
+    private String fecha;
+    private String hora;
 
     public XMLRecepMultSuc(int version) {
         super(version);
     }
 
-    public void XMLTrasp(String usuario, String contrasena,String suc,ArrayList<Traspasos> datos) {
+    public void XMLTrasp(String usuario, String contrasena,String suc,String prod,String cant,String fecha,String hora) {
         this.usuario = usuario;
         this.contrasena = contrasena;
         this.suc = suc;
-        this.datos=datos;
+        this.prod = prod;
+        this.cant=cant;
+        this.fecha=fecha;
+        this.hora=hora;
     }//void
 
     @Override
@@ -54,21 +57,25 @@ public class XMLRecepMultSuc extends SoapSerializationEnvelope {
         writer.text(suc);
         writer.endTag(tem, "k_Sucursal");
 
+        writer.startTag(tem, "k_Producto");
+        writer.text(prod);
+        writer.endTag(tem, "k_Producto");
+
+        writer.startTag(tem, "k_Cantidad");
+        writer.text(cant);
+        writer.endTag(tem, "k_Cantidad");
+
         writer.startTag(tem, "k_Usuario");
         writer.text(usuario);
         writer.endTag(tem, "k_Usuario");
 
-        for(int i=0;i<datos.size();i++){
-            writer.startTag(tem, "Datos");
-            writer.startTag(tem, "k_Producto");
-            writer.text(datos.get(i).getProducto());
-            writer.endTag(tem, "k_Producto");
+        writer.startTag(tem, "k_Fecha");
+        writer.text(fecha);
+        writer.endTag(tem, "k_Fecha");
 
-            writer.startTag(tem, "k_Cantidad");
-            writer.text(datos.get(i).getCantSurt());
-            writer.endTag(tem, "k_Cantidad");
-            writer.endTag(tem, "Datos");
-        }
+        writer.startTag(tem, "k_Hora");
+        writer.text(hora);
+        writer.endTag(tem, "k_Hora");
 
         writer.endTag(tem, "RecepMultiSuc");
 

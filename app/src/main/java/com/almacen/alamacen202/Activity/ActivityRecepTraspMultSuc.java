@@ -67,10 +67,9 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private SharedPreferences preference;
     private boolean escaneo=false,datos=false;
-    private int posicion=0,contador=0,contador2=0;//para contar los registros que se escanearon y se van a sincronizar
+    private int posicion=0,datPSinc=0;//para contar los registros que se escanearon y se van a sincronizar
     private String strusr,strpass,strbran,strServer,codeBar,mensaje,Producto="",serv;
     private ArrayList<Traspasos> listaTrasp = new ArrayList<>();
-    private ArrayList<Traspasos> listaPSincro = new ArrayList<>();
     private EditText txtProd,txtCantidad,txtCantSurt;
     private ImageView ivProd;
     private TextView tvProd;
@@ -191,8 +190,8 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         btnSincro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                datPSincro();
-                if(listaPSincro.size()>0){
+                datPSinc=datPSincro();
+                if(listaTrasp.size()>0 && datPSinc>0){
                     AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
                     builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
                         @Override
@@ -202,7 +201,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                     });//positive button
                     builder.setNegativeButton("CANCELAR",null);
                     builder.setCancelable(false);
-                    builder.setTitle("Confirmación").setMessage(listaPSincro.size()+" productos escaneados ¿Desea sincronizar?").create().show();
+                    builder.setTitle("Confirmación").setMessage(datPSinc+" productos escaneados ¿Desea sincronizar?").create().show();
                 }else{
                     Toast.makeText(ActivityRecepTraspMultSuc.this, "Sin datos para sincronizar", Toast.LENGTH_SHORT).show();
                 }
@@ -233,16 +232,15 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         db.close();
     }//onDestroy
 
-    public void datPSincro(){//saber cuantos datos son para sincronizar(cantidad de surtido no sea 0) o sea que se escaneo
-        int num=0;
-        listaPSincro.clear();
+    public int datPSincro(){//saber cuantos datos son para sincronizar(cantidad de surtido no sea 0) o sea que se escaneo
+        int num=0,cont=0;
         for(int i=0;i<listaTrasp.size();i++){
             num=Integer.parseInt(listaTrasp.get(i).getCantSurt());
             if(num>0){
-                listaPSincro.add(new Traspasos(listaTrasp.get(i).getNum(),listaTrasp.get(i).getProducto(),
-                        listaTrasp.get(i).getCantidad(),listaTrasp.get(i).getCantSurt(),listaTrasp.get(i).getUbic()));
+                cont++;
             }//if
         }//for
+        return cont;
     }//datPSincro
 
     public boolean firtMet() {//firtMet
@@ -395,6 +393,9 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
     }//conectaListInv
 
     private class AsyncRecepMultiSuc extends AsyncTask<Void, Integer, Void> {//WEBSERVICE PARA ACTUALIZAR DATOS
+        private String pro,cc;
+        private int contador=0;
+        private int contador2=0;
         private boolean conn=true;
         @Override
         protected void onPreExecute() {progressDialog.show();}
@@ -403,10 +404,34 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         protected Void doInBackground(Void... params) {
             escaneo=false;
             mensaje="";
-            contador=0;contador2=0;
             if(firtMet()==true){//si hay conexión a internet
-                progressDialog.setMax(listaPSincro.size());
-                conectaRecepMultSuc();
+                progressDialog.setMax(listaTrasp.size());
+                String fecha =new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault()).format(new Date());
+                String hora=new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+                for(int i=0;i<listaTrasp.size();i++){
+                    try {
+                        pro=listaTrasp.get(i).getProducto();
+                        cc=listaTrasp.get(i).getCantSurt();
+                        if(Integer.parseInt(cc)>0){
+                            conectaRecepMultSuc(pro,cc,fecha,hora);
+                            if(mensaje.equals("SINCRONIZADO")){
+                                eliminarSql("AND PRODUCTO='"+pro+"'");//si se sincroniza se elimina de la base de datos sqlite del telefono
+                                contador++;
+                                mensaje="";
+                            }else{
+                                contador2++;
+                            }//else
+                        }else{
+                            eliminarSql("AND PRODUCTO='"+pro+"'");//si se sincroniza se elimina de la base de datos sqlite del telefono
+                            contador2++;
+                        }//else
+
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        return null;
+                    }//catch
+                    progressDialog.setProgress(i);
+                }//for
             }else{conn=false;}
             return null;
         }
@@ -421,11 +446,11 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void result) {
             progressDialog.dismiss();
-            if (contador==listaPSincro.size()) {
+            if (contador==datPSincro()) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
                 builder.setPositiveButton("OK", null);
                 builder.setCancelable(false);
-                builder.setTitle("Resultado Sincronización").setMessage("Datos sincronizados: "+contador+"\n"+" Datos no sincronizados: "+contador2).create().show();
+                builder.setTitle("Resultado Sincronización").setMessage("Total de productos escaneados: "+datPSinc+"\n"+" Datos sincronizados: "+contador+"\n"+" Datos no sincronizados: "+contador2).create().show();
                 txtProd.setText("");
                 consultaSql();
                 tvProd.setText("");
@@ -443,6 +468,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                         valueOf(getResources().getColor(R.color.ColorGris)));
                 btnAtras.setBackgroundTintList(ColorStateList.
                         valueOf(getResources().getColor(R.color.ColorGris)));
+                datPSinc=0;
             }else if(conn==false){
                 Toast.makeText(ActivityRecepTraspMultSuc.this, "Sin conexión a internet", Toast.LENGTH_SHORT).show();
             }else{
@@ -454,7 +480,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
     }//AsynInsertInv
 
 
-    private void conectaRecepMultSuc () {
+    private void conectaRecepMultSuc (String producto, String cant,String fecha,String hora) {
         String SOAP_ACTION = "RecepcionMultisucursal";
         String METHOD_NAME = "RecepcionMultisucursal";
         String NAMESPACE = "http://" + strServer + "/WSk75AlmacenesApp/";
@@ -463,7 +489,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
 
             SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
             XMLRecepMultSuc soapEnvelope = new XMLRecepMultSuc(SoapEnvelope.VER11);
-            soapEnvelope.XMLTrasp(strusr, strpass, strbran, listaPSincro);
+            soapEnvelope.XMLTrasp(strusr, strpass, strbran, producto,cant,fecha,hora);
             soapEnvelope.dotNet = true;
             soapEnvelope.implicitTypes = true;
             soapEnvelope.setOutputSoapObject(Request);
@@ -471,19 +497,9 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             trasport.debug = true;
             trasport.call(SOAP_ACTION, soapEnvelope);
             SoapObject response = (SoapObject) soapEnvelope.bodyIn;
-            int n=response.getPropertyCount()-1;
-            for (int i = 0; i <n;i++) {
-                try {
-                    progressDialog.setProgress(i);
-                    mensaje="";
-                    SoapObject response0 = (SoapObject) soapEnvelope.bodyIn;
-                    mensaje=(response0.getPropertyAsString("Sincronizado").equals("anyType{}") ? " " : response0.getPropertyAsString("Sincronizado"));
-                    eliminarSql("AND PRODUCTO='"+mensaje+"' ");
-                    if(!mensaje.equals("")){contador++;}else{contador2++;}
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {}//catch
+            response = (SoapObject) response.getProperty("PRODUCTO");
 
-            }//for
+            mensaje=(response.getPropertyAsString("MENSAJE").equals("anyType{}") ? null : response.getPropertyAsString("MENSAJE"));
         }catch (SoapFault soapFault) {
             mensaje=soapFault.getMessage();
         }catch (XmlPullParserException e) {

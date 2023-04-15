@@ -45,7 +45,7 @@ public class ActivityMenu extends AppCompatActivity {
 
     private ConexionSQLiteHelper conn;
     private SQLiteDatabase db;
-    private LinearLayout lyAdicSPR,lyInv;
+    private LinearLayout lyAdicSPR,ly2;
 
 
     @Override
@@ -70,7 +70,7 @@ public class ActivityMenu extends AppCompatActivity {
         extIm=getString(R.string.ext);
 
         lyAdicSPR = findViewById(R.id.lyAdicSPR);
-        lyInv= findViewById(R.id.lyInv);
+        ly2= findViewById(R.id.ly2);
 
         switch (StrServer) {
             case "jacve.dyndns.org:9085":
@@ -90,7 +90,7 @@ public class ActivityMenu extends AppCompatActivity {
                         .centerInside()
                         .into(imgVi);
                 lyAdicSPR.setVisibility(View.GONE);
-                lyInv.setVisibility(View.VISIBLE);
+                ly2.setVisibility(View.VISIBLE);
                 break;
             case "cecra.ath.cx:9085":
 

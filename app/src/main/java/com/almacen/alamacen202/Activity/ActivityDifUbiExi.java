@@ -70,9 +70,9 @@ public class ActivityDifUbiExi extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private SharedPreferences preference,preferenceD;
     private SharedPreferences.Editor editor;
-    private int posicion,contador=0;
+    private int posicion=0;
     private String strusr,strpass,strServer,strbran,codeBar,ProductoAct="",folio="",fecha="",hora="",mensaje,serv="",where=" AND CONTEO>0 ";
-    private ArrayList<DifUbiExist> lista = new ArrayList<>();
+    private ArrayList<DifUbiExist> lista2 = new ArrayList<>();
     private ArrayList<DifUbiExist> listaPSincro = new ArrayList<>();
     private ArrayList<Almacenes> listaAlm = new ArrayList<>();
     private EditText txtFolioInv,txtProductoVi,txtFechaI,txtHoraI,txtProducto,txtCant,txtContF,txtExistS,txtDif,txtUbb;
@@ -306,27 +306,17 @@ public class ActivityDifUbiExi extends AppCompatActivity {
         btnRefr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityDifUbiExi.this);
-                builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        ProductoAct="";
-                        chbMan.setChecked(false);
-                        lista.clear();
-                        rvDifUbiExi.setAdapter(null);
-                        eliminarSql("");
-                        txtProductoVi.setText("");
-                        txtContF.setText("");
-                        txtExistS.setText("");
-                        txtDif.setText("");
-                        txtUbb.setText("");
-                        txtCant.setText("");
-                        new AsyncDifUbiExist().execute();
-                    }//onclick
-                });//positive button
-                builder.setNegativeButton("Cancelar",null);//negative
-                builder.setCancelable(false);
-                builder.setTitle("AVISO").setMessage("¿Desea volver a consultar los productos de este folio?").create().show();
+                chbMan.setChecked(false);
+                lista2.clear();
+                rvDifUbiExi.setAdapter(null);
+                eliminarSql("");
+                txtProductoVi.setText("");
+                txtContF.setText("");
+                txtExistS.setText("");
+                txtDif.setText("");
+                txtUbb.setText("");
+                txtCant.setText("");
+                new AsyncDifUbiExist().execute();
             }//onclick
         });//btnRefr
 
@@ -532,7 +522,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            lista.clear();
+            lista2.clear();
             conectaDifUbiExist();
             return null;
         }
@@ -586,14 +576,31 @@ public class ActivityDifUbiExi extends AppCompatActivity {
     }//conectaListInv
 
     private class AsyncActualiza extends AsyncTask<Void, Integer, Void> {
+        private String pro,cc,ubic;
+        private int contador=0;
         @Override
         protected void onPreExecute() {progressDialog.show();}
 
         @Override
         protected Void doInBackground(Void... params) {
             progressDialog.setMax(listaPSincro.size());
-            contador=0;
-            conectaActualiza();
+            for(int j=0;j<listaPSincro.size();j++){
+                try {
+                    mensaje="";
+                    pro=listaPSincro.get(j).getProducto();
+                    cc=listaPSincro.get(j).getConteo();
+                    ubic=listaPSincro.get(j).getUbicacion();
+                    conectaActualiza(pro,cc,ubic);
+                    if(mensaje.equals("Actualizado")){
+                        eliminarSql("AND PRODUCTO='"+pro+"' ");
+                        contador++;
+                    }//if
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    return null;
+                }//catch
+                progressDialog.setProgress(j);
+            }//for
             return null;
         }//doinbackground
 
@@ -608,7 +615,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
         protected void onPostExecute(Void result) {
             progressDialog.dismiss();
             if (contador==listaPSincro.size()) {
-                lista.clear();
+                lista2.clear();
                 rvDifUbiExi.setAdapter(null);
                 editor.clear().commit();
                 eliminarSql("");
@@ -621,19 +628,26 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                 });//positivebutton
                 builder.setCancelable(false);
                 builder.setTitle("Resultado Sincronización").setMessage(contador+" Datos sincronizados").create().show();
+
             }else{
                 AlertDialog.Builder builder = new AlertDialog.Builder(ActivityDifUbiExi.this);
-                builder.setPositiveButton("OK",null);//positivebutton
+                builder.setMessage("Error al sincronizar");
                 builder.setCancelable(false);
-                builder.setTitle("Resultado Sincronización").setMessage(contador+" Datos sincronizados").create().show();
+                builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                    }
+                });//negative botton
+                AlertDialog dialog = builder.create();
+                dialog.show();
                 contados();
             }//else
-
         }//onPostExecute
     }//AsynInsertInv
 
 
-    private void conectaActualiza () {
+    private void conectaActualiza (String producto, String cont, String ubic) {
         String SOAP_ACTION = "ActualizaDif";
         String METHOD_NAME = "ActualizaDif";
         String NAMESPACE = "http://" + strServer + "/WSk75AlmacenesApp/";
@@ -641,7 +655,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
         try {
             SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
             XMLActualizaDif soapEnvelope = new XMLActualizaDif(SoapEnvelope.VER11);
-            soapEnvelope.XMLAct(strusr, strpass, folio, strbran, listaPSincro);
+            soapEnvelope.XMLAct(strusr, strpass, folio, strbran, producto,cont,ubic);
             soapEnvelope.dotNet = true;
             soapEnvelope.implicitTypes = true;
             soapEnvelope.setOutputSoapObject(Request);
@@ -649,20 +663,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
             trasport.debug = true;
             trasport.call(SOAP_ACTION, soapEnvelope);
             SoapObject response = (SoapObject) soapEnvelope.bodyIn;
-            int n=response.getPropertyCount();
-            for (int i = 0; i <n;i++) {
-                try {
-                    progressDialog.setProgress(i);
-                    mensaje="";
-                    SoapObject response0 = (SoapObject) response.getProperty(i);
-                    //response0 = (SoapObject) response0.getProperty(i);
-                    mensaje=(response0.getPropertyAsString("k_res").equals("anyType{}") ? " " : response0.getPropertyAsString("k_res"));
-                    eliminarSql("AND PRODUCTO='"+mensaje+"' ");
-                    if(!mensaje.equals("")){contador++;}
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {}//catch
-
-            }//for
+            mensaje=response.getPropertyAsString("k_estado");
             //mensaje=(response.getPropertyAsString("k_estatus").equals("anyType{}") ? null : response.getPropertyAsString("k_estatus"));
         } catch (SoapFault soapFault) {
             mensaje=soapFault.getMessage();
@@ -676,18 +677,18 @@ public class ActivityDifUbiExi extends AppCompatActivity {
     }//conectaActualiza
 
     public void buscar(String prod,String canti,boolean sum){
-        try{
-            int contA=0,cont=0,exist=0,dif=0;
-            String ubi="";
-            @SuppressLint("Recycle") Cursor fila = db.rawQuery("SELECT CONTEO,EXISTENCIA,UBICACION"+
-                    " FROM DIFUBIEXIST WHERE EMPRESA='"+serv+"' AND PRODUCTO='"+prod+"'", null);
-            if (fila.moveToNext()) {
+        boolean band=false;
+        int contA=0,cont=0,exist=0,dif=0;
+        String ubi="";
+        rvDifUbiExi.setAdapter(null);
+        for(int i=0;i<lista2.size();i++){
+            if(prod.equals(lista2.get(i).getProducto())){
                 if(canti.equals("-1")){
-                    canti=fila.getString(0);
+                    canti=lista2.get(i).getConteo();
                 }
-                exist=Integer.parseInt(fila.getString(1));
-                cont=Integer.parseInt(fila.getString(0));
-                ubi=fila.getString(2);
+                exist=Integer.parseInt(lista2.get(i).getExistencia());
+                cont=Integer.parseInt(lista2.get(i).getConteo());
+                ubi=lista2.get(i).getUbicacion();
                 int op;
                 if(sum==true){
                     op=cont+1;
@@ -698,21 +699,21 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                 dif=exist-op;
                 cont=op;
                 actualizarSql(prod,cont+"",dif+"",ubi,exist+"");
-            }else{
-                Toast.makeText(this, "Producto no existe en lista", Toast.LENGTH_SHORT).show();
-                ProductoAct="";
-                txtProducto.setText("");
-                txtProductoVi.setText("");
-                if(chbMan.isChecked()){
-                    txtProducto.requestFocus();
-                }
-            }//else
-            fila.close();
-        }catch(Exception e){
-            Toast.makeText(ActivityDifUbiExi.this,
-                    "Error al buscar producto", Toast.LENGTH_SHORT).show();
-        }//catch
-        contados();
+                lista2.get(i).setConteo(cont+"");
+                lista2.get(i).setDiferencia(dif+"");
+                band=true;
+                break;
+            }//if
+        }//for
+        if (band==false){//si no existe el producto
+            Toast.makeText(this, "Producto no existe en lista", Toast.LENGTH_SHORT).show();
+            txtProducto.setText("");
+            txtProductoVi.setText("");
+            if(chbMan.isChecked()){
+                txtProducto.requestFocus();
+            }
+        }
+        consultaSql();
     }//buscar
 
     private class AsyncalListAlm extends AsyncTask<Void, Void, Void> {
@@ -744,7 +745,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                 GridLayoutManager gl = new GridLayoutManager(ActivityDifUbiExi.this, 1);
                 rvAlmacenes.setLayoutManager(gl);
 
-                adapter= new AdapterDifUbiExi(lista);
+                adapter= new AdapterDifUbiExi(lista2);
                 rvDifUbiExi.setAdapter(adapter);
 
                 AdaptadorListAlmacenes adapAlm = new AdaptadorListAlmacenes(listaAlm);
@@ -807,22 +808,22 @@ public class ActivityDifUbiExi extends AppCompatActivity {
     }//onClickLista
 
     public void detalle(int posi){//detalle del producto seleccionado
-        ProductoAct=lista.get(posi).getProducto();
+        ProductoAct=lista2.get(posi).getProducto();
         txtProductoVi.setText(ProductoAct);
-        txtContF.setText(lista.get(posi).getCantidad());
-        txtExistS.setText(lista.get(posi).getExistencia());
-        txtDif.setText(lista.get(posi).getDiferencia());
-        txtUbb.setText(lista.get(posi).getUbicacion());
-        txtCant.setText(lista.get(posi).getConteo());
+        txtContF.setText(lista2.get(posi).getCantidad());
+        txtExistS.setText(lista2.get(posi).getExistencia());
+        txtDif.setText(lista2.get(posi).getDiferencia());
+        txtUbb.setText(lista2.get(posi).getUbicacion());
+        txtCant.setText(lista2.get(posi).getConteo());
     }//detalle
     public void detalleProd1(String prod){//se busca el detalle en todos lo productos ya sea contados o no contados
-        for(int i=0;i<lista.size();i++){
-            if(lista.get(i).getProducto().equals(prod)){
-                txtContF.setText(lista.get(i).getCantidad());
-                txtExistS.setText(lista.get(i).getExistencia());
-                txtDif.setText(lista.get(i).getDiferencia());
-                txtUbb.setText(lista.get(i).getUbicacion());
-                txtCant.setText(lista.get(i).getConteo());
+        for(int i=0;i<lista2.size();i++){
+            if(lista2.get(i).getProducto().equals(prod)){
+                txtContF.setText(lista2.get(i).getCantidad());
+                txtExistS.setText(lista2.get(i).getExistencia());
+                txtDif.setText(lista2.get(i).getDiferencia());
+                txtUbb.setText(lista2.get(i).getUbicacion());
+                txtCant.setText(lista2.get(i).getConteo());
                 break;
             }
         }
@@ -831,7 +832,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
 
     public void consultaSql(){
         try{
-            lista.clear();
+            lista2.clear();
             int j=0;
             rvDifUbiExi.setAdapter(null);
             posicion=0;
@@ -851,10 +852,10 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                         txtUbb.setText(fila.getString(4));
                         txtCant.setText(fila.getString(5));
                     }
-                    lista.add(new DifUbiExist(j+"",fila.getString(0),fila.getString(1),fila.getString(2),
+                    lista2.add(new DifUbiExist(j+"",fila.getString(0),fila.getString(1),fila.getString(2),
                             fila.getString(3),fila.getString(4),fila.getString(5),fila.getString(6)));
                 } while (fila.moveToNext());
-                adapter= new AdapterDifUbiExi(lista);
+                adapter= new AdapterDifUbiExi(lista2);
                 rvDifUbiExi.setAdapter(adapter);
                 adapter.index(posicion);
                 adapter.notifyDataSetChanged();
@@ -924,5 +925,6 @@ public class ActivityDifUbiExi extends AppCompatActivity {
             db.delete("DIFUBIEXIST"," EMPRESA='"+serv+"' "+sentProd,null);
         }catch(Exception e){}
     }//eliminarSql
+
 
 }//ActivityInventario
