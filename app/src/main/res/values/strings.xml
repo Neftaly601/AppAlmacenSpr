@@ -43,4 +43,5 @@
 
     <!-- NOMBRES WEB SERVICES -->
     <string name="resRecepConten">resRecepConten</string>
+    <string name="resRecepXProd">resRecepXProd</string>
 </resources>

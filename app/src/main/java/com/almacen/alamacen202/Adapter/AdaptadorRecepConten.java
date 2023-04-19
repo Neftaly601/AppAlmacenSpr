@@ -1,11 +1,16 @@
 package com.almacen.alamacen202.Adapter;
 
+import android.annotation.SuppressLint;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.almacen.alamacen202.R;
@@ -29,6 +34,8 @@ public class AdaptadorRecepConten extends RecyclerView.Adapter<AdaptadorRecepCon
         return new AdaptadorRecepConten.ViewHolderRecepConten(view);
     }//oncreateViewHolder
 
+
+    @SuppressLint("ResourceAsColor")
     @Override
     public void onBindViewHolder(AdaptadorRecepConten.ViewHolderRecepConten holder, int position) {
         holder.tvPr.setText(datos.get(position).getProducto());
@@ -41,6 +48,15 @@ public class AdaptadorRecepConten extends RecyclerView.Adapter<AdaptadorRecepCon
         }else{
             holder.lyRec.setBackgroundColor(0);
         }
+
+        if(datos.get(position).getPrioridad().equals("U")){
+            holder.tvNu.setTextColor(Color.RED);
+            holder.tvPr.setTextColor(Color.RED);
+            holder.tvC.setTextColor(Color.RED);
+            holder.tvPal.setTextColor(Color.RED);
+        }
+
+
     }//onBindViewHolder
 
     public int index(int index){

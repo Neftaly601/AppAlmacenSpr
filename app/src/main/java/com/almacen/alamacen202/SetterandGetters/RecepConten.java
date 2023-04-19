@@ -5,12 +5,14 @@ public class RecepConten {
     private String producto;
     private String cantidad;
     private String paletCaja;
+    private String prioridad;
 
-    public RecepConten(String  num, String producto, String cantidad, String paletCaja) {
+    public RecepConten(String  num, String producto, String cantidad, String paletCaja,String prioridad) {
         this.num = num;
         this.producto = producto;
         this.cantidad = cantidad;
         this.paletCaja = paletCaja;
+        this.prioridad = prioridad;
     }//constructor
 
     public String getNum() {
@@ -43,5 +45,13 @@ public class RecepConten {
 
     public void setPaletCaja(String paletCaja) {
         this.paletCaja = paletCaja;
+    }
+
+    public String getPrioridad() {
+        return prioridad;
+    }
+
+    public void setPrioridad(String prioridad) {
+        this.prioridad = prioridad;
     }
 }//clase

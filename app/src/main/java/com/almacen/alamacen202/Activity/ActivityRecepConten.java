@@ -1,5 +1,7 @@
 package com.almacen.alamacen202.Activity;
 
+import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -18,6 +20,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -37,10 +40,12 @@ import com.almacen.alamacen202.Adapter.AdapterDifUbiExi;
 import com.almacen.alamacen202.MainActivity;
 import com.almacen.alamacen202.R;
 import com.almacen.alamacen202.SetterandGetters.RecepConten;
+import com.almacen.alamacen202.SetterandGetters.RecepListSucCont;
 import com.almacen.alamacen202.SetterandGetters.Traspasos;
 import com.almacen.alamacen202.Sqlite.ConexionSQLiteHelper;
 import com.almacen.alamacen202.XML.XMLRecepConsul;
 import com.almacen.alamacen202.XML.XMLRecepMultSuc;
+import com.almacen.alamacen202.includes.HttpHandler;
 import com.almacen.alamacen202.includes.MyToolbar;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -48,6 +53,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.squareup.picasso.Picasso;
 
@@ -61,6 +67,7 @@ import org.ksoap2.transport.HttpTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -74,13 +81,17 @@ import dmax.dialog.SpotsDialog;
 public class ActivityRecepConten extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private SharedPreferences preference;
-    private boolean escaneo=false,datos=false;
-    private int posicion=0,datPSinc=0;//para contar los registros que se escanearon y se van a sincronizar
-    private String strusr,strpass,strbran,strServer,codeBar,mensaje,Producto="",folio="";
+    private float existMtz=0,existCdmx=0,existCul=0,existMty=0,existRep=0,repMtz=0,repCdmx=0,repCul=0,repMty=0;
+    private float faltMtz=0,faltCdmx=0,faltCul=0,faltMty=0;
+    private float demBMtz=0,demBCdmx=0,demBCul=0,demBMty=0;
+    private int posicion=0;
+
+    private String strusr,strpass,strbran,strServer,codeBar,mensaje,Producto="",folio="",producto="",clasf="";
     private ArrayList<RecepConten> listaRecep = new ArrayList<>();
-    private EditText txtBfolio;
-    private ImageView ivProd;
-    private TextView tvProd;
+    private ArrayList<RecepListSucCont> listaSucRecep = new ArrayList<>();
+    private EditText txtBfolio,txtProdR,txtSuc,txtFalt,txtEscan;
+    private ImageView ivProdR;
+    private TextView tvRepMatr,tvRepCdmx,tvRepCul,tvRepMty;
     private Button btnBuscaFolio,btnAtras,btnAdelante,btnSincro;
     private RecyclerView rvRecep;
     private AdaptadorRecepConten adapter;
@@ -117,8 +128,19 @@ public class ActivityRecepConten extends AppCompatActivity {
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setCancelable(false);
 
-        txtBfolio    = findViewById(R.id.txtBfolio);
-        btnBuscaFolio  = findViewById(R.id.btnBuscaFolio);
+        txtBfolio       = findViewById(R.id.txtBfolio);
+        txtProdR        = findViewById(R.id.txtProdR);
+        txtSuc          = findViewById(R.id.txtSuc);
+        txtFalt         = findViewById(R.id.txtFalt);
+        txtEscan        = findViewById(R.id.txtEscan);
+        btnBuscaFolio   = findViewById(R.id.btnBuscaFolio);
+        tvRepMatr       = findViewById(R.id.tvRepMatr);
+        tvRepCdmx       = findViewById(R.id.tvRepCdmx);
+        tvRepCul        = findViewById(R.id.tvRepCul);
+        tvRepMty        = findViewById(R.id.tvRepMty);
+        ivProdR         = findViewById(R.id.ivProdR);
+
+
         /*btnAtras    = findViewById(R.id.btnAtras);
         btnAdelante =findViewById(R.id.btnAdelante);
         btnSincro   = findViewById(R.id.btnSincro);
@@ -238,57 +260,184 @@ public class ActivityRecepConten extends AppCompatActivity {
         consultaSql();*/
     }//onCreate
 
+    public void limpiarCampos(){
+        txtProdR.setText("");
+        txtSuc.setText("");
+        txtFalt.setText("0");
+        txtEscan.setText("");
+        tvRepMatr.setText("0");
+        tvRepCdmx.setText("0");
+        tvRepCul.setText("0");
+        tvRepMty.setText("0");
+        ivProdR.setImageResource(R.drawable.logokepler);
+    }//limpiarCampos
 
-    private void jSonRecepContent() throws InterruptedException{
-        final CountDownLatch latch = new CountDownLatch(1);
-        mQueue.start();
-        String url="http://"+strServer+"/"+getString(R.string.resRecepConten);
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, new JSONObject(),
-                new Response.Listener<JSONObject>() {//correcto
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONArray jsonArray = response.getJSONArray("Response");
-                            for(int i=0;i<jsonArray.length();i++){
-                                JSONObject dato = jsonArray.getJSONObject(i);//Conjunto de datos
-                                listaRecep.add(new RecepConten((i++)+"",dato.getString("k_prod"),dato.getString("k_cant"),dato.getString("k_paletCaja")));
-                                mensaje="";
-                            }//for
-                            latch.countDown();//
-                        } catch (JSONException e) {
-                            mensaje="Problemas al recibir datos json";
-                            latch.countDown();
-                        }catch (Error error){
-                            mensaje="Hubó un problema";
-                            latch.countDown();
+    public void onClickListaR(View v){//cada vez que se seleccione un producto en la lista
+        posicion = rvRecep.getChildPosition(rvRecep.findContainingItemView(v));
+        producto=listaRecep.get(posicion).getProducto();
+        adapter.index(posicion);
+        adapter.notifyDataSetChanged();
+        rvRecep.scrollToPosition(posicion);
+        producto=listaRecep.get(posicion).getProducto();
+        new AsyncRecepXProd().execute();
+    }//onClickLista
 
-                        }//catch
-                    }//onResponse
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {//Para error
-                latch.countDown();
-                mensaje="Hubó un problema al recibir datos";
-            }//onError
-        })//JsonObjectRequest
-        {//headers
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("user", strusr);
-                headers.put("pass", strpass);
-                return headers;
-            }//Map
-            //parametros
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("k_folio",folio);
-                return params;
+    public void mostrarDatosProd(){
+        repMtz=0;repCdmx=0;repCul=0;repMty=0;
+
+        txtProdR.setText(producto);
+        asignarReparticiones();
+        /*txtSuc.setText(listaSucRecep.);
+        txtFalt.setText("0");
+        txtEscan.setText("");
+        tvRepMatr.setText("0");
+        tvRepCdmx.setText("0");
+        tvRepCul.setText("0");
+        tvRepMty.setText("0");
+        ivProdR.setImageResource(R.drawable.logokepler);*/
+    }//mostrarDatosProd
+
+    public float calculoDem(float demanda,String clasf){//
+        float dem=0;
+        if(clasf.equals("A")){
+            dem=Float.parseFloat((demanda*2.5)+"");
+        }else if(clasf.equals("B")){
+            dem=Float.parseFloat((demanda*1.5)+"");
+        }else{
+            dem=Float.parseFloat(demanda+"");
+        }
+        return dem;
+    }//calculoDem
+    public float calculoFalt(float demanda,float exist){//
+        float falt=demanda-exist;
+        if(falt<0){falt=0;}
+        return falt;
+    }//calculoFalt
+
+    public float calculoExistBal(String suc,float exist,float falt){
+        float existBal=0;
+        if(!suc.equals("01")){
+            if(falt>0){
+                existBal=exist;
             }
-        };//headers
-        mQueue.add(request);
-        //Bloqueamos el hilo hasta que el callback llame a latch.countDown
-        latch.await();
-    }//jSonRecepContent
+        }else{
+            existBal=exist;
+        }//else
+        return existBal;
+    }//calculoExistBal
+
+    public float calculoDemBal(String suc,float demanda,float falt){
+        float demBal=demanda;
+        if(!suc.equals("01")){
+            demBal=0;
+            if(falt>0){
+                demBal=demanda;
+            }
+        }else{
+            demBal=demanda;
+        }//else
+        return demBal;
+    }//calculoDemBal
+
+    public float redondeo(float op){
+        float redo=0,result=0;
+        if(op>1){//REDONDEO MENOS
+            redo=Math.round(op);
+            if(redo>op){//es para redondear  menos, si el redondeo es mayor al original entonces se le resta uno para que sea redondeo menos
+                result=redo-1;
+            }else{
+                result=redo;
+            }
+        }else{//REDONDEO MAS
+            redo=Math.round(op);
+            result=redo;
+        }//else
+        return result;
+    }
+
+    public float calculoRepartir(float ind,float demBal,float exist,float falt){
+        float op1=0,op2=0;
+        if(ind<1){
+            op1=(demBal*ind);
+            op1=op1-exist;
+        }else{
+            op1=falt;
+        }//else
+
+        if(op1<0){
+            op2=0;
+        }else{
+            op2=op1;
+        }//else
+        return redondeo(op2);
+    }
+
+    public void calculosFinal(float sumDemBal){
+        float indice=0;
+        repMtz=0;repCdmx=0;repCul=0;repMty=0;
+        if(existMtz!=0){
+            indice=Float.parseFloat((existRep/sumDemBal)+"");
+            repCdmx=calculoRepartir(indice,demBCdmx,existCdmx,faltCdmx);
+            repCul=calculoRepartir(indice,demBCul,existCul,faltCul);
+            repMty=calculoRepartir(indice,demBMty,existMty,faltMty);
+            repMtz=existMtz-repCdmx-repCul-repMty;
+        }//else
+
+        tvRepMatr.setText(repMtz+"");
+        tvRepCdmx.setText(repCdmx+"");
+        tvRepCul.setText(repCul+"");
+        tvRepMty.setText(repMty+"");
+    }//calculosFinal
+
+
+    public void asignarReparticiones(){
+        float compr=0,trans=0,existB=0,demXClasf=0,exist,faltante,demB,sumDemBal=0,demanda=0;
+        existMtz=0;existCdmx=0;existCul=0;existMty=0;
+        faltMtz=0;faltCdmx=0;faltCul=0;faltMty=0;demBMtz=0;demBCdmx=0;demBCul=0;demBMty=0;existRep=0;
+        String suc;
+        for(int i=0;i<listaSucRecep.size();i++){
+            compr=0;trans=0;exist=0;demanda=0;faltante=0;existB=0;demB=0;
+            suc=listaSucRecep.get(i).getSucursal();
+            clasf=listaSucRecep.get(i).getClasif();
+            exist=Integer.parseInt(listaSucRecep.get(i).getExist());
+            compr=Integer.parseInt(listaSucRecep.get(i).getCompr());
+            trans=Integer.parseInt(listaSucRecep.get(i).getTrans());
+            exist=(exist-compr)+trans;
+            demXClasf=Integer.parseInt(listaSucRecep.get(i).getDem());
+            demanda=calculoDem(demXClasf,clasf);
+            faltante=calculoFalt(demanda,exist);
+            existB=calculoExistBal(suc,exist,faltante);
+            demB=calculoDemBal(suc,demanda,faltante);
+            sumDemBal=sumDemBal+demB;
+            existRep=existRep+existB;
+            switch (suc){
+                case "01":
+                    existMtz=exist;
+                    faltMtz=faltante;
+                    demBMtz=demB;
+                    break;
+                case "06":
+                    existCdmx=exist;
+                    faltCdmx=faltante;
+                    demBCdmx=demB;
+                    break;
+                case "07":
+                    existCul=exist;
+                    faltCul=faltante;
+                    demBCul=demB;
+                    break;
+                case "08":
+                    existMty=exist;
+                    faltMty=faltante;
+                    demBMty=demB;
+                    break;
+                default:limpiarCampos();break;
+            }//switch
+        }//for
+
+        calculosFinal(sumDemBal);
+
+    }//asignarReparticiones
 
 
 
@@ -299,14 +448,48 @@ public class ActivityRecepConten extends AppCompatActivity {
             super.onPreExecute();
             mDialog.show();
             mensaje="";
+            posicion=-1;
+            limpiarCampos();
             listaRecep.clear();
+            rvRecep.setAdapter(null);
         }//onPreExecute
 
         @Override
         protected Boolean doInBackground(Void... voids) {
-            try {
-                jSonRecepContent();
-            } catch (InterruptedException e) {mensaje="Hubó problema con el web service";}
+            HttpHandler sh = new HttpHandler();
+            String parametros="k_folio="+folio;
+            String url = "http://"+strServer+"/"+getString(R.string.resRecepConten)+"?"+parametros;
+            String jsonStr = sh.makeServiceCall(url,strusr,strpass);
+            //Log.e(TAG, "Respuesta de la url: " + jsonStr);
+            if (jsonStr != null) {
+                try {
+                    JSONObject jsonObj = new JSONObject(jsonStr);
+                    // Obtener array de datos
+                    JSONArray jsonArray = jsonObj.getJSONArray("Response");
+                    for(int i=0;i<jsonArray.length();i++){
+                        JSONObject dato = jsonArray.getJSONObject(i);//Conjunto de datos
+                        listaRecep.add(new RecepConten((i+1)+"",dato.getString("k_prod"),dato.getString("k_cant"),
+                                dato.getString("k_paletCaja"),dato.getString("k_prio")));
+                        mensaje="";
+                    }//for
+                } catch (final JSONException e) {
+                    //Log.e(TAG, "Error al convertir Json: " + e.getMessage());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mensaje="Error al traer datos";
+                        }//run
+                    });
+                }//catch JSON EXCEPTION
+            }else {
+                //Log.e(TAG, "Problemas al traer datos");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mensaje="No fue posible obtener datos del servidor";
+                    }//run
+                });//runUniTthread
+            }//else
             return null;
         }//doInBackground
 
@@ -323,13 +506,85 @@ public class ActivityRecepConten extends AppCompatActivity {
                 AlertDialog dialog = builder.create();
                 dialog.show();
             }else{
+                posicion=-1;
                 adapter= new AdaptadorRecepConten(listaRecep);
                 rvRecep.setAdapter(adapter);
                 adapter.index(posicion);
-                //adapter.notifyDataSetChanged();
-                //rvRecep.scrollToPosition(posicion)
+                adapter.notifyDataSetChanged();
+                rvRecep.scrollToPosition(posicion);
             }//else
         }//onPost
     }//AsyncRecepCon
+
+    private class AsyncRecepXProd extends AsyncTask<Void, Boolean, Boolean> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mDialog.show();
+            mensaje="";
+            listaSucRecep.clear();
+            limpiarCampos();
+        }//onPreExecute
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            HttpHandler sh = new HttpHandler();//separar párametros con &
+            String parametros="k_folio="+folio+"&k_producto="+producto;
+            String url = "http://"+strServer+"/"+getString(R.string.resRecepXProd)+"?"+parametros;
+            String jsonStr = sh.makeServiceCall(url,strusr,strpass);
+            //Log.e(TAG, "Respuesta de la url: " + jsonStr);
+            if (jsonStr != null) {
+                try {
+                    JSONObject jsonObj = new JSONObject(jsonStr);
+                    // Obtener array de datos
+                    JSONArray jsonArray = jsonObj.getJSONArray("Response");
+                    for(int i=0;i<jsonArray.length();i++){
+                        JSONObject dato = jsonArray.getJSONObject(i);//Conjunto de datos
+                        listaSucRecep.add(new RecepListSucCont(dato.getString("k_suc"),dato.getString("k_clasf"),
+                                dato.getString("k_exist"),dato.getString("k_compr"),dato.getString("k_trans"),
+                                dato.getString("k_dem")));
+                        mensaje="";
+                    }//for
+                } catch (final JSONException e) {
+                    //Log.e(TAG, "Error al convertir Json: " + e.getMessage());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mensaje="Error al traer datos";
+                        }//run
+                    });
+                }//catch JSON EXCEPTION
+            } else {
+                //Log.e(TAG, "Problemas al traer datos");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mensaje="No fue posible obtener datos del servidor";
+                    }//run
+                });//runUniTthread
+            }//else
+            return null;
+        }//doInBackground
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+            mDialog.dismiss();
+            if (listaSucRecep.size()==0) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepConten.this);
+                builder.setTitle("AVISO");
+                builder.setMessage(mensaje);
+                builder.setCancelable(false);
+                builder.setNegativeButton("OK",null);
+                AlertDialog dialog = builder.create();
+                dialog.show();limpiarCampos();
+            }else{
+                mostrarDatosProd();
+            }//else
+        }//onPost
+    }//AsyncRecepCon
+
+
 
 }//ActivityRecepConten
