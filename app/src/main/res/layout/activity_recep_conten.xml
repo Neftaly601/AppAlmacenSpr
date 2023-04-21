@@ -72,12 +72,23 @@
                 android:layout_marginBottom="5dp"/>
 
             <com.google.android.material.checkbox.MaterialCheckBox
-                android:id="@+id/chbMan"
+                android:id="@+id/chbManual"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/modo_manual"
                 android:textSize="12dp"
                 android:buttonTint="@color/AzulBack"/>
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/txtProdR"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:maxLength="40"
+                android:textSize="15dp"
+                android:inputType="text"
+                android:enabled="false"
+                android:imeOptions="actionNext"
+                tools:ignore="TextContrastCheck"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -92,17 +103,14 @@
                 app:boxCornerRadiusTopStart="10dp"
                 app:startIconTint="@null">
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/txtProdR"
+                    android:id="@+id/txtProdVi"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLength="40"
                     android:maxLines="1"
                     android:textSize="15dp"
-                    android:textColor="#000000"
-                    android:inputType="text"
                     android:enabled="false"
-                    android:imeOptions="actionNext"
-                    tools:ignore="TextContrastCheck"/>
+                    android:textColor="#000000"/>
             </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -119,108 +127,142 @@
                     android:textSize="18dp"
                     android:textColor="@color/AzulBack"
                     android:textStyle="bold"/>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/AzulBack"
-                    android:orientation="horizontal">
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:textStyle="bold"
-                        android:textSize="10dp"
-                        android:textColor="@color/ColorWhite"
-                        android:text="MATRIZ"/>
 
-                    <View
-                        android:layout_width="2dp"
-                        android:layout_height="match_parent"/>
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:textStyle="bold"
-                        android:textSize="10dp"
-                        android:textColor="@color/ColorWhite"
-                        android:text="CDMX."/>
-                    <View
-                        android:layout_width="2dp"
-                        android:layout_height="match_parent"/>
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:textStyle="bold"
-                        android:textSize="10dp"
-                        android:textColor="@color/ColorWhite"
-                        android:text="CUL."/>
-                    <View
-                        android:layout_width="2dp"
-                        android:layout_height="match_parent"/>
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:textStyle="bold"
-                        android:textSize="10dp"
-                        android:textColor="@color/ColorWhite"
-                        android:text="MTY."/>
-                </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
-                    <TextView
-                        android:id="@+id/tvRepMatr"
+                    <LinearLayout
+                        android:id="@+id/lyMatrz"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="center"
-                        android:textStyle="bold"
-                        android:textSize="12dp"
-                        android:text="0"/>
+                        android:orientation="vertical"
+                        android:onClick="onClickSuc">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@color/AzulBack"
+                            android:gravity="center"
+                            android:text="MATRIZ"
+                            android:textColor="@color/ColorWhite"
+                            android:textSize="10dp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tvRepMatr"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/drawable_border"
+                            android:gravity="center"
+                            android:textStyle="bold"
+                            android:textSize="12dp"
+                            android:text="0"/>
+                    </LinearLayout>
+
 
                     <View
                         android:layout_width="2dp"
                         android:layout_height="match_parent"/>
-                    <TextView
-                        android:id="@+id/tvRepCdmx"
+
+                    <LinearLayout
+                        android:id="@+id/lyCdmx"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="center"
-                        android:textStyle="bold"
-                        android:textSize="12dp"
-                        android:text="0"/>
+                        android:orientation="vertical"
+                        android:onClick="onClickSuc">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:textStyle="bold"
+                            android:textSize="10dp"
+                            android:textColor="@color/ColorWhite"
+                            android:background="@color/AzulBack"
+                            android:text="CDMX"/>
+                        <TextView
+                            android:id="@+id/tvRepCdmx"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/drawable_border"
+                            android:gravity="center"
+                            android:textStyle="bold"
+                            android:textSize="12dp"
+                            android:text="0"/>
+                    </LinearLayout>
+
                     <View
                         android:layout_width="2dp"
                         android:layout_height="match_parent"/>
-                    <TextView
-                        android:id="@+id/tvRepCul"
+
+                    <LinearLayout
+                        android:id="@+id/lyCul"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="center"
-                        android:textStyle="bold"
-                        android:textSize="12dp"
-                        android:text="0"/>
+                        android:orientation="vertical"
+                        android:onClick="onClickSuc">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:textStyle="bold"
+                            android:textSize="10dp"
+                            android:textColor="@color/ColorWhite"
+                            android:background="@color/AzulBack"
+                            android:text="CUL"/>
+                        <TextView
+                            android:id="@+id/tvRepCul"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/drawable_border"
+                            android:gravity="center"
+                            android:textStyle="bold"
+                            android:textSize="12dp"
+                            android:text="0"/>
+                    </LinearLayout>
+
                     <View
                         android:layout_width="2dp"
                         android:layout_height="match_parent"/>
-                    <TextView
-                        android:id="@+id/tvRepMty"
+                    <LinearLayout
+                        android:id="@+id/lyMty"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="center"
-                        android:textStyle="bold"
-                        android:textSize="12dp"
-                        android:text="0"/>
+                        android:orientation="vertical"
+                        android:onClick="onClickSuc">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:textStyle="bold"
+                            android:textSize="10dp"
+                            android:textColor="@color/ColorWhite"
+                            android:background="@color/AzulBack"
+                            android:text="MTY"/>
+
+                        <TextView
+                            android:id="@+id/tvRepMty"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/drawable_border"
+                            android:gravity="center"
+                            android:textStyle="bold"
+                            android:textSize="12dp"
+                            android:text="0"/>
+                    </LinearLayout>
+
                 </LinearLayout>
             </LinearLayout>
 
@@ -240,10 +282,10 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:hint="Sucursal"
+                            app:hintTextColor="@color/AzulBack"
                             app:boxBackgroundMode="outline"
                             app:boxCornerRadiusTopEnd="10dp"
-                            app:boxCornerRadiusTopStart="10dp"
-                            app:startIconTint="@null">
+                            app:boxCornerRadiusTopStart="10dp">
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/txtSuc"
                                 android:layout_width="match_parent"
@@ -251,7 +293,6 @@
                                 android:inputType="phone"
                                 android:digits="0123456789"
                                 android:clickable="true"
-                                android:maxLength="5"
                                 android:maxLines="1"
                                 android:textSize="15dp"
                                 android:enabled="false" />
@@ -261,13 +302,13 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:hint="Faltante"
+                            android:hint="Restantes"
                             app:boxBackgroundMode="outline"
                             app:boxCornerRadiusTopEnd="10dp"
                             app:boxCornerRadiusTopStart="10dp"
                             app:startIconTint="@null">
                             <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/txtFalt"
+                                android:id="@+id/txtRest"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:inputType="phone"
@@ -331,7 +372,6 @@
                     android:text="@string/guardar"
                     android:textColor="@color/ColorWhite"
                     android:textSize="12dp"
-                    app:icon="@drawable/icon_guarda"
                     app:iconSize="15dp"
                     app:iconTint="@color/ColorWhite"
                     android:enabled="false"

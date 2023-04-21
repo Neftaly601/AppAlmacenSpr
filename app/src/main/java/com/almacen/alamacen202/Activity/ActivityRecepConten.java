@@ -24,8 +24,11 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -81,18 +84,21 @@ import dmax.dialog.SpotsDialog;
 public class ActivityRecepConten extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private SharedPreferences preference;
+    private boolean revisa=false;
     private float existMtz=0,existCdmx=0,existCul=0,existMty=0,existRep=0,repMtz=0,repCdmx=0,repCul=0,repMty=0;
     private float faltMtz=0,faltCdmx=0,faltCul=0,faltMty=0;
     private float demBMtz=0,demBCdmx=0,demBCul=0,demBMty=0;
-    private int posicion=0;
+    private int posicion=0,escaneados=0;
 
-    private String strusr,strpass,strbran,strServer,codeBar,mensaje,Producto="",folio="",producto="",clasf="";
+    private String strusr,strpass,strbran,strServer,codeBar,mensaje,folio="",producto="",clasf="",sucursalSelec="";
     private ArrayList<RecepConten> listaRecep = new ArrayList<>();
     private ArrayList<RecepListSucCont> listaSucRecep = new ArrayList<>();
-    private EditText txtBfolio,txtProdR,txtSuc,txtFalt,txtEscan;
+    private LinearLayout lyMatrz,lyCdmx,lyCul,lyMty;
+    private EditText txtBfolio,txtProdR,txtSuc,txtRest,txtEscan,txtProdVi;
     private ImageView ivProdR;
     private TextView tvRepMatr,tvRepCdmx,tvRepCul,tvRepMty;
-    private Button btnBuscaFolio,btnAtras,btnAdelante,btnSincro;
+    private Button btnBuscaFolio,btnAtras,btnAdelante,btnSave;
+    private CheckBox chbManual;
     private RecyclerView rvRecep;
     private AdaptadorRecepConten adapter;
     private AlertDialog mDialog;
@@ -100,7 +106,6 @@ public class ActivityRecepConten extends AppCompatActivity {
     private SQLiteDatabase db;
     private InputMethodManager keyboard;
     private String urlImagenes,extImg;
-    private RequestQueue mQueue;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,8 +121,6 @@ public class ActivityRecepConten extends AppCompatActivity {
         urlImagenes=preference.getString("urlImagenes", "null");
         extImg=preference.getString("ext", "null");
 
-        mQueue = Volley.newRequestQueue(this);
-
         mDialog = new SpotsDialog.Builder().setContext(ActivityRecepConten.this).
                 setMessage("Espere un momento...").build();
         mDialog.setCancelable(false);
@@ -128,10 +131,14 @@ public class ActivityRecepConten extends AppCompatActivity {
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setCancelable(false);
 
+        lyMatrz         = findViewById(R.id.lyMatrz);
+        lyCdmx          = findViewById(R.id.lyCdmx);
+        lyCul           = findViewById(R.id.lyCul);
+        lyMty           = findViewById(R.id.lyMty);
         txtBfolio       = findViewById(R.id.txtBfolio);
         txtProdR        = findViewById(R.id.txtProdR);
         txtSuc          = findViewById(R.id.txtSuc);
-        txtFalt         = findViewById(R.id.txtFalt);
+        txtRest         = findViewById(R.id.txtRest);
         txtEscan        = findViewById(R.id.txtEscan);
         btnBuscaFolio   = findViewById(R.id.btnBuscaFolio);
         tvRepMatr       = findViewById(R.id.tvRepMatr);
@@ -139,12 +146,13 @@ public class ActivityRecepConten extends AppCompatActivity {
         tvRepCul        = findViewById(R.id.tvRepCul);
         tvRepMty        = findViewById(R.id.tvRepMty);
         ivProdR         = findViewById(R.id.ivProdR);
+        chbManual       = findViewById(R.id.chbManual);
+        btnSave         = findViewById(R.id.btnSave);
+        txtProdVi       = findViewById(R.id.txtProdVi);
 
 
-        /*btnAtras    = findViewById(R.id.btnAtras);
-        btnAdelante =findViewById(R.id.btnAdelante);
-        btnSincro   = findViewById(R.id.btnSincro);
-        ivProd      = findViewById(R.id.ivProd);*/
+        btnAtras    = findViewById(R.id.btnBack);
+        btnAdelante =findViewById(R.id.btnNext);
 
         conn = new ConexionSQLiteHelper(ActivityRecepConten.this, "bd_INVENTARIO", null, 1);
         db = conn.getReadableDatabase();//apertura de la base de datos interna
@@ -153,6 +161,30 @@ public class ActivityRecepConten extends AppCompatActivity {
         adapter = new AdaptadorRecepConten(listaRecep);
         keyboard = (InputMethodManager) getSystemService(ActivityRecepConten.INPUT_METHOD_SERVICE);
 
+        chbManual.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                txtProdR.setText("");
+                txtProdVi.setText("");
+                posicion=-1;
+                mostrarLista();
+                seleccionaSuc();
+                if(b==true){
+                    txtProdR.requestFocus();
+                    txtEscan.setEnabled(true);
+                    btnSave.setEnabled(true);
+                    btnSave.setBackgroundTintList(ColorStateList.
+                            valueOf(getResources().getColor(R.color.colorPrimary)));
+                }else{
+                    txtEscan.setEnabled(false);
+                    btnSave.setEnabled(false);
+                    btnSave.setBackgroundTintList(ColorStateList.
+                            valueOf(getResources().getColor(R.color.ColorGris)));
+                    txtProdR.requestFocus();
+                    //mostrarDatosProd();
+                }
+            }//oncheckedchange
+        });//chbManual
 
         btnBuscaFolio.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -172,25 +204,36 @@ public class ActivityRecepConten extends AppCompatActivity {
             }//onclick
         });//btnBuscaFolio
 
-        /*g.addTextChangedListener(new TextWatcher() {
+        txtProdR.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override
             public void afterTextChanged(Editable editable) {
-                folio=editable.toString();
-                if(!editable.toString().equals("") && escaneo==true){
+                producto=editable.toString();
+                if(!editable.toString().equals("")){
+                    txtProdVi.setText(producto);
                     if (codeBar.equals("Zebra")) {
-                        buscarEnSql(Producto);
-                        txtProd.setText("");
+                        if(chbManual.isChecked()){//si esta en modo manual
+                            txtEscan.requestFocus();
+                            keyboard.showSoftInput(txtEscan, InputMethodManager.SHOW_IMPLICIT);
+                        }else{
+                            escanear(producto,0,false,1);
+                            txtProdR.setText("");
+                        }//else
                     }else{
                         for (int i = 0; i < editable.length(); i++) {
                             char ban;
                             ban = editable.charAt(i);
                             if (ban == '\n') {
-                                buscarEnSql(Producto);
-                                txtProd.setText("");
+                                if(chbManual.isChecked()){//si esta en modo manual
+                                    txtEscan.requestFocus();
+                                    keyboard.showSoftInput(txtEscan, InputMethodManager.SHOW_IMPLICIT);
+                                }else{
+                                    escanear(producto,0,false,1);
+                                    txtProdR.setText("");
+                                }//else
                                 break;
                             }//if
                         }//for
@@ -198,55 +241,34 @@ public class ActivityRecepConten extends AppCompatActivity {
                 }//if es diferente a vacio
             }//after
         });//txtProd textchange
-
-        btnBuscar.setOnClickListener(new View.OnClickListener() {
+        btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(listaTrasp.size()>0){//si tiene
-                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepConten.this);
-                    builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            Producto="";
-                            new AsyncRecepConsul().execute();
-                        }//onclick
-                    });//positive button
-                    builder.setNegativeButton("CANCELAR",null);
-                    builder.setCancelable(false);
-                    builder.setTitle("Aviso").setMessage("Se eliminaran los datos que esten almacenados en el teléfono \n¿Desea continuar?").create().show();
+                if(!txtEscan.getText().equals("") && !producto.equals("")){
+                    int c=Integer.parseInt(txtEscan.getText().toString());
+                    escanear(producto,c,true,0);
+                    keyboard.hideSoftInputFromWindow(txtEscan.getWindowToken(), 0);
+                    if(revisa=false){//cuando se realizo el cambio correctamente
+                        txtProdR.setText("");
+                        txtProdVi.setText("");
+                        txtProdR.requestFocus();
+                        producto="";
+                        posicion=-1;
+                        mostrarLista();
+                    }else{
+                        mostrarDatosProd();
+                    }//else
                 }else{
-                    Producto="";
-                    new AsyncRecepConsul().execute();
-                }
+                    Toast.makeText(ActivityRecepConten.this, "Campos vacíos", Toast.LENGTH_SHORT).show();
+                }//else
             }//onclick
-        });//btnGuardar setonclick
-
-        btnSincro.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                datPSinc=datPSincro();
-                if(listaTrasp.size()>0 && datPSinc>0){
-                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepConten.this);
-                    builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            new AsyncRecepMultiSuc().execute();
-                        }//onclick
-                    });//positive button
-                    builder.setNegativeButton("CANCELAR",null);
-                    builder.setCancelable(false);
-                    builder.setTitle("Confirmación").setMessage(datPSinc+" productos escaneados ¿Desea sincronizar?").create().show();
-                }else{
-                    Toast.makeText(ActivityRecepConten.this, "Sin datos para sincronizar", Toast.LENGTH_SHORT).show();
-                }
-            }//onclick
-        });//btnSincro setonclick
+        });//btnSave
 
         btnAdelante.setOnClickListener(new View.OnClickListener() {//boton adelante
             @Override
             public void onClick(View view) {
                 posicion++;
-                mostrarDetalleProd();
+                seleccionaProd();
             }//onclick
         });//btnadelante setonclicklistener
 
@@ -254,47 +276,226 @@ public class ActivityRecepConten extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 posicion--;
-                mostrarDetalleProd();
+                seleccionaProd();
             }//onclick
         });//btnatras setonclicklistener
-        consultaSql();*/
     }//onCreate
+    public void escanear(String producto,int cantidad,boolean sumarOno,int sum){
+        revisa=false;
+        if(!producto.equals("")){
+            boolean find=false;
+            escaneados=0;
+            for(int i=0;i<listaRecep.size();i++){
+                if(listaRecep.get(i).getProducto().equals(producto)){
+                    posicion=i;
+                    find=true;
+                    switch (sucursalSelec){
+                        case "Matriz":
+                            if(sumarOno==true){//determina si se modifica o se suma
+                                escaneados=cantidad;
+                            }else{
+                                escaneados=Integer.parseInt(listaRecep.get(i).getEscanMtrz())+sum;
+                            }//else
+                            if(escaneados<=repMtz){
+                                listaRecep.get(i).setEscanMtrz(escaneados+"");
+                            }else{
+                                revisa=true;
+                                Toast.makeText(this, "Excede cantidad a repartir", Toast.LENGTH_SHORT).show();
+                            }//else
+                            break;
+                        case "CDMX.":
+                            if(sumarOno==true){//determina si se modifica o se suma
+                                escaneados=cantidad;
+                            }else{
+                                escaneados=Integer.parseInt(listaRecep.get(i).getEscanCdmx())+sum;
+                            }//else
+                            if(escaneados<=repCdmx){
+                                listaRecep.get(i).setEscanCdmx(escaneados+"");
+                            }else{
+                                revisa=true;
+                                Toast.makeText(this, "Excede cantidad a repartir", Toast.LENGTH_SHORT).show();
+                            }//else
+                            break;
+                        case "Culiacan":
+                            if(sumarOno==true){//determina si se modifica o se suma
+                                escaneados=cantidad;
+                            }else{
+                                escaneados=Integer.parseInt(listaRecep.get(i).getEscanCul())+sum;
+                            }//else
+                            if(escaneados<=repCul){
+                                listaRecep.get(i).setEscanCul(escaneados+"");
+                            }else{
+                                revisa=true;
+                                Toast.makeText(this, "Excede cantidad a repartir", Toast.LENGTH_SHORT).show();
+                            }//else
+                            break;
+                        case "Monterrey":
+                            if(sumarOno==true){//determina si se modifica o se suma
+                                escaneados=cantidad;
+                            }else{
+                                escaneados=Integer.parseInt(listaRecep.get(i).getEscanMty())+sum;
+                            }//else
+                            if(escaneados<=repMty){
+                                listaRecep.get(i).setEscanMty(escaneados+"");
+                            }else{
+                                revisa=true;
+                                Toast.makeText(this, "Excede cantidad a repartir", Toast.LENGTH_SHORT).show();
+                            }//else
+                            break;
+                        default :break;
+                    }//switch
+
+                    break;
+                }//if
+            }//for
+            if(find==false){
+                posicion=-1;
+                Toast.makeText(this, "No existe producto", Toast.LENGTH_SHORT).show();
+            }//if
+        }//if
+    }//escanear
+
+    public void limiteBotDir(){
+        if(posicion==0){
+            btnAdelante.setEnabled(true);
+            btnAdelante.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.colorPrimary)));
+            btnAtras.setEnabled(false);
+            btnAtras.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.ColorGris)));
+
+        }else if(posicion+1==listaRecep.size()){
+            btnAtras.setEnabled(true);
+            btnAtras.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.colorPrimary)));
+            btnAdelante.setEnabled(false);
+            btnAdelante.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.ColorGris)));
+        }else{
+            btnAtras.setEnabled(true);
+            btnAtras.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.colorPrimary)));
+            btnAdelante.setEnabled(true);
+            btnAdelante.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.colorPrimary)));
+        }//else
+    }//cambiaProd
+
+    public void onClickSuc(View v){
+        if(!producto.equals("")){
+            sucursalSelec="";
+            switch(v.getId()){
+                case R.id.lyMatrz:
+                    sucursalSelec="Matriz";
+                    break;
+                case R.id.lyCdmx:
+                    sucursalSelec="CDMX.";
+                    break;
+                case R.id.lyCul:
+                    sucursalSelec="Culiacan";
+                    break;
+                case R.id.lyMty:
+                    sucursalSelec="Monterrey";
+                    break;
+            }//switch
+            seleccionaSuc();
+        }//si hay producto seleccionado
+    }//onClickSuc
+
+    public void seleccionaSuc(){
+        if(!producto.equals("")){
+            switch(sucursalSelec){
+                case "Matriz":
+                    escaneados=Integer.parseInt(listaRecep.get(posicion).getEscanMtrz());
+                    tvRepMatr.setBackgroundResource(R.color.ColorGris);
+                    tvRepCdmx.setBackgroundResource(0);
+                    tvRepCul.setBackgroundResource(0);
+                    tvRepMty.setBackgroundResource(0);
+                    break;
+                case "CDMX.":
+                    escaneados=Integer.parseInt(listaRecep.get(posicion).getEscanCdmx());
+                    tvRepCdmx.setBackgroundResource(R.color.ColorGris);
+                    tvRepMatr.setBackgroundResource(0);
+                    tvRepCul.setBackgroundResource(0);
+                    tvRepMty.setBackgroundResource(0);
+                    break;
+                case "Culiacan":
+                    escaneados=Integer.parseInt(listaRecep.get(posicion).getEscanCul());
+                    tvRepCul.setBackgroundResource(R.color.ColorGris);
+                    tvRepMatr.setBackgroundResource(0);
+                    tvRepCdmx.setBackgroundResource(0);
+                    tvRepMty.setBackgroundResource(0);
+                    break;
+                case "Monterrey":
+                    escaneados=Integer.parseInt(listaRecep.get(posicion).getEscanMty());
+                    tvRepMty.setBackgroundResource(R.color.ColorGris);
+                    tvRepMatr.setBackgroundResource(0);
+                    tvRepCdmx.setBackgroundResource(0);
+                    tvRepCul.setBackgroundResource(0);
+                    break;
+                default:
+                    escaneados=0;
+                    tvRepMatr.setBackgroundResource(0);
+                    tvRepCdmx.setBackgroundResource(0);
+                    tvRepCul.setBackgroundResource(0);
+                    tvRepMty.setBackgroundResource(0);
+                    break;
+            }//switch
+            txtSuc.setText(sucursalSelec);
+            txtEscan.setText(escaneados+"");
+            int totalEsc=Integer.parseInt(listaRecep.get(posicion).getEscanMtrz())+
+                    Integer.parseInt(listaRecep.get(posicion).getEscanCdmx())+
+                    Integer.parseInt(listaRecep.get(posicion).getEscanCul())+
+                    Integer.parseInt(listaRecep.get(posicion).getEscanMty());
+            txtRest.setText((Integer.parseInt(listaRecep.get(posicion).getCantidad())-totalEsc)+"");
+        }//si hay producto seleccionado
+        else{
+            limpiarCampos();
+        }//else
+    }//seleccionaSuc
 
     public void limpiarCampos(){
-        txtProdR.setText("");
+        txtProdVi.setText("");
         txtSuc.setText("");
-        txtFalt.setText("0");
-        txtEscan.setText("");
+        txtRest.setText("0");
+        txtEscan.setText("0");
         tvRepMatr.setText("0");
         tvRepCdmx.setText("0");
         tvRepCul.setText("0");
         tvRepMty.setText("0");
+        escaneados=0;
+        tvRepMatr.setBackgroundResource(0);
+        tvRepCdmx.setBackgroundResource(0);
+        tvRepCul.setBackgroundResource(0);
+        tvRepMty.setBackgroundResource(0);
         ivProdR.setImageResource(R.drawable.logokepler);
     }//limpiarCampos
 
     public void onClickListaR(View v){//cada vez que se seleccione un producto en la lista
         posicion = rvRecep.getChildPosition(rvRecep.findContainingItemView(v));
+        seleccionaProd();
+    }//onClickLista
+
+    public void seleccionaProd(){
+        //seleccionaSuc(null);
         producto=listaRecep.get(posicion).getProducto();
         adapter.index(posicion);
         adapter.notifyDataSetChanged();
         rvRecep.scrollToPosition(posicion);
-        producto=listaRecep.get(posicion).getProducto();
         new AsyncRecepXProd().execute();
-    }//onClickLista
+    }//seleccionaProd
 
     public void mostrarDatosProd(){
         repMtz=0;repCdmx=0;repCul=0;repMty=0;
-
-        txtProdR.setText(producto);
+        txtProdVi.setText(producto);
+        Picasso.with(getApplicationContext()).
+                load(urlImagenes+producto+extImg)
+                .error(R.drawable.aboutlogo)
+                .fit()
+                .centerInside()
+                .into(ivProdR);
         asignarReparticiones();
-        /*txtSuc.setText(listaSucRecep.);
-        txtFalt.setText("0");
-        txtEscan.setText("");
-        tvRepMatr.setText("0");
-        tvRepCdmx.setText("0");
-        tvRepCul.setText("0");
-        tvRepMty.setText("0");
-        ivProdR.setImageResource(R.drawable.logokepler);*/
+        limiteBotDir();
     }//mostrarDatosProd
 
     public float calculoDem(float demanda,String clasf){//
@@ -383,10 +584,10 @@ public class ActivityRecepConten extends AppCompatActivity {
             repMtz=existMtz-repCdmx-repCul-repMty;
         }//else
 
-        tvRepMatr.setText(repMtz+"");
-        tvRepCdmx.setText(repCdmx+"");
-        tvRepCul.setText(repCul+"");
-        tvRepMty.setText(repMty+"");
+        tvRepMatr.setText(Math.round(repMtz)+"");
+        tvRepCdmx.setText(Math.round(repCdmx)+"");
+        tvRepCul.setText(Math.round(repCul)+"");
+        tvRepMty.setText(Math.round(repMty)+"");
     }//calculosFinal
 
 
@@ -436,8 +637,16 @@ public class ActivityRecepConten extends AppCompatActivity {
         }//for
 
         calculosFinal(sumDemBal);
-
+        escanear(producto,0,false,0);
     }//asignarReparticiones
+
+    public void mostrarLista(){
+        adapter= new AdaptadorRecepConten(listaRecep);
+        rvRecep.setAdapter(adapter);
+        adapter.index(posicion);
+        adapter.notifyDataSetChanged();
+        rvRecep.scrollToPosition(posicion);
+    }//mostrar lista
 
 
 
@@ -469,7 +678,7 @@ public class ActivityRecepConten extends AppCompatActivity {
                     for(int i=0;i<jsonArray.length();i++){
                         JSONObject dato = jsonArray.getJSONObject(i);//Conjunto de datos
                         listaRecep.add(new RecepConten((i+1)+"",dato.getString("k_prod"),dato.getString("k_cant"),
-                                dato.getString("k_paletCaja"),dato.getString("k_prio")));
+                                dato.getString("k_paletCaja"),dato.getString("k_prio"),"0","0","0","0"));
                         mensaje="";
                     }//for
                 } catch (final JSONException e) {
@@ -477,7 +686,7 @@ public class ActivityRecepConten extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            mensaje="Error al traer datos";
+                            mensaje="Puede que el folio no exista";
                         }//run
                     });
                 }//catch JSON EXCEPTION
@@ -507,11 +716,11 @@ public class ActivityRecepConten extends AppCompatActivity {
                 dialog.show();
             }else{
                 posicion=-1;
-                adapter= new AdaptadorRecepConten(listaRecep);
-                rvRecep.setAdapter(adapter);
-                adapter.index(posicion);
-                adapter.notifyDataSetChanged();
-                rvRecep.scrollToPosition(posicion);
+                mostrarLista();
+                txtProdR.requestFocus();
+                txtProdR.setInputType(InputType.TYPE_NULL);
+                btnAtras.setEnabled(true);
+                btnAdelante.setEnabled(true);
             }//else
         }//onPost
     }//AsyncRecepCon
@@ -523,6 +732,7 @@ public class ActivityRecepConten extends AppCompatActivity {
             super.onPreExecute();
             mDialog.show();
             mensaje="";
+            sucursalSelec="";
             listaSucRecep.clear();
             limpiarCampos();
         }//onPreExecute
@@ -546,6 +756,20 @@ public class ActivityRecepConten extends AppCompatActivity {
                                 dato.getString("k_dem")));
                         mensaje="";
                     }//for
+                    switch (listaSucRecep.get(0).getSucursal()){
+                        case "01":
+                            sucursalSelec="Matriz";
+                            break;
+                        case "06":
+                            sucursalSelec="CDMX.";
+                            break;
+                        case "07":
+                            sucursalSelec="Culiacan";
+                            break;
+                        case "08":
+                            sucursalSelec="Monterrey";
+                            break;
+                    }
                 } catch (final JSONException e) {
                     //Log.e(TAG, "Error al convertir Json: " + e.getMessage());
                     runOnUiThread(new Runnable() {
@@ -571,7 +795,7 @@ public class ActivityRecepConten extends AppCompatActivity {
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
             mDialog.dismiss();
-            if (listaSucRecep.size()==0) {
+            if(listaSucRecep.size()==0) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepConten.this);
                 builder.setTitle("AVISO");
                 builder.setMessage(mensaje);
@@ -581,10 +805,8 @@ public class ActivityRecepConten extends AppCompatActivity {
                 dialog.show();limpiarCampos();
             }else{
                 mostrarDatosProd();
+                seleccionaSuc();
             }//else
         }//onPost
     }//AsyncRecepCon
-
-
-
 }//ActivityRecepConten

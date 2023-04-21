@@ -81,6 +81,7 @@ public class ActivityMenu extends AppCompatActivity {
                         .centerInside()
                         .into(imgVi);
                 lyAdicSPR.setVisibility(View.GONE);
+                ly2.setVisibility(View.VISIBLE);
                 break;
             case "sprautomotive.servehttp.com:9085":
                 Picasso.with(getApplicationContext()).
@@ -101,6 +102,7 @@ public class ActivityMenu extends AppCompatActivity {
                         .centerInside()
                         .into(imgVi);
                 lyAdicSPR.setVisibility(View.GONE);
+                ly2.setVisibility(View.VISIBLE);
                 break;
             case "guvi.ath.cx:9085":
 
@@ -111,6 +113,7 @@ public class ActivityMenu extends AppCompatActivity {
                         .centerInside()
                         .into(imgVi);
                 lyAdicSPR.setVisibility(View.GONE);
+                ly2.setVisibility(View.VISIBLE);
                 break;
             case "cedistabasco.ddns.net:9085":
 
@@ -121,6 +124,7 @@ public class ActivityMenu extends AppCompatActivity {
                         .centerInside()
                         .into(imgVi);
                 lyAdicSPR.setVisibility(View.GONE);
+                ly2.setVisibility(View.VISIBLE);
                 break;
             case "autodis.ath.cx:9085":
 
@@ -131,6 +135,7 @@ public class ActivityMenu extends AppCompatActivity {
                         .centerInside()
                         .into(imgVi);
                 lyAdicSPR.setVisibility(View.GONE);
+                ly2.setVisibility(View.VISIBLE);
                 break;
             case "sprautomotive.servehttp.com:9090":
                 Conten.setBackgroundColor(Color.rgb(4, 59, 114));
@@ -171,6 +176,7 @@ public class ActivityMenu extends AppCompatActivity {
                         .centerInside()
                         .into(imgVi);
                 lyAdicSPR.setVisibility(View.GONE);
+                ly2.setVisibility(View.VISIBLE);
                 break;
             default:
                 Picasso.with(getApplicationContext()).
@@ -180,6 +186,7 @@ public class ActivityMenu extends AppCompatActivity {
                         .centerInside()
                         .into(imgVi);
                 lyAdicSPR.setVisibility(View.GONE);
+                ly2.setVisibility(View.GONE);
                 break;
         }//switch
         editor.putString("urlImagenes",urlImagenes);

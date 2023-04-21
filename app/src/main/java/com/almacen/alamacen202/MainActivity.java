@@ -54,8 +54,10 @@ import dmax.dialog.SpotsDialog;
 public class MainActivity extends AppCompatActivity {
     private String user,name,lName,type,mail,codB,branch,msjToast="";
     private String res="";
+    int result1 = 0;
     private Button btn1;
     private EditText usu;
+    SoapObject response;
     private EditText clave;
     private String getUsuario = "", getPass = "", mensaje = "";
     private Spinner SERVER;
@@ -123,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
                                 msjToast="Iniciando Pruebas";break;
                         }//swicth
                         id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-                        new AsyncLogg().execute();
+                        new AsyncCallWS().execute();
                     }else {
                         AlertDialog.Builder alerta = new AlertDialog.Builder(MainActivity.this);
                         alerta.setMessage("Ingrese los datos Faltantes").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
@@ -244,7 +246,8 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }//trasactiv
 
-    private class AsyncLogg extends AsyncTask<Void, Boolean, Boolean> {
+
+    /*private class AsyncLogg extends AsyncTask<Void, Boolean, Boolean> {
         boolean term=false;
 
         @Override
@@ -290,30 +293,37 @@ public class MainActivity extends AppCompatActivity {
                 }//else
             }//else if
         }
-    }
+    }*/
 
-    /*private class AsyncCallWS extends AsyncTask<Void, Void, Void> {
+    private class AsyncCallWS extends AsyncTask<Void, Void, Void> {
 
         @Override
-        protected void onPreExecute() {mDialog.show();}
+        protected void onPreExecute() {
+            mDialog.show();
+
+        }
+
         @Override
         protected Void doInBackground(Void... params) {
-            //Conectar();
-            user="";name="";lName="";type="";mail="";codB="";branch="";
-            jSon();
+            Conectar();
             return null;
-        }//doInBacground
+        }
+
         @Override
         protected void onPostExecute(Void result) {
+
             if (result1 == 0) {
                 mDialog.dismiss();
                 Toast.makeText(MainActivity.this, mensaje, Toast.LENGTH_LONG).show();
+
             } else if (result1 == 1) {
-                if (type.equals("ALMACEN") || type.equals("SUPERVISOR") ) {
+                String tipo = type;
+                if (tipo.equals("ALMACEN") || tipo.equals("SUPERVISOR") ) {
                     mDialog.dismiss();
-                    //AsyncCallWS2 task2 = new AsyncCallWS2();
-                    //task2.execute();
+                    AsyncCallWS2 task2 = new AsyncCallWS2();
+                    task2.execute();
                     trasactiv();
+
                 } else {
                     AlertDialog.Builder alerta = new AlertDialog.Builder(MainActivity.this);
                     alerta.setMessage("ESTE USUARIO NO ES PARTE DEL ALMACEN").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
@@ -327,10 +337,12 @@ public class MainActivity extends AppCompatActivity {
                     AlertDialog titulo = alerta.create();
                     titulo.setTitle("USUARIO ERRONEO");
                     titulo.show();
-                }//else
-            }//else if
-        }//onPostExecute
-    }//asyncall
+                }
+            }
+
+        }
+
+    }
 
 
     private void Conectar() {
@@ -352,25 +364,33 @@ public class MainActivity extends AppCompatActivity {
             trasport.call(SOAP_ACTION, soapEnvelope);
             Vector response0 = (Vector) soapEnvelope.getResponse();
             result1 = Integer.parseInt(response0.get(0).toString());
+
             if (response0 == null) {
                 mensaje = "Null";
+
             } else {
+
                 if (result1 == 0) {
                     mensaje = "Contraseña y/o Usuario Inconrrecto";
                 } else if (result1 == 1) {
                     mensaje = "Correcto";
                     response = (SoapObject) soapEnvelope.bodyIn;
                     response = (SoapObject) response.getProperty("UserInfo");
-                    /*loginSave = new Login();
-                    loginSave.setUsers(response.getPropertyAsString("k_usr"));
-                    loginSave.setName(response.getPropertyAsString("k_name"));
-                    loginSave.setLastname(response.getPropertyAsString("k_lname"));
-                    loginSave.setType(response.getPropertyAsString("k_type"));
-                    loginSave.setBranch(response.getPropertyAsString("k_dscr"));
-                    loginSave.setEmail(response.getPropertyAsString("k_mail1"));
-                    loginSave.setCodeBranch(response.getPropertyAsString("k_codB"));
+
+                    user=response.getPropertyAsString("k_usr");
+                    name=response.getPropertyAsString("k_name");
+                    lName=response.getPropertyAsString("k_lname");
+                    type=response.getPropertyAsString("k_type");
+                    branch=response.getPropertyAsString("k_dscr");
+                    mail=response.getPropertyAsString("k_mail1");
+                    codB=response.getPropertyAsString("k_codB");
+                    mensaje="";
+
                 }
+
             }
+
+
         } catch (SoapFault soapFault) {
             mDialog.dismiss();
             mensaje = "Error:" + soapFault.getMessage();
@@ -388,5 +408,68 @@ public class MainActivity extends AppCompatActivity {
             mensaje = "Error:" + ex.getMessage();
         }
 
-    }*/
+    }
+
+    private class AsyncCallWS2 extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            conectar2();
+            return null;
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.P)
+        @Override
+        protected void onPostExecute(Void result) {
+
+
+        }
+
+
+    }
+
+    private void conectar2() {
+        String SOAP_ACTION = "LogAppUs";
+        String METHOD_NAME = "LogAppUs";
+        String NAMESPACE = "http://" + StrServer + "/WSk75Branch/";
+        String URL = "http://" + StrServer + "/WSk75Branch";
+
+
+        try {
+
+            SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
+            xmlLog soapEnvelope = new xmlLog(SoapEnvelope.VER11);
+            soapEnvelope.xmlLog(getUsuario, getPass, id, "LOG IN", "");
+            soapEnvelope.dotNet = true;
+            soapEnvelope.implicitTypes = true;
+            soapEnvelope.setOutputSoapObject(Request);
+            HttpTransportSE trasport = new HttpTransportSE(URL);
+            trasport.debug = true;
+            trasport.call(SOAP_ACTION, soapEnvelope);
+            SoapObject response0 = (SoapObject) soapEnvelope.bodyIn;
+
+
+        } catch (SoapFault soapFault) {
+            mDialog.dismiss();
+            mensaje = "Error:" + soapFault.getMessage();
+            soapFault.printStackTrace();
+        } catch (XmlPullParserException e) {
+            mDialog.dismiss();
+            mensaje = "Error:" + e.getMessage();
+            e.printStackTrace();
+        } catch (IOException e) {
+            mDialog.dismiss();
+            mensaje = "No se encontro servidor";
+            e.printStackTrace();
+        } catch (Exception ex) {
+            mDialog.dismiss();
+            mensaje = "Error:" + ex.getMessage();
+        }
+    }
+
 }
