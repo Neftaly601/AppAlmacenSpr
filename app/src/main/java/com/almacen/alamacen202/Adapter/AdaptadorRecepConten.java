@@ -41,7 +41,8 @@ public class AdaptadorRecepConten extends RecyclerView.Adapter<AdaptadorRecepCon
         holder.tvPr.setText(datos.get(position).getProducto());
         holder.tvC.setText(datos.get(position).getCantidad());
         holder.tvNu.setText(datos.get(position).getNum());
-        holder.tvPal.setText(datos.get(position).getPaletCaja());
+        holder.tvFol.setText(datos.get(position).getFolio());
+        holder.tvPal.setText(datos.get(position).getPalet());
 
         if(index==position){
             holder.lyRec.setBackgroundResource(R.color.ColorGris);
@@ -56,6 +57,11 @@ public class AdaptadorRecepConten extends RecyclerView.Adapter<AdaptadorRecepCon
             holder.tvPal.setTextColor(Color.RED);
         }
 
+        if(datos.get(position).getFolio().equals("")){
+            holder.tvFol.setVisibility(View.GONE);
+        }else{
+            holder.tvFol.setVisibility(View.VISIBLE);
+        }
 
     }//onBindViewHolder
 
@@ -74,7 +80,7 @@ public class AdaptadorRecepConten extends RecyclerView.Adapter<AdaptadorRecepCon
     }
 
     public static class ViewHolderRecepConten extends RecyclerView.ViewHolder {
-        TextView tvNu,tvPr, tvC,tvPal;
+        TextView tvNu,tvPr, tvC,tvPal,tvFol;
         LinearLayout lyRec;
         public ViewHolderRecepConten (View itemView) {
             super(itemView);
@@ -83,6 +89,7 @@ public class AdaptadorRecepConten extends RecyclerView.Adapter<AdaptadorRecepCon
             tvC =  itemView.findViewById(R.id.tvC);
             tvPal = itemView.findViewById(R.id.tvPal);
             lyRec  = itemView.findViewById(R.id.lyRec);
+            tvFol = itemView.findViewById(R.id.tvFol);
         }//constructor
     }//ViewHolderRecepConten class
 }//principal

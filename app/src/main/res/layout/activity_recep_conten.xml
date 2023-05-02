@@ -1,12 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:fitsSystemWindows="true"
     tools:context=".Activity.ActivityRecepConten">
     <include layout="@layout/action_bar_toolbar"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="LISTA FOLIOS"
+            android:textSize="18dp"
+            android:textColor="@color/AzulBack"
+            android:textStyle="bold"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:orientation="horizontal">
+
+            <ListView
+                android:id="@+id/lvFolios"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/ColorWhite"
+                android:choiceMode="singleChoice"
+                android:listSelector="@drawable/selector_backgr" />
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBuscaFolio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:layout_marginLeft="5dp"
+                android:layout_gravity="center"
+                android:background="@drawable/roundbutton"
+                android:text="Buscar Folios"
+                android:textColor="@color/ColorWhite"
+                android:textSize="10dp"
+                android:backgroundTint="@color/Amarillo"/>
+        </LinearLayout>
+    </LinearLayout>
+
+
 
     <ScrollView
         android:layout_width="match_parent"
@@ -20,49 +67,33 @@
             android:layout_marginRight="10dp"
             android:layout_marginTop="10dp">
 
+
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="@string/folio"
-                    app:hintTextColor="@color/AzulBack"
-                    android:maxLines="1"
-                    app:boxBackgroundMode="outline"
-                    app:boxCornerRadiusTopEnd="10dp"
-                    app:boxCornerRadiusTopStart="10dp"
-                    app:startIconTint="@null">
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/txtBfolio"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:maxLength="15"
-                        android:maxLines="1"
-                        android:textSize="15dp"
-                        android:textColor="@color/AzulBack"
-                        android:inputType="text"
-                        android:imeOptions="actionDone"
-                        tools:ignore="TextContrastCheck"
-                        android:layout_marginRight="5dp"/>
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnBuscaFolio"
+                android:orientation="horizontal"
+                android:layout_marginTop="5dp"
+                android:gravity="center_vertical">
+                <RadioButton
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:layout_gravity="center"
-                    android:background="@drawable/roundbutton"
-                    android:text="Buscar Folio"
-                    android:textColor="@color/ColorWhite"
+                    android:buttonTint="@color/AzulBack"
                     android:textSize="10dp"
-                    android:backgroundTint="@color/Amarillo"/>
+                    android:hint="Agr. por Prod."
+                    android:textColorHint="@color/AzulBack"
+                    android:checked="true"/>
+                <RadioButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:buttonTint="@color/AzulBack"
+                    android:textSize="10dp"
+                    android:hint="Agr. por Palet."
+                    android:textColorHint="@color/AzulBack"/>
+
+
             </LinearLayout>
             <View
                 android:layout_width="match_parent"
@@ -503,6 +534,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvRecep"
                     android:layout_width="match_parent"
+                    android:layout_weight="2"
                     android:layout_height="wrap_content"
                     android:background="@color/ColorGris"/>
 
@@ -510,4 +542,4 @@
 
         </LinearLayout>
     </ScrollView>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

@@ -145,7 +145,7 @@ public class ActivityMenu extends AppCompatActivity {
                         .fit()
                         .centerInside()
                         .into(imgVi);
-                urlImagenes=getString(R.string.urlImagenesSPR)+"rodatech/";
+                urlImagenes=getString(R.string.urlImagenesSPR);
                 extIm=getString(R.string.ext);
                 break;
             case "sprautomotive.servehttp.com:9095":
@@ -155,7 +155,7 @@ public class ActivityMenu extends AppCompatActivity {
                         .fit()
                         .centerInside()
                         .into(imgVi);
-                urlImagenes=getString(R.string.urlImagenesSPR)+"partech/";
+                urlImagenes=getString(R.string.urlImagenesSPR);
                 extIm=getString(R.string.ext);
                 break;
             case "sprautomotive.servehttp.com:9080":
@@ -165,7 +165,7 @@ public class ActivityMenu extends AppCompatActivity {
                         .fit()
                         .centerInside()
                         .into(imgVi);
-                urlImagenes=getString(R.string.urlImagenesSPR)+"shark/";
+                urlImagenes=getString(R.string.urlImagenesSPR);
                 extIm=getString(R.string.ext);
                 break;
             case "vazlocolombia.dyndns.org:9085":
@@ -315,6 +315,7 @@ public class ActivityMenu extends AppCompatActivity {
                         editor.clear();
                         editor.commit();
                         eliminarSqlySP();
+                        getApplicationContext().deleteDatabase("bd_INVENTARIO");
                         Intent cerrar = new Intent(ActivityMenu.this, MainActivity.class);
                         startActivity(cerrar);
                         System.exit(0);

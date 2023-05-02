@@ -4,25 +4,27 @@ public class RecepConten {
     private String num;
     private String producto;
     private String cantidad;
-    private String paletCaja;
     private String prioridad;
     private String escanMtrz;
     private String escanCdmx;
     private String escanCul;
     private String escanMty;
+    private String folio;
+    private String palet;
 
-    public RecepConten(String  num, String producto, String cantidad, String paletCaja,String prioridad,
-                       String escanMtrz,String escanCdmx,String escanCul,String escanMty) {
+    public RecepConten(String num, String producto, String cantidad, String prioridad,
+                       String escanMtrz, String escanCdmx, String escanCul, String escanMty, String folio,String palet) {
         this.num = num;
         this.producto = producto;
         this.cantidad = cantidad;
-        this.paletCaja = paletCaja;
         this.prioridad = prioridad;
         this.escanMtrz = escanMtrz;
         this.escanCdmx = escanCdmx;
         this.escanCul = escanCul;
         this.escanMty = escanMty;
-    }//constructor
+        this.folio = folio;
+        this.palet=palet;
+    }
 
     public String getNum() {
         return num;
@@ -46,14 +48,6 @@ public class RecepConten {
 
     public void setCantidad(String cantidad) {
         this.cantidad = cantidad;
-    }
-
-    public String getPaletCaja() {
-        return paletCaja;
-    }
-
-    public void setPaletCaja(String paletCaja) {
-        this.paletCaja = paletCaja;
     }
 
     public String getPrioridad() {
@@ -94,5 +88,21 @@ public class RecepConten {
 
     public void setEscanMty(String escanMty) {
         this.escanMty = escanMty;
+    }
+
+    public String getFolio() {
+        return folio;
+    }
+
+    public void setFolio(String folio) {
+        this.folio = folio;
+    }
+
+    public String getPalet() {
+        return palet;
+    }
+
+    public void setPalet(String palet) {
+        this.palet = palet;
     }
 }//clase

@@ -8,7 +8,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-
+        <TextView
+            android:id="@+id/tvFol"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Folio"
+            android:textSize="10dp"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:padding="5dp"
+            android:textColor="@color/ColorFinalizado"/>
         <LinearLayout
             android:id="@+id/lyRec"
             android:layout_width="match_parent"

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Almacen Kepler</string>
     <string name="buscar">Buscar</string>
-    <string name="version_1_6">Version 1.9.5</string>
+    <string name="version_1_6">Version 1.9.6</string>
     <string name="usuario">Usuario</string>
     <string name="escanear">Escanear</string>
     <string name="comprometidas">COMPROMETIDAS</string>
@@ -35,7 +35,8 @@
     <string name="terminar">Terminar</string>
     <!-- https://vazlo.com.mx/assets/img/productos/chica/jpg/-->
     <string name="urlImagenesGeneral">https://www.jacve.mx/es-mx/img/products/xl/</string><!--URL genereal imagenes -->
-    <string name="urlImagenesSPR">https://sprautomotive.com/es_MX/res/img/products/md/</string><!--URL SPR imagenes -->
+    <string name="urlImagenesSPR">https://jacve.mx/es-mx/img/products/md/</string>
+    <!--<string name="urlImagenesSPR">https://sprautomotive.com/es_MX/res/img/products/md/</string>--><!--URL SPR imagenes -->
     <string name="ext">/4.webp</string>
     <string name="rodatech">rodatech/</string>
     <string name="partech">partech/</string>
@@ -44,4 +45,5 @@
     <!-- NOMBRES WEB SERVICES -->
     <string name="resRecepConten">resRecepConten</string>
     <string name="resRecepXProd">resRecepXProd</string>
+    <string name="resRecepFolios">resRecepFolios</string>
 </resources>
