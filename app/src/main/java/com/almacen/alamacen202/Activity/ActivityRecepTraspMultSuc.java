@@ -73,7 +73,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
     private EditText txtProd,txtCantidad,txtCantSurt;
     private ImageView ivProd;
     private TextView tvProd;
-    private Button btnBuscar,btnAtras,btnAdelante,btnSincro;
+    private Button btnBuscar,btnAtras,btnAdelante,btnSincro,btnCorr;
     private RecyclerView rvTraspasos;
     private AdaptadorTraspasos adapter;
     private AlertDialog mDialog;
@@ -127,6 +127,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         btnAdelante =findViewById(R.id.btnAdelante);
         btnSincro   = findViewById(R.id.btnSincro);
         ivProd      = findViewById(R.id.ivProd);
+        btnCorr     = findViewById(R.id.btnCorr);
 
         conn = new ConexionSQLiteHelper(ActivityRecepTraspMultSuc.this, "bd_INVENTARIO", null, 1);
         db = conn.getReadableDatabase();//apertura de la base de datos interna
@@ -223,6 +224,29 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                 mostrarDetalleProd();
             }//onclick
         });//btnatras setonclicklistener
+
+        btnCorr.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
+                builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        int cantAct=Integer.parseInt(listaTrasp.get(posicion).getCantSurt());
+                        if(cantAct==0){
+                            Toast.makeText(ActivityRecepTraspMultSuc.this, "Escaneados en 0, no se puede corregir", Toast.LENGTH_SHORT).show();
+                        }else{
+                            actualizarSql(Producto,(cantAct-1)+"");
+                            consultaSql();
+                        }
+                    }
+                });
+                builder.setCancelable(false);
+                builder.setTitle("AVISO").setMessage("Se corregirá "+Producto+" con una pieza de más").create().show();
+
+            }//onclick
+        });//btnCorr
+
         consultaSql();
     }//onCreate
 
@@ -247,7 +271,6 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-
         if (networkInfo != null && networkInfo.isConnected()) {//si hay conexion a internet
             return true;
         } else {
@@ -256,6 +279,9 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
     }//FirtMet saber si hay conexion a internet
 
     public void cambiaProd(){
+        btnCorr.setEnabled(true);
+        btnCorr.setBackgroundTintList(ColorStateList.
+                valueOf(getResources().getColor(R.color.ColorFinalizado)));
         if(posicion==0){
             btnAdelante.setEnabled(true);
             btnAdelante.setBackgroundTintList(ColorStateList.

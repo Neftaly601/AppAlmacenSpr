@@ -69,7 +69,7 @@
 
 
 
-            <LinearLayout
+            <RadioGroup
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -94,7 +94,7 @@
                     android:textColorHint="@color/AzulBack"/>
 
 
-            </LinearLayout>
+            </RadioGroup>
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
@@ -516,6 +516,7 @@
                         android:textSize="10dp"
                         android:textColor="@color/ColorWhite"
                         android:text="CANT."/>
+
                     <View
                         android:layout_width="2dp"
                         android:layout_height="match_parent"/>
