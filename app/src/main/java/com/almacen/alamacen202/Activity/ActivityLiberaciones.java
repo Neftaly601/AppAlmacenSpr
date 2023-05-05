@@ -1125,6 +1125,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
 
                 Cliente = listaProduAduana.get(0).getCliente();
                 Folio = listaProduAduana.get(0).getFolio();
+                Nombre = listaProduAduana.get(0).getNombre();
                 viaEmbarque = txtVia.getText().toString();
                 imprimir = new BluetoothPrint(context, getResources());
 
@@ -1226,6 +1227,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                 break;
             case "cecra.ath.cx:9085":
                 Cliente = listaProduAduana.get(0).getCliente();
+                Nombre = listaProduAduana.get(0).getNombre();
                 Folio = listaProduAduana.get(0).getFolio();
                 viaEmbarque = txtVia.getText().toString();
                 imprimir = new BluetoothPrint(context, getResources());
@@ -1330,6 +1332,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
 
                 Cliente = listaProduAduana.get(0).getCliente();
                 Folio = listaProduAduana.get(0).getFolio();
+                Nombre = listaProduAduana.get(0).getNombre();
                 viaEmbarque = txtVia.getText().toString();
                 imprimir = new BluetoothPrint(context, getResources());
 
@@ -1433,6 +1436,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                 Cliente = listaProduAduana.get(0).getCliente();
                 Folio = listaProduAduana.get(0).getFolio();
                 viaEmbarque = txtVia.getText().toString();
+                Nombre = listaProduAduana.get(0).getNombre();
                 imprimir = new BluetoothPrint(context, getResources());
 
 
@@ -1535,6 +1539,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
             case "autodis.ath.cx:9085":
                 Cliente = listaProduAduana.get(0).getCliente();
                 Folio = listaProduAduana.get(0).getFolio();
+                Nombre = listaProduAduana.get(0).getNombre();
                 viaEmbarque = txtVia.getText().toString();
                 imprimir = new BluetoothPrint(context, getResources());
 
@@ -1639,6 +1644,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
 
                 Cliente = listaProduAduana.get(0).getCliente();
                 Folio = listaProduAduana.get(0).getFolio();
+                Nombre = listaProduAduana.get(0).getNombre();
                 viaEmbarque = txtVia.getText().toString();
                 imprimir = new BluetoothPrint(context, getResources());
 
@@ -1741,7 +1747,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                 break;
             case "sprautomotive.servehttp.com:9095":
 
-
+                Nombre = listaProduAduana.get(0).getNombre();
                 Cliente = listaProduAduana.get(0).getCliente();
                 Folio = listaProduAduana.get(0).getFolio();
                 viaEmbarque = txtVia.getText().toString();
@@ -1846,6 +1852,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
             case "sprautomotive.servehttp.com:9080":
                 Cliente = listaProduAduana.get(0).getCliente();
                 Folio = listaProduAduana.get(0).getFolio();
+                Nombre = listaProduAduana.get(0).getNombre();
                 viaEmbarque = txtVia.getText().toString();
                 imprimir = new BluetoothPrint(context, getResources());
 
@@ -1949,6 +1956,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
 
                 Cliente = listaProduAduana.get(0).getCliente();
                 Folio = listaProduAduana.get(0).getFolio();
+                Nombre = listaProduAduana.get(0).getNombre();
                 viaEmbarque = txtVia.getText().toString();
                 imprimir = new BluetoothPrint(context, getResources());
 
@@ -2052,6 +2060,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
             default:
                 Cliente = listaProduAduana.get(0).getCliente();
                 Folio = listaProduAduana.get(0).getFolio();
+                Nombre = listaProduAduana.get(0).getNombre();
                 viaEmbarque = txtVia.getText().toString();
                 imprimir = new BluetoothPrint(context, getResources());
 
