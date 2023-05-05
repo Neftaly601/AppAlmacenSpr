@@ -69,32 +69,34 @@
 
 
 
-            <RadioGroup
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginTop="5dp"
                 android:gravity="center_vertical">
-                <RadioButton
+                <CheckBox
+                    android:id="@+id/chBxProd"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:buttonTint="@color/AzulBack"
+                    android:buttonTint="@color/colorPrimary"
                     android:textSize="10dp"
                     android:hint="Agr. por Prod."
                     android:textColorHint="@color/AzulBack"
                     android:checked="true"/>
-                <RadioButton
+                <CheckBox
+                    android:id="@+id/chBpalet"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:buttonTint="@color/AzulBack"
+                    android:buttonTint="@color/colorPrimary"
                     android:textSize="10dp"
                     android:hint="Agr. por Palet."
                     android:textColorHint="@color/AzulBack"/>
 
 
-            </RadioGroup>
+            </LinearLayout>
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
@@ -102,13 +104,36 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"/>
 
-            <com.google.android.material.checkbox.MaterialCheckBox
-                android:id="@+id/chbManual"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/modo_manual"
-                android:textSize="12dp"
-                android:buttonTint="@color/AzulBack"/>
+                android:orientation="horizontal">
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/chbManual"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/modo_manual"
+                    android:textSize="12dp"
+                    android:buttonTint="@color/AzulBack"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAct"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:background="@drawable/roundbutton"
+                    android:backgroundTint="@color/colorPrimary"
+                    android:enabled="false"
+                    android:maxLines="1"
+                    android:text="Actualizar lista"
+                    android:textAlignment="textStart"
+                    android:textColor="@color/cardview_light_background"
+                    android:textSize="8dp"
+                    app:icon="@drawable/icon_actualizar"
+                    app:iconSize="12dp"
+                    app:iconGravity="start"
+                    app:iconTint="@color/ColorWhite" />
+            </LinearLayout>
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/txtProdR"

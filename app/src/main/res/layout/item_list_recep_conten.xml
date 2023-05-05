@@ -5,9 +5,11 @@
     android:orientation="vertical"
     android:background="@color/ColorWhite">
     <LinearLayout
+        android:id="@+id/lyRec"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:onClick="onClickListaR">
         <TextView
             android:id="@+id/tvFol"
             android:layout_width="match_parent"
@@ -19,11 +21,9 @@
             android:padding="5dp"
             android:textColor="@color/ColorFinalizado"/>
         <LinearLayout
-            android:id="@+id/lyRec"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:onClick="onClickListaR">
+            android:orientation="horizontal">
             <TextView
                 android:id="@+id/tvNu"
                 android:layout_width="40dp"

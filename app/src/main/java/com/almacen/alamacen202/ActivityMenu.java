@@ -94,7 +94,6 @@ public class ActivityMenu extends AppCompatActivity {
                 ly2.setVisibility(View.VISIBLE);
                 break;
             case "cecra.ath.cx:9085":
-
                 Picasso.with(getApplicationContext()).
                         load(R.drawable.cecra)
                         .error(R.drawable.logokepler)
@@ -105,7 +104,6 @@ public class ActivityMenu extends AppCompatActivity {
                 ly2.setVisibility(View.VISIBLE);
                 break;
             case "guvi.ath.cx:9085":
-
                 Picasso.with(getApplicationContext()).
                         load(R.drawable.guvi)
                         .error(R.drawable.logokepler)
@@ -116,7 +114,6 @@ public class ActivityMenu extends AppCompatActivity {
                 ly2.setVisibility(View.VISIBLE);
                 break;
             case "cedistabasco.ddns.net:9085":
-
                 Picasso.with(getApplicationContext()).
                         load(R.drawable.pressa)
                         .error(R.drawable.logokepler)
@@ -127,7 +124,6 @@ public class ActivityMenu extends AppCompatActivity {
                 ly2.setVisibility(View.VISIBLE);
                 break;
             case "autodis.ath.cx:9085":
-
                 Picasso.with(getApplicationContext()).
                         load(R.drawable.autodis)
                         .error(R.drawable.logokepler)
