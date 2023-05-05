@@ -1012,11 +1012,13 @@ public class ActivityLiberaciones extends AppCompatActivity {
             }
         }, 5000);
 
+
         switch (StrServer) {
             case "jacve.dyndns.org:9085":
 
 
                 String Cliente = listaProduAduana.get(0).getCliente();
+                String Nombre = listaProduAduana.get(0).getNombre();
                 Folio = listaProduAduana.get(0).getFolio();
                 String viaEmbarque = txtVia.getText().toString();
                 BluetoothPrint imprimir = new BluetoothPrint(context, getResources());
@@ -1042,7 +1044,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                     imprimir.FindBluetoothDevice(impresora);
                     imprimir.openBluetoothPrinter();
                     if (imprimir.checkConnection() == true) {
-                        imprimir.printProductos("JACVE", Cliente, Folio, viaEmbarque, listaProduAduana, R.drawable.jacveprint);
+                        imprimir.printProductos("JACVE", Cliente,Nombre, Folio, viaEmbarque, listaProduAduana, R.drawable.jacveprint);
                         imprimir.disconnectBT();
                     } else {
                         AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
@@ -1079,7 +1081,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                                 imprimir.FindBluetoothDevice(opciones[which]);
                                 imprimir.openBluetoothPrinter();
                                 if (imprimir.checkConnection() == true) {
-                                    imprimir.printProductos("JACVE", Cliente, Folio, viaEmbarque, listaProduAduana, R.drawable.jacveprint);
+                                    imprimir.printProductos("JACVE", Cliente,Nombre, Folio, viaEmbarque, listaProduAduana, R.drawable.jacveprint);
                                     imprimir.disconnectBT();
                                 } else {
                                     AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
@@ -1146,7 +1148,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                     imprimir.FindBluetoothDevice(impresora);
                     imprimir.openBluetoothPrinter();
                     if (imprimir.checkConnection() == true) {
-                        imprimir.printProductos("VIPLA", Cliente, Folio, viaEmbarque, listaProduAduana, R.drawable.viplaprint);
+                        imprimir.printProductos("VIPLA", Cliente,Nombre, Folio, viaEmbarque, listaProduAduana, R.drawable.viplaprint);
                         imprimir.disconnectBT();
                     } else {
                         AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
@@ -1183,7 +1185,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                                 imprimir.FindBluetoothDevice(opciones[which]);
                                 imprimir.openBluetoothPrinter();
                                 if (imprimir.checkConnection() == true) {
-                                    imprimir.printProductos("VIPLA", Cliente, Folio, viaEmbarque, listaProduAduana, R.drawable.viplaprint);
+                                    imprimir.printProductos("VIPLA", Cliente,Nombre, Folio, viaEmbarque, listaProduAduana, R.drawable.viplaprint);
                                     imprimir.disconnectBT();
                                 } else {
                                     AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
@@ -1248,7 +1250,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                     imprimir.FindBluetoothDevice(impresora);
                     imprimir.openBluetoothPrinter();
                     if (imprimir.checkConnection() == true) {
-                        imprimir.printProductos("CECRA", Cliente, Folio, viaEmbarque, listaProduAduana, R.drawable.cecraprint);
+                        imprimir.printProductos("CECRA", Cliente,Nombre, Folio, viaEmbarque, listaProduAduana, R.drawable.cecraprint);
                         imprimir.disconnectBT();
                     } else {
                         AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
@@ -1285,7 +1287,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                                 imprimir.FindBluetoothDevice(opciones[which]);
                                 imprimir.openBluetoothPrinter();
                                 if (imprimir.checkConnection() == true) {
-                                    imprimir.printProductos("CECRA", Cliente, Folio, viaEmbarque, listaProduAduana, R.drawable.cecra);
+                                    imprimir.printProductos("CECRA", Cliente,Nombre, Folio, viaEmbarque, listaProduAduana, R.drawable.cecra);
                                     imprimir.disconnectBT();
                                 } else {
                                     AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
@@ -1351,7 +1353,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                     imprimir.FindBluetoothDevice(impresora);
                     imprimir.openBluetoothPrinter();
                     if (imprimir.checkConnection() == true) {
-                        imprimir.printProductos("GUVI", Cliente, Folio, viaEmbarque, listaProduAduana, R.drawable.guviprint);
+                        imprimir.printProductos("GUVI", Cliente,Nombre, Folio, viaEmbarque, listaProduAduana, R.drawable.guviprint);
                         imprimir.disconnectBT();
                     } else {
                         AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
@@ -1388,7 +1390,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                                 imprimir.FindBluetoothDevice(opciones[which]);
                                 imprimir.openBluetoothPrinter();
                                 if (imprimir.checkConnection() == true) {
-                                    imprimir.printProductos("GUVI", Cliente, Folio, viaEmbarque, listaProduAduana, R.drawable.guviprint);
+                                    imprimir.printProductos("GUVI", Cliente,Nombre, Folio, viaEmbarque, listaProduAduana, R.drawable.guviprint);
                                     imprimir.disconnectBT();
                                 } else {
                                     AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
@@ -1453,7 +1455,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                     imprimir.FindBluetoothDevice(impresora);
                     imprimir.openBluetoothPrinter();
                     if (imprimir.checkConnection() == true) {
-                        imprimir.printProductos("PRESSA", Cliente, Folio, viaEmbarque, listaProduAduana, R.drawable.pressaprint);
+                        imprimir.printProductos("PRESSA", Cliente,Nombre, Folio, viaEmbarque, listaProduAduana, R.drawable.pressaprint);
                         imprimir.disconnectBT();
                     } else {
                         AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
@@ -1490,7 +1492,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                                 imprimir.FindBluetoothDevice(opciones[which]);
                                 imprimir.openBluetoothPrinter();
                                 if (imprimir.checkConnection() == true) {
-                                    imprimir.printProductos("PRESSA", Cliente, Folio, viaEmbarque, listaProduAduana, R.drawable.pressaprint);
+                                    imprimir.printProductos("PRESSA", Cliente,Nombre, Folio, viaEmbarque, listaProduAduana, R.drawable.pressaprint);
                                     imprimir.disconnectBT();
                                 } else {
                                     AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
@@ -1556,7 +1558,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                     imprimir.FindBluetoothDevice(impresora);
                     imprimir.openBluetoothPrinter();
                     if (imprimir.checkConnection() == true) {
-                        imprimir.printProductos("AUTODIS", Cliente, Folio, viaEmbarque, listaProduAduana, R.drawable.autodisprint);
+                        imprimir.printProductos("AUTODIS", Cliente,Nombre, Folio, viaEmbarque, listaProduAduana, R.drawable.autodisprint);
                         imprimir.disconnectBT();
                     } else {
                         AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
@@ -1593,7 +1595,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                                 imprimir.FindBluetoothDevice(opciones[which]);
                                 imprimir.openBluetoothPrinter();
                                 if (imprimir.checkConnection() == true) {
-                                    imprimir.printProductos("AUTODIS", Cliente, Folio, viaEmbarque, listaProduAduana, R.drawable.autodisprint);
+                                    imprimir.printProductos("AUTODIS", Cliente,Nombre, Folio, viaEmbarque, listaProduAduana, R.drawable.autodisprint);
                                     imprimir.disconnectBT();
                                 } else {
                                     AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
@@ -1660,7 +1662,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                     imprimir.FindBluetoothDevice(impresora);
                     imprimir.openBluetoothPrinter();
                     if (imprimir.checkConnection() == true) {
-                        imprimir.printProductos("RODATECH", Cliente, Folio, viaEmbarque, listaProduAduana, R.drawable.rodaprint);
+                        imprimir.printProductos("RODATECH", Cliente,Nombre, Folio, viaEmbarque, listaProduAduana, R.drawable.rodaprint);
                         imprimir.disconnectBT();
                     } else {
                         AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
@@ -1697,7 +1699,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                                 imprimir.FindBluetoothDevice(opciones[which]);
                                 imprimir.openBluetoothPrinter();
                                 if (imprimir.checkConnection() == true) {
-                                    imprimir.printProductos("RODATECH", Cliente, Folio, viaEmbarque, listaProduAduana, R.drawable.rodaprint);
+                                    imprimir.printProductos("RODATECH", Cliente,Nombre, Folio, viaEmbarque, listaProduAduana, R.drawable.rodaprint);
                                     imprimir.disconnectBT();
                                 } else {
                                     AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
@@ -1765,7 +1767,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                     imprimir.FindBluetoothDevice(impresora);
                     imprimir.openBluetoothPrinter();
                     if (imprimir.checkConnection() == true) {
-                        imprimir.printProductos("PARTECH", Cliente, Folio, viaEmbarque, listaProduAduana, R.drawable.partechprint);
+                        imprimir.printProductos("PARTECH", Cliente,Nombre, Folio, viaEmbarque, listaProduAduana, R.drawable.partechprint);
                         imprimir.disconnectBT();
                     } else {
                         AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
@@ -1802,7 +1804,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                                 imprimir.FindBluetoothDevice(opciones[which]);
                                 imprimir.openBluetoothPrinter();
                                 if (imprimir.checkConnection() == true) {
-                                    imprimir.printProductos("PARTECH", Cliente, Folio, viaEmbarque, listaProduAduana, R.drawable.partechprint);
+                                    imprimir.printProductos("PARTECH", Cliente,Nombre, Folio, viaEmbarque, listaProduAduana, R.drawable.partechprint);
                                     imprimir.disconnectBT();
                                 } else {
                                     AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
@@ -1867,7 +1869,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                     imprimir.FindBluetoothDevice(impresora);
                     imprimir.openBluetoothPrinter();
                     if (imprimir.checkConnection() == true) {
-                        imprimir.printProductos("SHARK", Cliente, Folio, viaEmbarque, listaProduAduana, R.drawable.sharkprint);
+                        imprimir.printProductos("SHARK", Cliente,Nombre, Folio, viaEmbarque, listaProduAduana, R.drawable.sharkprint);
                         imprimir.disconnectBT();
                     } else {
                         AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
@@ -1904,7 +1906,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                                 imprimir.FindBluetoothDevice(opciones[which]);
                                 imprimir.openBluetoothPrinter();
                                 if (imprimir.checkConnection() == true) {
-                                    imprimir.printProductos("SHARK", Cliente, Folio, viaEmbarque, listaProduAduana, R.drawable.sharkprint);
+                                    imprimir.printProductos("SHARK", Cliente,Nombre, Folio, viaEmbarque, listaProduAduana, R.drawable.sharkprint);
                                     imprimir.disconnectBT();
                                 } else {
                                     AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
@@ -1970,7 +1972,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                     imprimir.FindBluetoothDevice(impresora);
                     imprimir.openBluetoothPrinter();
                     if (imprimir.checkConnection() == true) {
-                        imprimir.printProductos("VAZLO COLOMBIA", Cliente, Folio, viaEmbarque, listaProduAduana, R.drawable.bhpprint);
+                        imprimir.printProductos("VAZLO COLOMBIA", Cliente,Nombre, Folio, viaEmbarque, listaProduAduana, R.drawable.bhpprint);
                         imprimir.disconnectBT();
                     } else {
                         AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
@@ -2007,7 +2009,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                                 imprimir.FindBluetoothDevice(opciones[which]);
                                 imprimir.openBluetoothPrinter();
                                 if (imprimir.checkConnection() == true) {
-                                    imprimir.printProductos("VAZLO COLOMBIA", Cliente, Folio, viaEmbarque, listaProduAduana, R.drawable.bhpprint);
+                                    imprimir.printProductos("VAZLO COLOMBIA", Cliente,Nombre, Folio, viaEmbarque, listaProduAduana, R.drawable.bhpprint);
                                     imprimir.disconnectBT();
                                 } else {
                                     AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
@@ -2073,7 +2075,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                     imprimir.FindBluetoothDevice(impresora);
                     imprimir.openBluetoothPrinter();
                     if (imprimir.checkConnection() == true) {
-                        imprimir.printProductos("PRUEBAS", Cliente, Folio, viaEmbarque, listaProduAduana, R.drawable.aboutlogo);
+                        imprimir.printProductos("PRUEBAS", Cliente,Nombre, Folio, viaEmbarque, listaProduAduana, R.drawable.aboutlogo);
                         imprimir.disconnectBT();
                     } else {
                         AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
@@ -2110,7 +2112,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                                 imprimir.FindBluetoothDevice(opciones[which]);
                                 imprimir.openBluetoothPrinter();
                                 if (imprimir.checkConnection() == true) {
-                                    imprimir.printProductos("PRUEBAS", Cliente, Folio, viaEmbarque, listaProduAduana, R.drawable.aboutlogo);
+                                    imprimir.printProductos("PRUEBAS", Cliente,Nombre, Folio, viaEmbarque, listaProduAduana, R.drawable.aboutlogo);
                                     imprimir.disconnectBT();
                                 } else {
                                     AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
@@ -2151,6 +2153,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
 
                 break;
         }
+
 
     }
 

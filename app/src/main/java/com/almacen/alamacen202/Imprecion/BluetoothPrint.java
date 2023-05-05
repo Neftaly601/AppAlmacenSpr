@@ -198,7 +198,7 @@ public class BluetoothPrint extends AppCompatActivity {
     }
 
     // Printing Text to Bluetooth Printer //
-    public void printProductos(String Empresa, String Cliente, String Folio, String viaEmbarque, ArrayList<ListProAduSandG> listaProduAduana ,int imagen) {
+    public void printProductos(String Empresa, String Cliente,String Nombre, String Folio, String viaEmbarque, ArrayList<ListProAduSandG> listaProduAduana ,int imagen) {
 
         Date c = Calendar.getInstance().getTime();
         SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
@@ -226,6 +226,7 @@ public class BluetoothPrint extends AppCompatActivity {
             outputStream.flush();
 
             msg = "CLIENTE:" + Cliente + "\n";
+            msg += "NOMBRE:" + Nombre + "\n";
             msg += "FOLIO:" + Folio + "\n";
             msg += "ViaEmbarque:" + viaEmbarque + "\n";
             msg += "\n";
