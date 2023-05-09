@@ -5201,7 +5201,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                 LinearUbicacion.setVisibility(View.GONE);
                 EdUbicacion.setFocusable(false);
                 EdUbicacion.setInputType(InputType.TYPE_NULL);
-                txtVisiUbicacion.setVisibility(View.VISIBLE);
+                txtVisiUbicacion.setVisibility(View.GONE);
                 txtUbicacionDestino.setText("SURTIDO");
                 ClaveObtenida.setFocusable(true);
                 ClaveObtenida.requestFocus();
