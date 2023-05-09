@@ -302,26 +302,26 @@ public class ActivityLiberaciones extends AppCompatActivity {
 
                         if (codeBar.equals("Zebra")) {
 
-                        if(listaProduAduana.get(0).getConfiguracion().equals("1")){
-                            if(UbicacionDest.equals("")){
-                                AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
-                                alerta.setMessage("Nos has escaneado una Ubicacion Destino").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        dialogInterface.cancel();
-                                    }
-                                });
+                            if(listaProduAduana.get(0).getConfiguracion().equals("1")){
+                                if(UbicacionDest.equals("")){
+                                    AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
+                                    alerta.setMessage("Nos has escaneado una Ubicacion Destino").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            dialogInterface.cancel();
+                                        }
+                                    });
 
-                                AlertDialog titulo = alerta.create();
-                                titulo.setTitle("Ubicacion invalida");
-                                titulo.show();
+                                    AlertDialog titulo = alerta.create();
+                                    titulo.setTitle("Ubicacion invalida");
+                                    titulo.show();
+                                }else{
+                                    EscaneoCompleto(Cantidad, CantidadSur, Cantidad1, cantidadCajas, editable.toString());
+                                }
+
                             }else{
                                 EscaneoCompleto(Cantidad, CantidadSur, Cantidad1, cantidadCajas, editable.toString());
                             }
-
-                            }else{
-                            EscaneoCompleto(Cantidad, CantidadSur, Cantidad1, cantidadCajas, editable.toString());
-                             }
 
 
                         } else {
@@ -3647,30 +3647,30 @@ public class ActivityLiberaciones extends AppCompatActivity {
         }
     }
 
-//Guardar datos de cuando cambie por medio de la lista
-private class ActualizaSurtidoLista extends AsyncTask<Void, Void, Void> {
+    //Guardar datos de cuando cambie por medio de la lista
+    private class ActualizaSurtidoLista extends AsyncTask<Void, Void, Void> {
 
-    @Override
-    protected void onPreExecute() {
+        @Override
+        protected void onPreExecute() {
 
-    }
-
-    @Override
-    protected Void doInBackground(Void... params) {
-
-        if (Integer.parseInt(listaProduAduana.get(contlis).getCantidadSurtida()) > 0) {
-            ActualizarSurti();
         }
-        return null;
-    }
 
-    @Override
-    protected void onPostExecute(Void result) {
-        ActivityLiberaciones.ActualizarCajasLista task = new ActivityLiberaciones.ActualizarCajasLista();
-        task.execute();
-    }
+        @Override
+        protected Void doInBackground(Void... params) {
 
-}
+            if (Integer.parseInt(listaProduAduana.get(contlis).getCantidadSurtida()) > 0) {
+                ActualizarSurti();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            ActivityLiberaciones.ActualizarCajasLista task = new ActivityLiberaciones.ActualizarCajasLista();
+            task.execute();
+        }
+
+    }
     private class ActualizarCajasLista extends AsyncTask<Void, Void, Void> {
 
         @Override
@@ -6210,16 +6210,20 @@ private class ActualizaSurtidoLista extends AsyncTask<Void, Void, Void> {
                                         char ban;
                                         ban = editable.charAt(i);
                                         if (ban == '\n') {
+
                                             String Usuario = editable.toString();
                                             Usuario = Usuario.replace("\n", "");
                                             Autorizacion(Usuario);
+
                                             UsuarioED.setText(null);
-                                        }//for
-                                    }//else
-                                }//else
-                            }//if
-                        }//textchange
+
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     });
+
 
                 } else {
                     AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
@@ -6234,7 +6238,7 @@ private class ActualizaSurtidoLista extends AsyncTask<Void, Void, Void> {
                     titulo.setTitle("¡ERROR!");
                     titulo.show();
 
-                }//else
+                }
 
 
             } else if (id == R.id.Cajas) {
