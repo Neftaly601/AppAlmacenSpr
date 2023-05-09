@@ -303,21 +303,8 @@ public class ActivityLiberaciones extends AppCompatActivity {
                         if (codeBar.equals("Zebra")) {
 
                             if(listaProduAduana.get(0).getConfiguracion().equals("1")){
-                                if(UbicacionDest.equals("")){
-                                    AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
-                                    alerta.setMessage("Nos has escaneado una Ubicacion Destino").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            dialogInterface.cancel();
-                                        }
-                                    });
 
-                                    AlertDialog titulo = alerta.create();
-                                    titulo.setTitle("Ubicacion invalida");
-                                    titulo.show();
-                                }else{
                                     EscaneoCompleto(Cantidad, CantidadSur, Cantidad1, cantidadCajas, editable.toString());
-                                }
 
                             }else{
                                 EscaneoCompleto(Cantidad, CantidadSur, Cantidad1, cantidadCajas, editable.toString());
@@ -332,21 +319,8 @@ public class ActivityLiberaciones extends AppCompatActivity {
                                     String edition = editable.toString();
                                     edition = edition.replace("\n", "");
                                     if(listaProduAduana.get(0).getConfiguracion().equals("1")){
-                                        if(UbicacionDest.equals("")){
-                                            AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
-                                            alerta.setMessage("Nos has escaneado una Ubicacion Destino").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialogInterface, int i) {
-                                                    dialogInterface.cancel();
-                                                }
-                                            });
 
-                                            AlertDialog titulo = alerta.create();
-                                            titulo.setTitle("Ubicacion invalida");
-                                            titulo.show();
-                                        }else{
                                             EscaneoCompleto(Cantidad, CantidadSur, Cantidad1, cantidadCajas, editable.toString());
-                                        }
 
                                     }else{
                                         EscaneoCompleto(Cantidad, CantidadSur, Cantidad1, cantidadCajas, editable.toString());
