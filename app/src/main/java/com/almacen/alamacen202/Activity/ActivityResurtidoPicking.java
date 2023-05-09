@@ -385,8 +385,6 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
             }//onShow
         });//setonshowlistener
         dialog.show();
-
-
     }//resurtir
 
     public void onClickLista(View v){//cada vez que se seleccione un producto en la lista
