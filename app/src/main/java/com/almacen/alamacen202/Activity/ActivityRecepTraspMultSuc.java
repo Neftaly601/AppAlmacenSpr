@@ -236,14 +236,13 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                         if(cantAct==0){
                             Toast.makeText(ActivityRecepTraspMultSuc.this, "Escaneados en 0, no se puede corregir", Toast.LENGTH_SHORT).show();
                         }else{
-                            actualizarSql(Producto,(cantAct-1)+"");
+                            actualizarSql(tvProd.getText().toString(),(cantAct-1)+"");
                             consultaSql();
                         }
                     }
                 });
                 builder.setCancelable(false);
                 builder.setTitle("AVISO").setMessage("Se corregirá "+Producto+" con una pieza de más").create().show();
-
             }//onclick
         });//btnCorr
 

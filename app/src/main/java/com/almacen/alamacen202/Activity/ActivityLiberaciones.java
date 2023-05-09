@@ -6208,20 +6208,16 @@ private class ActualizaSurtidoLista extends AsyncTask<Void, Void, Void> {
                                         char ban;
                                         ban = editable.charAt(i);
                                         if (ban == '\n') {
-
                                             String Usuario = editable.toString();
                                             Usuario = Usuario.replace("\n", "");
                                             Autorizacion(Usuario);
-
                                             UsuarioED.setText(null);
-
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                                        }//for
+                                    }//else
+                                }//else
+                            }//if
+                        }//textchange
                     });
-
 
                 } else {
                     AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
@@ -6236,7 +6232,7 @@ private class ActualizaSurtidoLista extends AsyncTask<Void, Void, Void> {
                     titulo.setTitle("¡ERROR!");
                     titulo.show();
 
-                }
+                }//else
 
 
             } else if (id == R.id.Cajas) {

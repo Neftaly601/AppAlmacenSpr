@@ -112,8 +112,8 @@ public class ActivityRecepConten extends AppCompatActivity {
     private EditText txtProdR,txtSuc,txtRest,txtEscan,txtProdVi;
     private ImageView ivProdR;
     private TextView tvRepMatr,tvRepCdmx,tvRepCul,tvRepMty;
-    private Button btnBuscaFolio,btnAtras,btnAdelante,btnSave;
-    private CheckBox chbManual;
+    private Button btnBuscaFolio,btnAtras,btnAdelante,btnSave,btnAct;
+    private CheckBox chbManual,chBxProd,chBpalet;
     private RecyclerView rvRecep;
     private AdaptadorRecepConten adapter;
     private AlertDialog mDialog;
@@ -167,10 +167,13 @@ public class ActivityRecepConten extends AppCompatActivity {
         chbManual       = findViewById(R.id.chbManual);
         btnSave         = findViewById(R.id.btnSave);
         txtProdVi       = findViewById(R.id.txtProdVi);
+        chBxProd        = findViewById(R.id.chBxProd);
+        chBpalet        = findViewById(R.id.chBpalet);
 
 
         btnAtras    = findViewById(R.id.btnBack);
         btnAdelante =findViewById(R.id.btnNext);
+        btnAct      =findViewById(R.id.btnAct);
 
         conn = new ConexionSQLiteHelper(ActivityRecepConten.this, "bd_INVENTARIO", null, 1);
         db = conn.getReadableDatabase();//apertura de la base de datos interna
@@ -180,10 +183,29 @@ public class ActivityRecepConten extends AppCompatActivity {
         keyboard = (InputMethodManager) getSystemService(ActivityRecepConten.INPUT_METHOD_SERVICE);
 
 
+        chBxProd.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b==true){
+                    chBpalet.setChecked(false);
+                }
+            }//onckeckedchange
+        });
+        chBpalet.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b==true){
+                    chBxProd.setChecked(false);
+                }
+            }//oncheckedchange
+        });//chBpalet
         lvFolios.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 view.setSelected(true);
+                txtProdR.setText("");
+                posicion=-1;
+                limpiarCampos();
                 if(i>0){//cuando hay folio seleccionado
                     folioAct=folios[i];
                     ff="";
@@ -217,8 +239,7 @@ public class ActivityRecepConten extends AppCompatActivity {
                 txtProdR.setText("");
                 txtProdVi.setText("");
                 posicion=-1;
-                mostrarLista();
-                seleccionaSuc();
+                consultaSql(sqlW,ff);
                 if(b==true){
                     txtProdR.requestFocus();
                     txtEscan.setEnabled(true);
@@ -231,7 +252,6 @@ public class ActivityRecepConten extends AppCompatActivity {
                     btnSave.setBackgroundTintList(ColorStateList.
                             valueOf(getResources().getColor(R.color.ColorGris)));
                     txtProdR.requestFocus();
-                    //mostrarDatosProd();
                 }
             }//oncheckedchange
         });//chbManual
@@ -257,6 +277,23 @@ public class ActivityRecepConten extends AppCompatActivity {
                 }//if
             }
         });//txtEscan change
+
+        btnAct.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!folio1.equals("")){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepConten.this);
+                    builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            new AsyncRecepCon(folio1,folio2,folio3).execute();
+                        }
+                    });
+                    builder.setCancelable(false);
+                    builder.setTitle("AVISO").setMessage("Volver a hacer consulta con folios actuales").create().show();
+                }
+            }//onclick
+        });//btnAct
 
         btnBuscaFolio.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -309,16 +346,11 @@ public class ActivityRecepConten extends AppCompatActivity {
             public void onClick(View view) {
                 if(!txtEscan.getText().equals("") && !txtProdVi.getText().equals("")){
                     int c=Integer.parseInt(txtEscan.getText().toString());
-                    //escanear(producto,c,true,0);
-                    //seleccionaSuc();
                     buscarEnSql(tipoBusq,folioAct,producto,tipoEscan,c,true,0);
                     keyboard.hideSoftInputFromWindow(txtEscan.getWindowToken(), 0);
                     if(revisa==false){//cuando se realizo el cambio correctamente
-                        txtProdR.setText("");
-                        txtProdVi.setText("");
-                        posicion=-1;
                         limpiarCampos();
-                        mostrarLista();
+                        mostrarDatosProd();
                         txtProdR.requestFocus();
                     }else{
                         mostrarDatosProd();
@@ -361,6 +393,7 @@ public class ActivityRecepConten extends AppCompatActivity {
                 folios[3]=folio3;
             }//else
             listaFolios();
+            consultaSql(sqlW,ff);
         }
     }//onCreate
 
@@ -369,7 +402,6 @@ public class ActivityRecepConten extends AppCompatActivity {
         lvFolios.setAdapter(adapterLv);
         lvFolios.requestFocusFromTouch();
         lvFolios.performItemClick(lvFolios, 0, 0);
-        new AsyncRecepCon(folio1,folio2,folio3).execute();
     }//listaFolios
 
     @Override
@@ -377,94 +409,6 @@ public class ActivityRecepConten extends AppCompatActivity {
         super.onDestroy();
         db.close();
     }
-
-
-    public void escanear1(String producto, int cantidad, boolean sumarOno, int sum){
-        revisa=false;
-        if(!producto.equals("")){
-            boolean find=false;
-            escaneados=0;
-            for(int i=0;i<listaRecep.size();i++){
-                if(listaRecep.get(i).getProducto().equals(producto)){
-                    find=true;
-                    switch (sucursalSelec){
-                        case "Matriz":
-                            if(sumarOno==true){//determina si se modifica o se suma
-                                escaneados=cantidad;
-                            }else{
-                                escaneados=Integer.parseInt(listaRecep.get(i).getEscanMtrz())+sum;
-                            }//else
-                            if(escaneados<=repMtz && escaneados<=Integer.parseInt(txtRest.getText().toString())){
-                                listaRecep.get(i).setEscanMtrz(escaneados+"");
-                            }else{
-                                revisa=true;
-                                Toast.makeText(this, "Excede cantidad a repartir", Toast.LENGTH_SHORT).show();
-                            }//else
-                            if(Integer.parseInt(listaRecep.get(i).getEscanMtrz())==repMtz){
-                                tvRepMatr.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.ColorFinalizado)));
-                            }
-                            break;
-                        case "CDMX.":
-                            if(sumarOno==true){//determina si se modifica o se suma
-                                escaneados=cantidad;
-                            }else{
-                                escaneados=Integer.parseInt(listaRecep.get(i).getEscanCdmx())+sum;
-                            }//else
-                            if(escaneados<=repCdmx && escaneados<=Integer.parseInt(txtRest.getText().toString())){
-                                listaRecep.get(i).setEscanCdmx(escaneados+"");
-                            }else{
-                                revisa=true;
-                                Toast.makeText(this, "Excede cantidad a repartir", Toast.LENGTH_SHORT).show();
-                            }//else
-                            if(Integer.parseInt(listaRecep.get(i).getEscanCdmx())==repCdmx){
-                                tvRepCdmx.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.ColorFinalizado)));
-                            }
-                            break;
-                        case "Culiacan":
-                            if(sumarOno==true){//determina si se modifica o se suma
-                                escaneados=cantidad;
-                            }else{
-                                escaneados=Integer.parseInt(listaRecep.get(i).getEscanCul())+sum;
-                            }//else
-                            if(escaneados<=repCul && escaneados<=Integer.parseInt(txtRest.getText().toString())){
-                                listaRecep.get(i).setEscanCul(escaneados+"");
-                            }else{
-                                revisa=true;
-                                Toast.makeText(this, "Excede cantidad a repartir", Toast.LENGTH_SHORT).show();
-                            }//else
-                            if(Integer.parseInt(listaRecep.get(i).getEscanCul())==repCul){
-                                tvRepCul.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.ColorFinalizado)));
-                            }
-                            break;
-                        case "Monterrey":
-                            if(sumarOno==true){//determina si se modifica o se suma
-                                escaneados=cantidad;
-                            }else{
-                                escaneados=Integer.parseInt(listaRecep.get(i).getEscanMty())+sum;
-                            }//else
-                            if(escaneados<=repMty && escaneados<=Integer.parseInt(txtRest.getText().toString())){
-                                listaRecep.get(i).setEscanMty(escaneados+"");
-                            }else{
-                                revisa=true;
-                                Toast.makeText(this, "Excede cantidad a repartir", Toast.LENGTH_SHORT).show();
-                            }//else
-                            if(Integer.parseInt(listaRecep.get(i).getEscanMty())==repMty){
-                                tvRepMty.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.ColorFinalizado)));
-                            }
-                            break;
-                        default :break;
-                    }//switch
-                    break;
-                }//if
-            }//for
-            if(find==false){
-                posicion=-1;
-                Toast.makeText(this, "No existe producto", Toast.LENGTH_SHORT).show();
-            }//if
-            //PONER EN VERDE LAS SUCURSALES QUE YA SE COMPLETARON
-
-        }//if
-    }//escanear
 
     public void limiteBotDir(){
         if(posicion==0){
@@ -627,6 +571,7 @@ public class ActivityRecepConten extends AppCompatActivity {
                 .into(ivProdR);
         asignarReparticiones();
         limiteBotDir();
+        seleccionaSuc();
     }//mostrarDatosProd
 
     public float calculoDem(float demanda,String clasf){//
@@ -721,15 +666,15 @@ public class ActivityRecepConten extends AppCompatActivity {
         tvRepCul.setText(Math.round(repCul)+"");
         tvRepMty.setText(Math.round(repMty)+"");
 
-        if(tipoEscan.equals("ESCANMTRZ") && escaneados==repMtz){
+        if(Integer.parseInt(listaRecep.get(posicion).getEscanMtrz())==repMtz){
             tvRepMatr.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.ColorFinalizado)));
-        }if(tipoEscan.equals("ESCANCDMX") && escaneados==repCdmx){
+        }if(Integer.parseInt(listaRecep.get(posicion).getEscanCdmx())==repCdmx){
             tvRepCdmx.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.ColorFinalizado)));
-        }if(tipoEscan.equals("ESCANCUL") && escaneados==repCul){
+        }if(Integer.parseInt(listaRecep.get(posicion).getEscanCul())==repCul){
             tvRepCul.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.ColorFinalizado)));
-        }if(tipoEscan.equals("ESCANMTY") && escaneados==repMty){
+        }if(Integer.parseInt(listaRecep.get(posicion).getEscanMty())==repMty){
             tvRepMty.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.ColorFinalizado)));
-        }
+        }//
     }//calculosFinal
 
 
@@ -822,31 +767,31 @@ public class ActivityRecepConten extends AppCompatActivity {
 
     public void buscarEnSql(boolean tipoBusq,String folio,String prod,String tipoEscan,int cantidad,boolean sumarOno,int sum){
         try{
-            String sqlB,escan;
+            String sqlB,escan,cant,sumEscan;
             revisa=false;
             if(tipoBusq==true){//cuando es por folio
-                sqlB="SELECT "+tipoEscan+" FROM RECEPCONT WHERE PRODUCTO='"+prod+"' AND FOLIO='"+folio+"'";
+                sqlB="SELECT "+tipoEscan+",CANTIDAD,(ESCANMTRZ+ESCANCDMX+ESCANCUL+ESCANMTY) FROM RECEPCONT WHERE PRODUCTO='"+prod+"' AND FOLIO='"+folio+"'";
             }else{//cuando no es por folio
-                sqlB="SELECT SUM("+tipoEscan+") FROM RECEPCONT WHERE PRODUCTO='"+prod+"' ";
+                sqlB="SELECT SUM("+tipoEscan+"),SUM(CANTIDAD),SUM(ESCANMTRZ+ESCANCDMX+ESCANCUL+ESCANMTY) FROM RECEPCONT WHERE PRODUCTO='"+prod+"' ";
             }//else
             @SuppressLint("Recycle") Cursor fila = db.rawQuery(sqlB, null);
             if (fila != null && fila.moveToFirst()) {
-                escan=fila.getString(0);
+                escan=fila.getString(0);cant=fila.getString(1);
+                sumEscan=fila.getString(2);
                 if(sumarOno==true){//determina si se modifica o se suma
                     escaneados=cantidad;
                 }else{
                     escaneados=Integer.parseInt(escan)+sum;
                 }//else
                 //Para que no sobrepase la cantidad a repartir y las cantidades
-                if(escaneados<=repAct && escaneados<=Integer.parseInt(txtRest.getText().toString())){
+                int restN=(Integer.parseInt(cant)-(Integer.parseInt(sumEscan)-Integer.parseInt(escan)));
+                if(escaneados<=repAct && escaneados<=restN){
                     actualizarSql(folio,prod,tipoEscan,escaneados+"");
                 }else{
                     revisa=true;
                     escaneados=Integer.parseInt(escan);
                     Toast.makeText(this, "Excede cantidad a repartir", Toast.LENGTH_SHORT).show();
                 }//else
-                consultaSql(sqlW,ff);
-                mostrarDatosProd();
             }//if
             fila.close();
         }catch(Exception e){
@@ -1104,7 +1049,6 @@ public class ActivityRecepConten extends AppCompatActivity {
                 txtProdVi.setText("");
             }else{
                 mostrarDatosProd();
-                seleccionaSuc();
             }//else
         }//onPost
     }//AsyncRecepCon
@@ -1207,6 +1151,7 @@ public class ActivityRecepConten extends AppCompatActivity {
                             }//else
                         }//for
                         listaFolios();
+                        new AsyncRecepCon(folio1,folio2,folio3).execute();
                     }//onclick
                 }).setNegativeButton("Cancelar",null);
                 alert.create();

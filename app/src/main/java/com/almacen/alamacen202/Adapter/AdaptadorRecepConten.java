@@ -55,6 +55,11 @@ public class AdaptadorRecepConten extends RecyclerView.Adapter<AdaptadorRecepCon
             holder.tvPr.setTextColor(Color.RED);
             holder.tvC.setTextColor(Color.RED);
             holder.tvPal.setTextColor(Color.RED);
+        }else{
+            holder.tvNu.setTextColor(Color.BLACK);
+            holder.tvPr.setTextColor(Color.BLACK);
+            holder.tvC.setTextColor(Color.BLACK);
+            holder.tvPal.setTextColor(Color.BLACK);
         }
 
         if(datos.get(position).getFolio().equals("")){
