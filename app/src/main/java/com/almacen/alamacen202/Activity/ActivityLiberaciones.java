@@ -1048,7 +1048,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
                         imprimir.disconnectBT();
                     } else {
                         AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
-                        alerta.setMessage("Verifique que la impresora este encendida \n o que tenga el bluetooth hablitado").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                        alerta.setMessage("Verifique que la impresora este encendida \n o que tenga el bluetooth habilitado").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 dialogInterface.cancel();
@@ -3764,7 +3764,8 @@ private class ActualizaSurtidoLista extends AsyncTask<Void, Void, Void> {
         try {
             SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
             XMLInsertSurti soapEnvelope = new XMLInsertSurti(SoapEnvelope.VER11);
-            soapEnvelope.XMLInsertSurti(strusr, strpass, strcodBra, Documento, Folio, PartidaP, Producto1, Cantidad2, Fecha, Hora, UbicacionOri, UbicacionDest);
+            soapEnvelope.XMLInsertSurti(strusr, strpass, strcodBra, Documento, Folio, PartidaP, Producto1, Cantidad2, Fecha, Hora, UbicacionOri, "SURTIDO");
+
             soapEnvelope.dotNet = true;
             soapEnvelope.implicitTypes = true;
             soapEnvelope.setOutputSoapObject(Request);
@@ -5195,14 +5196,14 @@ private class ActualizaSurtidoLista extends AsyncTask<Void, Void, Void> {
             }
 
 
-            String Configuracion = listaProduAduana.get(0).getConfiguracion();
+            String Configuracion =listaProduAduana.get(0).getConfiguracion();
             if (Configuracion.equals("1")) {
-                LinearUbicacion.setVisibility(View.VISIBLE);
-                dialog6.show();
+                LinearUbicacion.setVisibility(View.GONE);
                 EdUbicacion.setFocusable(true);
                 EdUbicacion.requestFocus();
                 EdUbicacion.setInputType(InputType.TYPE_NULL);
                 txtVisiUbicacion.setVisibility(View.VISIBLE);
+                txtUbicacionDestino.setText("SURTIDO");
 
 
             } else {
