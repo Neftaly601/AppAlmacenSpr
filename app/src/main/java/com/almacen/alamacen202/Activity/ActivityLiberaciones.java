@@ -5370,7 +5370,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
         try {
             SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
             XMLInsertSurti soapEnvelope = new XMLInsertSurti(SoapEnvelope.VER11);
-            soapEnvelope.XMLInsertSurti(strusr, strpass, strcodBra, Documento, Folio, PartidaP, Producto1, Cantidad2, Fecha, Hora, UbicacionOri, UbicacionDest);
+            soapEnvelope.XMLInsertSurti(strusr, strpass, strcodBra, Documento, Folio, PartidaP, Producto1, Cantidad2, Fecha, Hora, UbicacionOri, "SURTIDO");
             soapEnvelope.dotNet = true;
             soapEnvelope.implicitTypes = true;
             soapEnvelope.setOutputSoapObject(Request);
