@@ -5199,11 +5199,13 @@ private class ActualizaSurtidoLista extends AsyncTask<Void, Void, Void> {
             String Configuracion =listaProduAduana.get(0).getConfiguracion();
             if (Configuracion.equals("1")) {
                 LinearUbicacion.setVisibility(View.GONE);
-                EdUbicacion.setFocusable(true);
-                EdUbicacion.requestFocus();
+                EdUbicacion.setFocusable(false);
                 EdUbicacion.setInputType(InputType.TYPE_NULL);
                 txtVisiUbicacion.setVisibility(View.VISIBLE);
                 txtUbicacionDestino.setText("SURTIDO");
+                ClaveObtenida.setFocusable(true);
+                ClaveObtenida.requestFocus();
+                ClaveObtenida.setInputType(InputType.TYPE_NULL);
 
 
             } else {
