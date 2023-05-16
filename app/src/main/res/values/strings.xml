@@ -43,6 +43,7 @@
     <string name="shark">shark/</string>
 
     <!-- NOMBRES WEB SERVICES -->
+    <string name="resActualizaDif">resActualizaDif</string>
     <string name="resRecepConten">resRecepConten</string>
     <string name="resRecepXProd">resRecepXProd</string>
     <string name="resRecepFolios">resRecepFolios</string>

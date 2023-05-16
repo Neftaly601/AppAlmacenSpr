@@ -37,6 +37,7 @@ dependencies {
     implementation files('libs\\ksoap2-android-assembly-3.6.4-jar-with-dependencies.jar')
     implementation 'com.github.d-max:spots-dialog:1.1@aar'
     implementation 'com.android.volley:volley:1.2.1'
+    implementation files('libs\\java-json.jar')
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'

@@ -209,21 +209,32 @@ public class ActivityRecepConten extends AppCompatActivity {
                 if(i>0){//cuando hay folio seleccionado
                     folioAct=folios[i];
                     ff="";
-                    sqlW="SELECT R.PRODUCTO,SUM(R.CANTIDAD),R.PRIORIDAD,SUM(R.ESCANMTRZ),SUM(R.ESCANCDMX),"+
+                    sqlW="SELECT R.PRODUCTO,R.CANTIDAD,R.PRIORIDAD,R.ESCANMTRZ,R.ESCANCDMX,"+
+                            "R.ESCANCUL,R.ESCANMTY,GROUP_CONCAT(P.NAMEPALET,',') FROM RECEPCONT R "+
+                            "LEFT JOIN(SELECT PRODUCTO,NAMEPALET FROM PALET WHERE " +
+                            "FOLIO='"+folioAct+"' GROUP BY PRODUCTO,NAMEPALET) P ON(P.PRODUCTO=R.PRODUCTO) " +
+                            "WHERE R.FOLIO='"+folioAct+"' GROUP BY R.PRODUCTO ORDER BY R.PRODUCTO ";
+
+                    /*sqlW="SELECT R.PRODUCTO,SUM(R.CANTIDAD),R.PRIORIDAD,SUM(R.ESCANMTRZ),SUM(R.ESCANCDMX),"+
                             "SUM(R.ESCANCUL),SUM(R.ESCANMTY),GROUP_CONCAT(P.NAMEPALET,',') FROM RECEPCONT R " +
                             "LEFT JOIN(SELECT PRODUCTO,NAMEPALET FROM PALET WHERE " +
                             "FOLIO='"+folioAct+"' GROUP BY PRODUCTO,NAMEPALET) P ON(P.PRODUCTO=R.PRODUCTO) " +
-                            "WHERE R.FOLIO='"+folioAct+"' GROUP BY R.PRODUCTO,R.PRIORIDAD ORDER BY R.PRODUCTO ";
+                            "WHERE R.FOLIO='"+folioAct+"' GROUP BY R.PRODUCTO,R.PRIORIDAD ORDER BY R.PRODUCTO ";*/
                     tipoBusq=true;
                     consultaSql(sqlW,ff);
                 }else{//cuando es todos los folios
                     folioAct="";
                     ff="FOLIO";
-                    sqlW="SELECT R.PRODUCTO,R.CANTIDAD,R.PRIORIDAD,R.ESCANMTRZ,R.ESCANCDMX,"+
+
+                    sqlW="SELECT R.PRODUCTO,SUM(R.CANTIDAD),R.PRIORIDAD,SUM(R.ESCANMTRZ),SUM(R.ESCANCDMX),"+
+                            "SUM(R.ESCANCUL),SUM(R.ESCANMTY),GROUP_CONCAT(P.NAMEPALET,','),GROUP_CONCAT(P.FOLIO,',') FROM RECEPCONT R " +
+                            "LEFT JOIN (SELECT FOLIO,PRODUCTO,NAMEPALET FROM PALET GROUP BY NAMEPALET) P ON(P.PRODUCTO=R.PRODUCTO AND P.FOLIO=R.FOLIO) " +
+                            "GROUP BY R.PRODUCTO,R.PRIORIDAD ORDER BY R.PRODUCTO ";
+                    /*sqlW="SELECT R.PRODUCTO,R.CANTIDAD,R.PRIORIDAD,R.ESCANMTRZ,R.ESCANCDMX,"+
                             "R.ESCANCUL,R.ESCANMTY,(SELECT GROUP_CONCAT(NAMEPALET) FROM PALET WHERE PRODUCTO=R.PRODUCTO GROUP BY NAMEPALET),R.FOLIO FROM RECEPCONT R " +
-                            "LEFT JOIN(SELECT PRODUCTO,NAMEPALET FROM PALET " +
-                            "GROUP BY PRODUCTO,NAMEPALET) P ON(P.PRODUCTO=R.PRODUCTO) " +
-                            "ORDER BY R.PRODUCTO ";
+                            "LEFT JOIN(SELECT FOLIO,PRODUCTO,NAMEPALET FROM PALET " +
+                            "GROUP BY PRODUCTO,NAMEPALET) P ON(P.PRODUCTO=R.PRODUCTO AND P.FOLIO=R.FOLIO) " +
+                            " ORDER BY R.PRODUCTO ";*/
                     tipoBusq=false;
                     consultaSql(sqlW,ff);
                 }//else
@@ -255,6 +266,7 @@ public class ActivityRecepConten extends AppCompatActivity {
                 }
             }//oncheckedchange
         });//chbManual
+
         txtEscan.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}

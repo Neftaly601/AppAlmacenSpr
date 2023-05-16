@@ -50,7 +50,7 @@ public class AdaptadorRecepConten extends RecyclerView.Adapter<AdaptadorRecepCon
             holder.lyRec.setBackgroundColor(0);
         }
 
-        if(datos.get(position).getPrioridad().equals("U")){
+        if(datos.get(position).getPrioridad().contains("U")){
             holder.tvNu.setTextColor(Color.RED);
             holder.tvPr.setTextColor(Color.RED);
             holder.tvC.setTextColor(Color.RED);

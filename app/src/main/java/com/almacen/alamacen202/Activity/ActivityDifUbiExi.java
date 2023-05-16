@@ -17,6 +17,8 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.JsonReader;
+import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -44,6 +46,8 @@ import com.almacen.alamacen202.SetterandGetters.DifUbiExist;
 import com.almacen.alamacen202.SetterandGetters.Folios;
 import com.almacen.alamacen202.SetterandGetters.Inventario;
 import com.almacen.alamacen202.SetterandGetters.ProdEtiq;
+import com.almacen.alamacen202.SetterandGetters.RecepConten;
+import com.almacen.alamacen202.SetterandGetters.RecepListSucCont;
 import com.almacen.alamacen202.SetterandGetters.UbicacionSandG;
 import com.almacen.alamacen202.Sqlite.ConexionSQLiteHelper;
 import com.almacen.alamacen202.XML.XMDifUbiExist;
@@ -53,8 +57,21 @@ import com.almacen.alamacen202.XML.XMLFolios;
 import com.almacen.alamacen202.XML.XMLUbicacionAlma;
 import com.almacen.alamacen202.XML.XMLValidEsc;
 import com.almacen.alamacen202.XML.XMLlistInv;
+import com.almacen.alamacen202.includes.HttpHandler;
 import com.almacen.alamacen202.includes.MyToolbar;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonRequest;
+import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.XML;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.SoapFault;
 import org.ksoap2.serialization.SoapObject;
@@ -62,7 +79,16 @@ import org.ksoap2.transport.HttpTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import org.json.JSONException;
+import org.json.JSONObject;
+import javax.net.ssl.HttpsURLConnection;
 
 import dmax.dialog.SpotsDialog;
 
@@ -87,6 +113,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
     private SQLiteDatabase db;
     private RecyclerView rvFolios;//para alertdialog
     private AlertDialog dialog;
+    private RequestQueue mQueue;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,6 +128,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
         folio=preferenceD.getString("folio", "");
         fecha=preferenceD.getString("fechaI", "");
         hora=preferenceD.getString("horaI", "");
+        mQueue = Volley.newRequestQueue(this);
 
         strusr = preference.getString("user", "null");
         strpass = preference.getString("pass", "null");
@@ -484,6 +512,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                 });//negative botton
                 AlertDialog dialog = builder.create();
                 dialog.show();
+                new AsyncActualizaDif2().execute();
             }//else
         }//onPostExecute
     }//AsyncFolios
@@ -655,7 +684,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
         try {
             SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
             XMLActualizaDif soapEnvelope = new XMLActualizaDif(SoapEnvelope.VER11);
-            soapEnvelope.XMLAct(strusr, strpass, folio, strbran, producto,cont,ubic);
+            soapEnvelope.XMLAct(strusr, strpass, folio, strbran, listaPSincro);
             soapEnvelope.dotNet = true;
             soapEnvelope.implicitTypes = true;
             soapEnvelope.setOutputSoapObject(Request);
@@ -872,7 +901,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
         try{
             listaPSincro.clear();
             @SuppressLint("Recycle") Cursor fila = db.rawQuery("SELECT PRODUCTO,"+
-                    "UBICACION,CONTEO FROM DIFUBIEXIST WHERE EMPRESA='"+serv+"' AND CONTEO>0 ", null);
+                    "UBICACION,CONTEO FROM DIFUBIEXIST WHERE EMPRESA='"+serv+"' ", null);
             if (fila != null && fila.moveToFirst()) {
                 do {
                     listaPSincro.add(new DifUbiExist("",fila.getString(0),"","",
@@ -926,5 +955,158 @@ public class ActivityDifUbiExi extends AppCompatActivity {
         }catch(Exception e){}
     }//eliminarSql
 
+    public static String convertStandardJSONString(String data_json) {
+        data_json = data_json.replaceAll("\\\\r\\\\n", "");
+        data_json = data_json.replace("\"{", "{");
+        data_json = data_json.replace("}\",", "},");
+        data_json = data_json.replace("}\"", "}");
+        return data_json;
+    }
 
+
+    private class AsyncActualizaDif2 extends AsyncTask<Void, Void, Void> {
+
+        private ArrayList<String> lista;
+        private String pro,cc,ubic;
+        private int contador=0;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.show();
+        }//onPreExecute
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            /*HttpHandler sh = new HttpHandler();
+            String xml=
+                    "<k_folio>0000001</k_folio>"+
+                    "<k_suc>01</k_suc>"+
+                    "<datos>" +
+                    "<k_prod>PROD1</k_prod>"+
+                    "<k_cont>10</k_cont>"+
+                    "<k_ubi>PS07-U87-9</k_ubi>"+
+                    "</datos>";
+
+            JSONObject jsonObject=null;
+            try {
+                jsonObject = XML.toJSONObject(xml);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            String param="k_folio=0000001&k_suc=01&datos={k_prod=PROD&k_cont=10&k_ubi=UBI73-7747}&datos={k_prod=PROD2&k_cont=5&k_ubi=PS046EG}";
+            String url = "http://"+strServer+"/"+getString(R.string.resActualizaDif)+"?"+param;
+            String jsonStr = sh.makeServiceCall(url,strusr,strpass);
+            String response;
+            if(jsonStr !=null){
+                try {
+                    JSONObject jsonObj = new JSONObject(jsonStr);
+                    JSONArray jsonArray = jsonObj.getJSONArray("Response");
+                    response=jsonArray.getString(0);
+                }catch (Exception e){
+                    Toast.makeText(ActivityDifUbiExi.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }else {
+                //Log.e(TAG, "Problemas al traer datos");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mensaje="No fue posible obtener datos del servidor";
+                    }//run
+                });//runUniTthread
+            }//else
+            */
+
+            String url = "http://"+strServer+"/"+getString(R.string.resActualizaDif);
+            String xml=
+                    "<k_folio>0000001</k_folio>"+
+                    "<k_suc>01</k_suc>"+
+                    "<datos>" +
+                    "<k_prod>PROD1</k_prod>"+
+                    "<k_cont>10</k_cont>"+
+                    "<k_ubi>PS07-U87-9</k_ubi>"+
+                    "</datos>";
+
+            JSONObject jsonObject=null;
+            JsonObjectRequest jsonObjectRequest=null;
+
+            try {
+                //jsonObject= XML.toJSONObject(xml);
+                JSONObject dat= new JSONObject();
+                dat.put("k_prod","PROD1");
+                dat.put("k_cont","10");
+                dat.put("k_ubi","PS0-6260-77");
+
+                JSONObject js= new JSONObject();
+                js.put("k_folio","0000001");
+                js.put("k_suc","08");
+                js.put("datos",dat);
+
+                JsonRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, url, js, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        //now handle the response
+                        Toast.makeText(ActivityDifUbiExi.this, response.toString(), Toast.LENGTH_SHORT).show();
+
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        //handle the error
+                        Toast.makeText(ActivityDifUbiExi.this, "An error occurred", Toast.LENGTH_SHORT).show();
+                        error.printStackTrace();
+
+                    }
+                }) {    //Headers
+                    @Override
+                    public Map<String, String> getHeaders() {
+                        Map<String, String> params = new HashMap<String, String>();
+                        params.put("user", strusr);
+                        params.put("pass", strpass);
+                        return params;
+                    }
+                };
+                mQueue.add(jsonRequest);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }//doInBackground
+
+        @Override
+        protected void onPostExecute(Void aBoolean) {
+            super.onPostExecute(aBoolean);
+            progressDialog.dismiss();
+            if (contador==listaPSincro.size()) {
+                lista2.clear();
+                rvDifUbiExi.setAdapter(null);
+                editor.clear().commit();
+                eliminarSql("");
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityDifUbiExi.this);
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        new AsyncFolios().execute();
+                    }//onclick
+                });//positivebutton
+                builder.setCancelable(false);
+                builder.setTitle("Resultado Sincronización").setMessage(contador+" Datos sincronizados").create().show();
+
+            }else{
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityDifUbiExi.this);
+                builder.setMessage("Error al sincronizar");
+                builder.setCancelable(false);
+                builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                    }
+                });//negative botton
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                contados();
+            }//else
+        }//onPost
+    }//AsyncRecepCon
 }//ActivityInventario

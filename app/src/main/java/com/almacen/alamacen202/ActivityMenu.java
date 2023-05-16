@@ -24,6 +24,7 @@ import com.almacen.alamacen202.Activity.ActivityInventario;
 import com.almacen.alamacen202.Activity.ActivityInventarioXProd;
 import com.almacen.alamacen202.Activity.ActivityLiberaciones;
 import com.almacen.alamacen202.Activity.ActivityRecepTraspMultSuc;
+import com.almacen.alamacen202.Activity.ActivityRecolectMontCarg;
 import com.almacen.alamacen202.Activity.ActivityRepEtiquetas;
 import com.almacen.alamacen202.Activity.ActivityResurtidoPicking;
 import com.almacen.alamacen202.Activity.ActivityRecepConten;
@@ -243,6 +244,10 @@ public class ActivityMenu extends AppCompatActivity {
         Intent intent = new Intent(ActivityMenu.this, ActivityDifUbiExi.class);
         startActivity(intent);
     }//diferencia entre ubicaciones y existenciasinventario
+    public void recolectMontCarg(View v){
+        Intent intent = new Intent(ActivityMenu.this, ActivityRecolectMontCarg.class);
+        startActivity(intent);
+    }//recolectMontCarg
     public void recepCont(View v){
         Intent intent = new Intent(ActivityMenu.this, ActivityRecepConten.class);
         startActivity(intent);

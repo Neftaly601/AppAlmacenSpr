@@ -63,6 +63,11 @@
             android:name=".Activity.ActivityRepEtiquetas"
             android:configChanges="screenSize|orientation"
             android:parentActivityName=".ActivityMenu"/>
+
+        <activity
+            android:name=".Activity.ActivityRecolectMontCarg"
+            android:configChanges="screenSize|orientation"
+            android:parentActivityName=".ActivityMenu"/>
         <activity
             android:name=".Activity.ActivityRecepConten"
             android:configChanges="screenSize|orientation"
