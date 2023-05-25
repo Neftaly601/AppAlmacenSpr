@@ -500,11 +500,11 @@
                                 android:lines="2"
                                 android:maxLines="2"
                                 android:padding="5dp"
+                                android:text="Recolección Montacargas"
                                 android:textAlignment="center"
                                 android:textColor="@color/ColorWhite"
                                 android:textSize="12sp"
-                                android:textStyle="bold"
-                                android:text="Recolección Montacargas"/>
+                                android:textStyle="bold" />
 
 
                             <ImageView
@@ -512,8 +512,7 @@
                                 android:layout_height="35dp"
                                 android:layout_margin="5dp"
                                 android:contentDescription="Manos"
-                                android:src="@drawable/icon_dif"
-                                android:visibility="invisible"/>
+                                android:src="@drawable/icon_montacarga"/>
                         </LinearLayout>
 
                         <LinearLayout

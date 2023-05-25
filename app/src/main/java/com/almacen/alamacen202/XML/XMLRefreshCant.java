@@ -12,17 +12,19 @@ public class XMLRefreshCant extends SoapSerializationEnvelope {
     String folio = "";
     String pariedad = "";
     String producto = "";
+    private String suc;
 
     public XMLRefreshCant(int version) {
         super(version);
     }
 
-    public void XMLRefreshCantidad(String usuario, String clave, String folio,String producto,String pariedad) {
+    public void XMLRefreshCantidad(String usuario, String clave, String folio,String producto,String pariedad,String suc) {
         this.usuario = usuario;
         this.clave = clave;
         this.folio = folio;
         this.pariedad = pariedad;
         this.producto = producto;
+        this.suc=suc;
     }
 
     @Override
@@ -59,6 +61,10 @@ public class XMLRefreshCant extends SoapSerializationEnvelope {
         writer.startTag(tem, "k_Pariedad");
         writer.text(pariedad);
         writer.endTag(tem, "k_Pariedad");
+
+        writer.startTag(tem, "k_suc");
+        writer.text(suc);
+        writer.endTag(tem, "k_suc");
 
 
         writer.endTag(tem, "RefreshCantidad");

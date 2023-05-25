@@ -80,12 +80,12 @@ public class ActivityRecolectMontCarg extends AppCompatActivity {
         mDialog = new SpotsDialog.Builder().setContext(ActivityRecolectMontCarg.this).
                 setMessage("Espere un momento...").build();
 
-        txtProd   = findViewById(R.id.txtProd);
+        /*txtProd   = findViewById(R.id.txtProd);
         tvClvProdD      = findViewById(R.id.tvClvProdR);
         tvDescProdD     = findViewById(R.id.tvDescProdR);
 
         txtDem         = findViewById(R.id.txtDem);
-        txtConsolid    = findViewById(R.id.txtConsolid);
+        txtConsolid    = findViewById(R.id.txtConsolid);*/
 
         txtProd.setInputType(InputType.TYPE_NULL);
         txtProd.requestFocus();

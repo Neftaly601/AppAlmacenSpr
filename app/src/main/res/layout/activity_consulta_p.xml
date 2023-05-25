@@ -87,7 +87,8 @@
                     android:onClick="Escanear"
                     android:text="@string/escanear"
                     android:textColor="@color/ColorWhite"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    android:visibility="gone"/>
 
             </LinearLayout>
             <com.google.android.material.button.MaterialButton

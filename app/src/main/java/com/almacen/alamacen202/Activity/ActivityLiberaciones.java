@@ -5673,7 +5673,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
         try {
             SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
             XMLRefreshCant soapEnvelope = new XMLRefreshCant(SoapEnvelope.VER11);
-            soapEnvelope.XMLRefreshCantidad(strusr, strpass, Foliorefres, ProdcutoRefres, PartidaPreRefres);
+            soapEnvelope.XMLRefreshCantidad(strusr, strpass, Foliorefres, ProdcutoRefres, PartidaPreRefres,strcodBra);
             soapEnvelope.dotNet = true;
             soapEnvelope.implicitTypes = true;
             soapEnvelope.setOutputSoapObject(Request);

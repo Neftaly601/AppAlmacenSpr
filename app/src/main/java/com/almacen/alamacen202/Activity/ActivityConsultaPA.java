@@ -367,7 +367,8 @@ public class ActivityConsultaPA extends AppCompatActivity {
             titulo.show();
 
         }
-
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(txtEscaneo.getWindowToken(),0);//cerrar teclado si esta abierto
     }
 
 

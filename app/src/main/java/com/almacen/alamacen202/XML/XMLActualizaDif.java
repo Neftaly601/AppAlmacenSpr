@@ -1,12 +1,9 @@
 package com.almacen.alamacen202.XML;
 
-import com.almacen.alamacen202.SetterandGetters.DifUbiExist;
-
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class XMLActualizaDif extends SoapSerializationEnvelope {
 
@@ -17,19 +14,20 @@ public class XMLActualizaDif extends SoapSerializationEnvelope {
     private String producto;
     private String cont;
     private String ubic;
-    private ArrayList<DifUbiExist> datos;
 
     public XMLActualizaDif(int version) {
         super(version);
     }
 
     public void XMLAct(String usuario, String contrasena, String folio, String sucursal,
-                       ArrayList<DifUbiExist> datos) {
+                       String producto, String cont,String ubic) {
         this.usuario = usuario;
         this.contrasena = contrasena;
         this.folio = folio;
         this.sucursal = sucursal;
-        this.datos = datos;
+        this.producto = producto;
+        this.cont = cont;
+        this.ubic = ubic;
     }//void
 
     @Override
@@ -37,7 +35,7 @@ public class XMLActualizaDif extends SoapSerializationEnvelope {
         env = "http://schemas.xmlsoap.org/soap/envelope/";
         String tem = "";
         writer.startDocument("UTF-8", true);
-        writer.setPrefix("json", env);
+        writer.setPrefix("soap", env);
         writer.setPrefix("", tem);
         writer.startTag(env, "Envelope");
         writer.startTag(env, "Body");
@@ -71,9 +69,9 @@ public class XMLActualizaDif extends SoapSerializationEnvelope {
         writer.text(cont);
         writer.endTag(tem, "k_cont");
 
-        writer.startTag(tem, "k_ubic");
+        writer.startTag(tem, "k_ubi");
         writer.text(ubic);
-        writer.endTag(tem, "k_ubic");
+        writer.endTag(tem, "k_ubi");
 
         writer.startTag(tem, "k_usu");
         writer.text(usuario);

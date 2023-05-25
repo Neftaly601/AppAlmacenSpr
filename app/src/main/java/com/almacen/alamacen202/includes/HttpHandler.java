@@ -32,13 +32,13 @@ public class HttpHandler {
             InputStream in = new BufferedInputStream(conn.getInputStream());
             response = convertStreamToString(in);
         } catch (MalformedURLException e) {
-            Log.e(TAG, "MalformedURLException: " + e.getMessage());
+            response="MalformedURLException: " + e.getMessage();
         } catch (ProtocolException e) {
-            Log.e(TAG, "ProtocolException: " + e.getMessage());
+            response="ProtocolException: " + e.getMessage();
         } catch (IOException e) {
-            Log.e(TAG, "IOException: " + e.getMessage());
+            response="IOException: " + e.getMessage();
         } catch (Exception e) {
-            Log.e(TAG, "Exception: " + e.getMessage());
+            response="Exception: " + e.getMessage();
         }
         return response;
     }

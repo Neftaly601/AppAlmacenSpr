@@ -26,6 +26,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -59,6 +60,7 @@ import com.almacen.alamacen202.XML.XMLValidEsc;
 import com.almacen.alamacen202.XML.XMLlistInv;
 import com.almacen.alamacen202.includes.HttpHandler;
 import com.almacen.alamacen202.includes.MyToolbar;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -66,6 +68,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.JsonRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
@@ -94,9 +97,11 @@ import dmax.dialog.SpotsDialog;
 
 public class ActivityDifUbiExi extends AppCompatActivity {
     private ProgressDialog progressDialog;
+    private TextView tvEstatus;
     private SharedPreferences preference,preferenceD;
     private SharedPreferences.Editor editor;
     private int posicion=0;
+    public static final int MY_DEFAULT_TIMEOUT = 15000;
     private String strusr,strpass,strServer,strbran,codeBar,ProductoAct="",folio="",fecha="",hora="",mensaje,serv="",where=" AND CONTEO>0 ";
     private ArrayList<DifUbiExist> lista2 = new ArrayList<>();
     private ArrayList<DifUbiExist> listaPSincro = new ArrayList<>();
@@ -155,6 +160,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                 break;
         }
 
+        tvEstatus       = findViewById(R.id.tvEstatus);
         txtFolioInv     = findViewById(R.id.txtFolioInv);
         txtFechaI       = findViewById(R.id.txtFechaI);
         txtHoraI        = findViewById(R.id.txtHoraI);
@@ -231,10 +237,10 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                     txtProductoVi.setText(ProductoAct);
                     if (codeBar.equals("Zebra")) {//codebar
                         if (!chbMan.isChecked()) {//manual no
-                            buscar(ProductoAct,"1",true);
+                            buscarXprod(ProductoAct,"1",true);
                             txtProducto.setText("");
                         }else{//manual si
-                            buscar(ProductoAct,"-1",false);
+                            buscarXprod(ProductoAct,"-1",false);
                             txtCant.requestFocus();
                             keyboard.showSoftInput(txtCant, InputMethodManager.SHOW_IMPLICIT);
                         }//else
@@ -244,10 +250,10 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                             ban = editable.charAt(i);
                             if (ban == '\n') {
                                 if (!chbMan.isChecked()) {//manual no
-                                    buscar(ProductoAct,"1",true);
+                                    buscarXprod(ProductoAct,"1",true);
                                     txtProducto.setText("");
                                 }else{//manual si
-                                    buscar(ProductoAct,"-1",false);
+                                    buscarXprod(ProductoAct,"-1",false);
                                     txtCant.requestFocus();
                                     keyboard.showSoftInput(txtCant, InputMethodManager.SHOW_IMPLICIT);
                                 }//else
@@ -266,13 +272,12 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                 String v1=ProductoAct;
                 String v2=txtCant.getText().toString();
                 if(!v1.equals("") && !v2.equals("")){
-                    buscar(v1,v2,false);
-                    keyboard.hideSoftInputFromWindow(txtCant.getWindowToken(), 0);
+                    posicion=-1;
+                    buscarXprod(v1,v2,false);
                     txtProducto.setText("");
-                    txtProductoVi.setText("");
+                    keyboard.hideSoftInputFromWindow(txtCant.getWindowToken(), 0);
                     txtProducto.requestFocus();
                     //keyboard.hideSoftInputFromWindow(txtProducto.getWindowToken(), 0);
-                    contados();
                 }else{
                     Toast.makeText(ActivityDifUbiExi.this, "Campos vacios", Toast.LENGTH_SHORT).show();
                 }
@@ -286,15 +291,23 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                 int tam=listaPSincro.size();
                 if(tam>0){
                     AlertDialog.Builder builder = new AlertDialog.Builder(ActivityDifUbiExi.this);
-                    builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
+                    /*builder.setPositiveButton("TODOS", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            jSon();
+                        }//onclick
+                    });*/
+                    builder.setNegativeButton("CANCELAR",null);
+                    builder.setNeutralButton("SINCRONIZAR", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             new AsyncActualiza().execute();
-                        }//onclick
-                    });//positive button
-                    builder.setNegativeButton("CANCELAR",null);
+                        }
+                    });
                     builder.setCancelable(false);
-                    builder.setTitle("AVISO").setMessage("Existen "+tam+" datos para sincronizar ¿Desea continuar?").create().show();
+                    builder.setTitle("AVISO").setMessage(
+                            "Existen "+tam+" datos para sincronizar ¿Desea continuar?").create().show();
+                    //jSon();
                 }else{
                     AlertDialog.Builder builder = new AlertDialog.Builder(ActivityDifUbiExi.this);
                     builder.setPositiveButton("ACEPTAR", null);//positive button
@@ -307,16 +320,18 @@ public class ActivityDifUbiExi extends AppCompatActivity {
         btnCont.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                contados();
                 txtProducto.setText("");
+                txtProductoVi.setText("");
+                contados();
+
             }//onclick
         });//btnCont
         btnNoCont.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                noContados();
                 txtProducto.setText("");
                 txtProductoVi.setText("");
+                noContados();
             }//onclick
         });//btnNoCont
 
@@ -365,6 +380,15 @@ public class ActivityDifUbiExi extends AppCompatActivity {
             return false;
         }
     }//isNumeric
+    public void limpiaCampos(){
+        txtProducto.setText("");
+        txtCant.setText("");
+        txtContF.setText("");
+        txtExistS.setText("");
+        txtDif.setText("");
+        txtUbb.setText("");
+        tvEstatus.setText("");
+    }//limpiaCampos
 
 
     public void contados(){//cuando se muestre la parte de contados
@@ -372,11 +396,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                 valueOf(getResources().getColor(R.color.AzulBack)));
         btnNoCont.setBackgroundTintList(ColorStateList.
                 valueOf(getResources().getColor(R.color.ColorGris)));
-        txtCant.setText("");
-        txtContF.setText("");
-        txtExistS.setText("");
-        txtDif.setText("");
-        txtUbb.setText("");
+        limpiaCampos();
         where=" AND ESTATUS=1 ";
         consultaSql();
     }//contados
@@ -386,12 +406,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                 valueOf(getResources().getColor(R.color.AzulBack)));
         btnCont.setBackgroundTintList(ColorStateList.
                 valueOf(getResources().getColor(R.color.ColorGris)));
-        txtProducto.setText("");
-        txtCant.setText("");
-        txtContF.setText("");
-        txtExistS.setText("");
-        txtDif.setText("");
-        txtUbb.setText("");
+        limpiaCampos();
         where=" AND ESTATUS=0 ";
         consultaSql();
     }//noContados
@@ -512,7 +527,6 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                 });//negative botton
                 AlertDialog dialog = builder.create();
                 dialog.show();
-                new AsyncActualizaDif2().execute();
             }//else
         }//onPostExecute
     }//AsyncFolios
@@ -613,8 +627,8 @@ public class ActivityDifUbiExi extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... params) {
             progressDialog.setMax(listaPSincro.size());
-            for(int j=0;j<listaPSincro.size();j++){
-                try {
+            try {
+                for(int j=0;j<listaPSincro.size();j++){
                     mensaje="";
                     pro=listaPSincro.get(j).getProducto();
                     cc=listaPSincro.get(j).getConteo();
@@ -625,11 +639,11 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                         contador++;
                     }//if
                     Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    return null;
-                }//catch
-                progressDialog.setProgress(j);
-            }//for
+                    progressDialog.setProgress(j);
+                }//for
+            } catch (InterruptedException e) {
+                return null;
+            }//catch
             return null;
         }//doinbackground
 
@@ -684,7 +698,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
         try {
             SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
             XMLActualizaDif soapEnvelope = new XMLActualizaDif(SoapEnvelope.VER11);
-            soapEnvelope.XMLAct(strusr, strpass, folio, strbran, listaPSincro);
+            soapEnvelope.XMLAct(strusr, strpass, folio, strbran, producto,cont,ubic);
             soapEnvelope.dotNet = true;
             soapEnvelope.implicitTypes = true;
             soapEnvelope.setOutputSoapObject(Request);
@@ -704,8 +718,65 @@ public class ActivityDifUbiExi extends AppCompatActivity {
             mensaje=ex.getMessage();
         }//catch
     }//conectaActualiza
+    public void buscarXprod(String prod,String canti,boolean sum){
+        try{
+            int contA=0,cont=0,exist=0,dif=0;
+            String ubi="";
+            String est="";
+            rvDifUbiExi.setAdapter(null);
+            @SuppressLint("Recycle") Cursor fila = db.rawQuery("SELECT PRODUCTO,CANTIDAD,EXISTENCIA,DIFERENCIA,"+
+                    "UBICACION,CONTEO,ESTATUS FROM DIFUBIEXIST WHERE EMPRESA='"+serv+"' AND PRODUCTO='"+prod+"' LIMIT 1", null);
+            if (fila != null && fila.moveToFirst()) {
+                do {
+                    ProductoAct=fila.getString(0);
+                    if(canti.equals("-1")){
+                        canti=fila.getString(5);
+                    }
+                    exist=Integer.parseInt(fila.getString(2));
+                    cont=Integer.parseInt(fila.getString(5));
+                    ubi=fila.getString(4);
+                    int op;
+                    if(sum==true){
+                        op=cont+1;
+                    }else{
+                        contA=Integer.parseInt(canti);
+                        op=contA;
+                    }
+                    dif=exist-op;
+                    cont=op;
+                    actualizarSql(prod,cont+"",dif+"",ubi,exist+"");
+                    txtProductoVi.setText(ProductoAct);
+                    txtContF.setText(fila.getString(1));
+                    txtExistS.setText(fila.getString(2));
+                    txtDif.setText(dif+"");
+                    txtUbb.setText(fila.getString(4));
+                    txtCant.setText(cont+"");
+                    if(fila.getString(6).equals("1")){
+                        est="CONTADO";
+                    }else{
+                        est="NO CONTADO";
+                    }
+                    tvEstatus.setText(est);
+                } while (fila.moveToNext());
+            }else{
+                posicion=-1;
+                Toast.makeText(this, "Producto no existe en lista", Toast.LENGTH_SHORT).show();
+                txtProducto.setText("");
+                limpiaCampos();
+                if(chbMan.isChecked()){
+                    txtProducto.requestFocus();
+                }
+            }
+            fila.close();
+        }catch(Exception e){
+            ProductoAct="";
+            Toast.makeText(ActivityDifUbiExi.this,
+                    "No existe producto", Toast.LENGTH_SHORT).show();
+        }//catch
+        consultaSql();
+    }//consultaSql
 
-    public void buscar(String prod,String canti,boolean sum){
+    public void buscar1(String prod,String canti,boolean sum){
         boolean band=false;
         int contA=0,cont=0,exist=0,dif=0;
         String ubi="";
@@ -735,6 +806,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
             }//if
         }//for
         if (band==false){//si no existe el producto
+            posicion=0;
             Toast.makeText(this, "Producto no existe en lista", Toast.LENGTH_SHORT).show();
             txtProducto.setText("");
             txtProductoVi.setText("");
@@ -837,6 +909,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
     }//onClickLista
 
     public void detalle(int posi){//detalle del producto seleccionado
+        String est;
         ProductoAct=lista2.get(posi).getProducto();
         txtProductoVi.setText(ProductoAct);
         txtContF.setText(lista2.get(posi).getCantidad());
@@ -844,6 +917,12 @@ public class ActivityDifUbiExi extends AppCompatActivity {
         txtDif.setText(lista2.get(posi).getDiferencia());
         txtUbb.setText(lista2.get(posi).getUbicacion());
         txtCant.setText(lista2.get(posi).getConteo());
+        if(lista2.get(0).getEstatus().equals("1")){
+            est="CONTADO";
+        }else{
+            est="NO CONTADO";
+        }
+        tvEstatus.setText(est);
     }//detalle
     public void detalleProd1(String prod){//se busca el detalle en todos lo productos ya sea contados o no contados
         for(int i=0;i<lista2.size();i++){
@@ -863,8 +942,8 @@ public class ActivityDifUbiExi extends AppCompatActivity {
         try{
             lista2.clear();
             int j=0;
+            String est;
             rvDifUbiExi.setAdapter(null);
-            posicion=0;
             if(ProductoAct.equals("")){
                 posicion=-1;
             }
@@ -875,11 +954,18 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                     j++;
                     if(ProductoAct.equals(fila.getString(0))){
                         posicion=j-1;
+                        txtProductoVi.setText(ProductoAct);
                         txtContF.setText(fila.getString(1));
                         txtExistS.setText(fila.getString(2));
                         txtDif.setText(fila.getString(3));
                         txtUbb.setText(fila.getString(4));
                         txtCant.setText(fila.getString(5));
+                        if(fila.getString(6).equals("1")){
+                            est="CONTADO";
+                        }else{
+                            est="NO CONTADO";
+                        }
+                        tvEstatus.setText(est);
                     }
                     lista2.add(new DifUbiExist(j+"",fila.getString(0),fila.getString(1),fila.getString(2),
                             fila.getString(3),fila.getString(4),fila.getString(5),fila.getString(6)));
@@ -901,7 +987,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
         try{
             listaPSincro.clear();
             @SuppressLint("Recycle") Cursor fila = db.rawQuery("SELECT PRODUCTO,"+
-                    "UBICACION,CONTEO FROM DIFUBIEXIST WHERE EMPRESA='"+serv+"' ", null);
+                    "UBICACION,CONTEO FROM DIFUBIEXIST WHERE EMPRESA='"+serv+"' AND CONTEO>0 ", null);
             if (fila != null && fila.moveToFirst()) {
                 do {
                     listaPSincro.add(new DifUbiExist("",fila.getString(0),"","",
@@ -955,158 +1041,89 @@ public class ActivityDifUbiExi extends AppCompatActivity {
         }catch(Exception e){}
     }//eliminarSql
 
-    public static String convertStandardJSONString(String data_json) {
-        data_json = data_json.replaceAll("\\\\r\\\\n", "");
-        data_json = data_json.replace("\"{", "{");
-        data_json = data_json.replace("}\",", "},");
-        data_json = data_json.replace("}\"", "}");
-        return data_json;
-    }
-
-
-    private class AsyncActualizaDif2 extends AsyncTask<Void, Void, Void> {
-
-        private ArrayList<String> lista;
-        private String pro,cc,ubic;
-        private int contador=0;
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressDialog.show();
-        }//onPreExecute
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            /*HttpHandler sh = new HttpHandler();
-            String xml=
-                    "<k_folio>0000001</k_folio>"+
-                    "<k_suc>01</k_suc>"+
-                    "<datos>" +
-                    "<k_prod>PROD1</k_prod>"+
-                    "<k_cont>10</k_cont>"+
-                    "<k_ubi>PS07-U87-9</k_ubi>"+
-                    "</datos>";
-
-            JSONObject jsonObject=null;
-            try {
-                jsonObject = XML.toJSONObject(xml);
-            } catch (JSONException e) {
-                e.printStackTrace();
+    public void mensajeDialog(String msg){
+        AlertDialog.Builder builder = new AlertDialog.Builder(ActivityDifUbiExi.this);
+        builder.setTitle("Respuesta");
+        builder.setMessage(msg);
+        builder.setCancelable(false);
+        builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                finish();
             }
+        });//negative botton
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }//mensajeDialog
 
-            String param="k_folio=0000001&k_suc=01&datos={k_prod=PROD&k_cont=10&k_ubi=UBI73-7747}&datos={k_prod=PROD2&k_cont=5&k_ubi=PS046EG}";
-            String url = "http://"+strServer+"/"+getString(R.string.resActualizaDif)+"?"+param;
-            String jsonStr = sh.makeServiceCall(url,strusr,strpass);
-            String response;
-            if(jsonStr !=null){
+    public String armarXml(){
+        String x="";
+        for(int i=0;i<lista2.size();i++){
+           x=x+"<Item>" +
+                   "<k_prod>"+lista2.get(i).getProducto()+"</k_prod>"+
+                   "<k_cont>"+lista2.get(i).getConteo()+"</k_cont>"+
+                   "<k_ubi>"+lista2.get(i).getUbicacion()+"</k_ubi>"
+                   +"</Item>";
+        }//for
+        return x;
+    }//armarXml
+
+
+    public void jSon(){
+        //mDialog.show();
+        String url = "http://"+strServer+"/"+getString(R.string.resActualizaDif);
+        mensaje="";
+        String xml="<Item>" +
+                "<k_prod>"+lista2.get(0).getProducto()+"</k_prod>"+
+                "<k_cont>"+lista2.get(0).getConteo()+"</k_cont>"+
+                "<k_ubi>"+lista2.get(0).getUbicacion()+"</k_ubi>"+
+                "</Item>"+ "<Item>" +
+                "<k_prod>"+lista2.get(1).getProducto()+"</k_prod>"+
+                "<k_cont>"+lista2.get(1).getConteo()+"</k_cont>"+
+                "<k_ubi>"+lista2.get(1).getUbicacion()+"</k_ubi>"+
+                "</Item>";
+
+        JsonObjectRequest jReq = new JsonObjectRequest(Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                //mDialog.dismiss();
                 try {
-                    JSONObject jsonObj = new JSONObject(jsonStr);
-                    JSONArray jsonArray = jsonObj.getJSONArray("Response");
-                    response=jsonArray.getString(0);
-                }catch (Exception e){
-                    Toast.makeText(ActivityDifUbiExi.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    mensaje=response.getString("Response").toString();
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-            }else {
-                //Log.e(TAG, "Problemas al traer datos");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mensaje="No fue posible obtener datos del servidor";
-                    }//run
-                });//runUniTthread
-            }//else
-            */
-
-            String url = "http://"+strServer+"/"+getString(R.string.resActualizaDif);
-            String xml=
-                    "<k_folio>0000001</k_folio>"+
-                    "<k_suc>01</k_suc>"+
-                    "<datos>" +
-                    "<k_prod>PROD1</k_prod>"+
-                    "<k_cont>10</k_cont>"+
-                    "<k_ubi>PS07-U87-9</k_ubi>"+
-                    "</datos>";
-
-            JSONObject jsonObject=null;
-            JsonObjectRequest jsonObjectRequest=null;
-
-            try {
-                //jsonObject= XML.toJSONObject(xml);
-                JSONObject dat= new JSONObject();
-                dat.put("k_prod","PROD1");
-                dat.put("k_cont","10");
-                dat.put("k_ubi","PS0-6260-77");
-
-                JSONObject js= new JSONObject();
-                js.put("k_folio","0000001");
-                js.put("k_suc","08");
-                js.put("datos",dat);
-
-                JsonRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, url, js, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        //now handle the response
-                        Toast.makeText(ActivityDifUbiExi.this, response.toString(), Toast.LENGTH_SHORT).show();
-
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                        //handle the error
-                        Toast.makeText(ActivityDifUbiExi.this, "An error occurred", Toast.LENGTH_SHORT).show();
-                        error.printStackTrace();
-
-                    }
-                }) {    //Headers
-                    @Override
-                    public Map<String, String> getHeaders() {
-                        Map<String, String> params = new HashMap<String, String>();
-                        params.put("user", strusr);
-                        params.put("pass", strpass);
-                        return params;
-                    }
-                };
-                mQueue.add(jsonRequest);
-            } catch (JSONException e) {
-                e.printStackTrace();
+                //mensajeDialog(mensaje);
             }
-            return null;
-        }//doInBackground
-
-        @Override
-        protected void onPostExecute(Void aBoolean) {
-            super.onPostExecute(aBoolean);
-            progressDialog.dismiss();
-            if (contador==listaPSincro.size()) {
-                lista2.clear();
-                rvDifUbiExi.setAdapter(null);
-                editor.clear().commit();
-                eliminarSql("");
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityDifUbiExi.this);
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        new AsyncFolios().execute();
-                    }//onclick
-                });//positivebutton
-                builder.setCancelable(false);
-                builder.setTitle("Resultado Sincronización").setMessage(contador+" Datos sincronizados").create().show();
-
-            }else{
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityDifUbiExi.this);
-                builder.setMessage("Error al sincronizar");
-                builder.setCancelable(false);
-                builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        finish();
-                    }
-                });//negative botton
-                AlertDialog dialog = builder.create();
-                dialog.show();
-                contados();
-            }//else
-        }//onPost
-    }//AsyncRecepCon
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //mDialog.dismiss();
+                mensaje=error.getMessage();
+            }
+        }){    //Headers
+            @Override
+            public Map<String, String> getHeaders() {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("user", strusr);
+                headers.put("pass", strpass);
+                return headers;
+            }
+            //params
+            public Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("k_folio",folio);
+                params.put("k_suc",strbran);
+                try {
+                    params.put("lista", String.valueOf(XML.toJSONObject(xml)));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return params;
+            }
+        };
+            /*stringRequest.setRetryPolicy(new DefaultRetryPolicy(MY_DEFAULT_TIMEOUT,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));*/
+        mQueue.add(jReq);
+    }//json
 }//ActivityInventario
