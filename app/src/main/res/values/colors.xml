@@ -8,5 +8,9 @@
     <color name="ColorGris">#D3D6D8</color>
     <color name="ColorFinalizado">#32997C</color>
     <color name="ColorTenue">#E9ECFF</color>
+    <color name="colorBlack">#0E0E0E</color>
+    <color name="colorRed">#B61B1B</color>
+    <color name="colorAzz">#223CCA</color>
+    <color name="colorVerdeAzul">#1E739A</color>
 
 </resources>

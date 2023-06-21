@@ -45,7 +45,7 @@ public class AdaptadorRecepConten extends RecyclerView.Adapter<AdaptadorRecepCon
         holder.tvPal.setText(datos.get(position).getPalet());
 
         if(index==position){
-            holder.lyRec.setBackgroundResource(R.color.ColorGris);
+            holder.lyRec.setBackgroundResource(R.color.ColorTenue);
         }else{
             holder.lyRec.setBackgroundColor(0);
         }

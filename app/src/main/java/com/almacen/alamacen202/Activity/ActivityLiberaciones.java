@@ -81,6 +81,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
+import dmax.dialog.SpotsDialog;
 import pl.droidsonroids.gif.GifImageView;
 
 public class ActivityLiberaciones extends AppCompatActivity {
@@ -186,6 +187,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
     AlertDialog dialog5 = null;
     AlertDialog.Builder builder6;
     AlertDialog dialog6 = null;
+    private AlertDialog mDialog;
 
     String FolioLiberacion;
     String Filtro;
@@ -207,6 +209,8 @@ public class ActivityLiberaciones extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_liberaciones);
         MyToolbar.show(this, "", true);
+        mDialog = new SpotsDialog.Builder().setContext(ActivityLiberaciones.this).
+                setMessage("Espere un momento...").build();
         preference = getSharedPreferences("Login", Context.MODE_PRIVATE);
         editor = preference.edit();
 
@@ -4439,7 +4443,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-
+            mDialog.show();
         }
 
         @Override
@@ -4452,6 +4456,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
         @RequiresApi(api = Build.VERSION_CODES.P)
         @Override
         protected void onPostExecute(Void result) {
+            mDialog.dismiss();
             dialog3 = builder3.create();
             dialog3.show();
 
@@ -4511,7 +4516,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-
+            mDialog.show();
         }
 
         @Override
@@ -4524,6 +4529,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
         @RequiresApi(api = Build.VERSION_CODES.P)
         @Override
         protected void onPostExecute(Void result) {
+            mDialog.dismiss();
             dialog3 = builder3.create();
             dialog3.show();
         }

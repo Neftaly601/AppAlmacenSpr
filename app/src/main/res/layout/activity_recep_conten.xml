@@ -49,7 +49,7 @@
                 android:text="Buscar Folios"
                 android:textColor="@color/ColorWhite"
                 android:textSize="10dp"
-                android:backgroundTint="@color/Amarillo"/>
+                app:backgroundTint="@color/Amarillo"/>
         </LinearLayout>
         <View
             android:layout_width="match_parent"
@@ -72,56 +72,31 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="10dp">
-
-
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="5dp"
-                android:gravity="center_vertical">
-                <RadioButton
-                    android:id="@+id/rdXProd"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/tvFolioR"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:buttonTint="@color/AzulBack"
-                    android:textSize="10dp"
-                    android:hint="Agr. por Prod."
-                    android:textColorHint="@color/AzulBack"
-                    android:checked="true"/>
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnPalet"
+                    android:layout_weight="1"
+                    android:text="FOLIO"
+                    android:textSize="20dp"
+                    android:textColor="@color/AzulBack"
+                    android:textStyle="bold"
+                    android:visibility="gone"/>
+                <TextView
+                    android:id="@+id/tvPalet"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:layout_marginLeft="5dp"
-                    android:layout_gravity="center"
-                    android:background="@drawable/roundbutton"
-                    android:text="Seleccionar Palet"
-                    android:textColor="@color/ColorWhite"
-                    android:textSize="10dp"
-                    android:backgroundTint="@color/AzulBack"/>
-
+                    android:layout_weight="1"
+                    android:text="PALET"
+                    android:textSize="20dp"
+                    android:textColor="@color/ColorFinalizado"
+                    android:textStyle="bold"
+                    android:visibility="gone"/>
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/tvPaletN"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="PALET"
-                android:textSize="18dp"
-                android:textColor="@color/AzulBack"
-                android:textStyle="bold"
-                android:visibility="gone"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/AzulBack"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"/>
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/txtProdR"
@@ -130,7 +105,6 @@
                 android:maxLength="40"
                 android:textSize="15dp"
                 android:inputType="text"
-                android:enabled="false"
                 android:imeOptions="actionNext"
                 tools:ignore="TextContrastCheck"/>
 
@@ -349,7 +323,6 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:clickable="true"
-                                android:maxLength="5"
                                 android:maxLines="1"
                                 android:textSize="15dp"
                                 android:enabled="false"/>
@@ -363,11 +336,43 @@
                         android:layout_weight="1"
                         android:src="@drawable/logokepler" />
                 </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/AzulBack"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"/>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="5dp"
+                android:gravity="center_vertical">
+                <RadioButton
+                    android:id="@+id/rdXProd"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:buttonTint="@color/AzulBack"
+                    android:textSize="10dp"
+                    android:hint="Agr. por Prod."
+                    android:textColorHint="@color/AzulBack"
+                    android:checked="true"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPalet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:layout_marginLeft="5dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/roundbutton"
+                    android:text="Seleccionar Palet"
+                    android:textColor="@color/ColorWhite"
+                    android:textSize="10dp"
+                    app:backgroundTint="@color/AzulBack"/>
 
-
-
-
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

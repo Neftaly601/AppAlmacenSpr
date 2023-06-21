@@ -40,7 +40,7 @@
                         android:layout_marginRight="10dp"
                         android:layout_weight="1"
                         android:background="@drawable/roundbutton"
-                        android:backgroundTint="@color/AzulBack"
+                        app:backgroundTint="@color/AzulBack"
                         android:onClick="TODFOLIOS"
                         android:text="@string/folios"
                         android:textColor="@color/ColorWhite"
@@ -67,7 +67,7 @@
                             android:text="Folio"
                             android:textColor="#FF0000"
                             android:textSize="20dp"
-                            tools:ignore="Suspicious0dp" />
+                            tools:ignore="Suspicious0dp"/>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"

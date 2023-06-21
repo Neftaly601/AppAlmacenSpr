@@ -52,7 +52,7 @@ import java.util.concurrent.CountDownLatch;
 import dmax.dialog.SpotsDialog;
 
 public class MainActivity extends AppCompatActivity {
-    private String user,name,lName,type,mail,codB,branch,msjToast="";
+    private String user="",name="",lName="",type="",mail="",codB="",branch="",msjToast="";
     private String res="";
     int result1 = 0;
     private Button btn1;

@@ -259,7 +259,7 @@
                     android:layout_gravity="bottom"
                     android:gravity="center"
                     android:background="@drawable/roundbutton"
-                    android:backgroundTint="@color/ColorGris"
+                    app:backgroundTint="@color/ColorGris"
                     app:icon="@drawable/icon_tranf"
                     app:iconPadding="2dp"
                     app:iconSize="18dp"
@@ -325,7 +325,7 @@
                 app:iconTint="@null"
                 android:enabled="false"
                 android:onClick="guarda"
-                android:backgroundTint="@color/ColorGris"/>
+                app:backgroundTint="@color/ColorGris"/>
 
         </LinearLayout>
 

@@ -2,6 +2,7 @@
     <string name="app_name">Almacen Kepler</string>
     <string name="buscar">Buscar</string>
     <string name="version_1_6">Version 1.9.8</string>
+    <string name="versionNum">1.9.8</string>
     <string name="usuario">Usuario</string>
     <string name="escanear">Escanear</string>
     <string name="comprometidas">COMPROMETIDAS</string>
@@ -35,6 +36,16 @@
     <string name="terminar">Terminar</string>
     <string name="maximo">MÁXIMO</string>
     <string name="minimo">MÍNIMO</string>
+    <string name="sucursales">SUCURSALES</string>
+    <string name="clave">CLAVE</string>
+    <string name="cant">CANT</string>
+    <string name="surtido">SURTIDO</string>
+    <string name="celda">Celda</string>
+    <string name="surtir">Surtir</string>
+    <string name="sugerido">Sugerido</string>
+    <string name="stock">Bajar a Stock</string>
+    <string name="cantCel">Cantidad Celda</string>
+    <string name="rellenar">Rellenar Celda</string>
     <!-- https://vazlo.com.mx/assets/img/productos/chica/jpg/-->
     <string name="urlImagenesGeneral">https://www.jacve.mx/es-mx/img/products/xl/</string><!--URL genereal imagenes -->
     <string name="urlImagenesSPR">https://jacve.mx/es-mx/img/products/md/</string>
@@ -49,4 +60,5 @@
     <string name="resRecepConten">resRecepConten</string>
     <string name="resRecepXProd">resRecepXProd</string>
     <string name="resRecepFolios">resRecepFolios</string>
+    <string name="resDetUbi">resDetUbi</string>
 </resources>

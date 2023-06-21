@@ -90,7 +90,7 @@
                         android:layout_height="40dp"
                         android:layout_marginTop="10dp"
                         android:background="@drawable/roundbutton"
-                        android:backgroundTint="@color/AzulBack"
+                        app:backgroundTint="@color/AzulBack"
                         android:text="Seleccionar"
                         android:textSize="10dp"
                         app:icon="@drawable/icon_seleccionar"

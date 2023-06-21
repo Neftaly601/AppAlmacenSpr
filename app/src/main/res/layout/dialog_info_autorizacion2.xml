@@ -50,7 +50,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:background="@drawable/roundbutton"
-                android:backgroundTint="@color/AzulBack"
+                app:backgroundTint="@color/AzulBack"
                 android:text="ACEPTAR"
                 android:textColor="@color/ColorWhite"
                 android:textSize="14dp"/>

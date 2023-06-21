@@ -171,7 +171,7 @@
                     android:layout_gravity="center"
                     android:layout_margin="40dp"
                     android:background="@drawable/roundbutton"
-                    android:backgroundTint="@color/Amarillo"
+                    app:backgroundTint="@color/Amarillo"
                     android:text="Ingresar"
                     android:textColor="#000000" />
 

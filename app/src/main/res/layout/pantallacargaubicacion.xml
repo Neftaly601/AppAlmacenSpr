@@ -58,9 +58,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="CANCELAR"
-            android:onClick="cancelar"
-
-            ></Button>
+            android:onClick="cancelar"/>
 
 
         <View

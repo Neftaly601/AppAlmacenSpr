@@ -99,7 +99,7 @@
                 android:layout_marginRight="10dp"
                 android:layout_weight="1"
                 android:background="@drawable/roundbutton"
-                android:backgroundTint="@color/AzulBack"
+                app:backgroundTint="@color/AzulBack"
                 android:onClick="FirtMet"
                 android:text="@string/buscar"
                 android:textColor="@color/ColorWhite"

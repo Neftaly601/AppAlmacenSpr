@@ -67,7 +67,7 @@
                         android:lines="2"
                         android:text="Buscar Folios"
                         android:textColor="@color/ColorWhite"
-                        android:backgroundTint="@color/colorPrimary"
+                        app:backgroundTint="@color/colorPrimary"
                         android:layout_marginLeft="5dp"
                         android:onClick="buscaFolios"
                         app:icon="@drawable/icons8_lupa"
@@ -167,7 +167,7 @@
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:background="@drawable/roundbutton"
-                    android:backgroundTint="@color/AzulBack"
+                    app:backgroundTint="@color/AzulBack"
                     android:maxLines="1"
                     android:text="CLAVE MANUAL SUPERVISOR"
                     android:textColor="@color/cardview_light_background"
@@ -270,7 +270,7 @@
                         android:layout_margin="5dp"
                         android:text="@string/guardar"
                         android:background="@drawable/roundbutton"
-                        android:backgroundTint="@color/ColorGris"
+                        app:backgroundTint="@color/ColorGris"
                         android:textColor="@color/ColorWhite"
                         android:textSize="14sp"
                         android:enabled="false"/>
@@ -290,7 +290,7 @@
                 android:text="@string/sincronizar"
                 android:textColor="@color/ColorWhite"
                 android:textSize="14sp"
-                android:backgroundTint="@color/Amarillo"/>
+                app:backgroundTint="@color/Amarillo"/>
 
             <LinearLayout
                 android:layout_width="match_parent"

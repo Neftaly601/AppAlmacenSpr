@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,29 +25,38 @@ import com.almacen.alamacen202.Activity.ActivityInventario;
 import com.almacen.alamacen202.Activity.ActivityInventarioXProd;
 import com.almacen.alamacen202.Activity.ActivityLiberaciones;
 import com.almacen.alamacen202.Activity.ActivityRecepTraspMultSuc;
-import com.almacen.alamacen202.Activity.ActivityRecolectMontCarg;
+import com.almacen.alamacen202.Activity.ActivityResurtBal;
 import com.almacen.alamacen202.Activity.ActivityRepEtiquetas;
 import com.almacen.alamacen202.Activity.ActivityResurtidoPicking;
 import com.almacen.alamacen202.Activity.ActivityRecepConten;
 import com.almacen.alamacen202.Activity.ActivityTrasladoUbi;
 import com.almacen.alamacen202.Activity.ActivityInventarioXfolioComp;
+import com.almacen.alamacen202.SetterandGetters.RecepListSucCont;
 import com.almacen.alamacen202.Sqlite.ConexionSQLiteHelper;
+import com.almacen.alamacen202.includes.HttpHandler;
 import com.almacen.alamacen202.includes.MyToolbar;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import dmax.dialog.SpotsDialog;
 
 public class ActivityMenu extends AppCompatActivity {
 
 
     private ImageView imgVi;
-    private String StrServer;
+    private String StrServer,strusr,strpass,mensaje="",versionApp;
     private LinearLayout Conten;
-    private SharedPreferences preference,preferenceF,preferenceD;
-    private SharedPreferences.Editor editor,editor2,editor3;
+    private SharedPreferences preference,preferenceF,preferenceD,preferenceR;
+    private SharedPreferences.Editor editor,editor2,editor3,editor4;
     private String codeBarClave,urlImagenes,extIm;;
 
     private ConexionSQLiteHelper conn;
     private SQLiteDatabase db;
     private LinearLayout lyAdicSPR,ly2;
+    private AlertDialog mDialog;
 
 
     @Override
@@ -60,12 +70,20 @@ public class ActivityMenu extends AppCompatActivity {
         preference = getSharedPreferences("Login", Context.MODE_PRIVATE);
         preferenceF = getSharedPreferences("Folio", Context.MODE_PRIVATE);//para guardar folio
         preferenceD = getSharedPreferences("FolioDif", Context.MODE_PRIVATE);//para guardar folio
+        preferenceR = getSharedPreferences("FoliosGuarda", Context.MODE_PRIVATE);
         editor = preference.edit();
         editor2 = preferenceF.edit();
         editor3 = preferenceD.edit();
+        editor4 = preferenceR.edit();
         Conten = findViewById(R.id.ContImage);
         imgVi = findViewById(R.id.productoImag);
         StrServer = preference.getString("Server", "null");
+        strusr = preference.getString("user", "null");
+        strpass = preference.getString("pass", "null");
+        versionApp=getString(R.string.versionNum);
+        mDialog = new SpotsDialog.Builder().setContext(ActivityMenu.this).
+                setMessage("Espere un momento...").build();
+        mDialog.setCancelable(false);
 
         urlImagenes=getString(R.string.urlImagenesGeneral);
         extIm=getString(R.string.ext);
@@ -189,15 +207,88 @@ public class ActivityMenu extends AppCompatActivity {
         editor.putString("urlImagenes",urlImagenes);
         editor.putString("ext", extIm);
         editor.commit();
+        new AsyncVersionesApp().execute();
     }
+
+    private class AsyncVersionesApp extends AsyncTask<Void, Boolean, Boolean> {
+        String respuesta="";
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mDialog.show();
+        }//onPreExecute
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            HttpHandler sh = new HttpHandler();//separar párametros con &
+            String parametros="Clave=3";
+            String url = "http://"+StrServer+"/resVersionesApp?"+parametros;
+            String jsonStr = sh.makeServiceCall(url,strusr,strpass);
+            //Log.e(TAG, "Respuesta de la url: " + jsonStr);
+            if (jsonStr != null) {
+                try {
+                    JSONObject jsonObj = new JSONObject(jsonStr);
+                    // Obtener array de datos
+                    JSONArray jsonArray = jsonObj.getJSONArray("Response");
+                    respuesta=jsonArray.getString(0);
+                }catch (final JSONException e) {
+                    //Log.e(TAG, "Error al convertir Json: " + e.getMessage());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            respuesta=e.getMessage();
+                        }//run
+                    });
+                }//catch JSON EXCEPTION
+            } else {
+                //Log.e(TAG, "Problemas al traer datos");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        respuesta="No fue posible obtener datos del servidor";
+                    }//run
+                });//runUniTthread
+            }//else
+            return null;
+        }//doInBackground
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+            mDialog.dismiss();
+            if(!respuesta.equals(versionApp)){//si la vresion no es la misma
+                if(!respuesta.equals("")){
+                    mensaje="Hay una nueva actualización, favor de instalarla";
+                }else{
+                    mensaje=respuesta;
+                }
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityMenu.this);
+                builder.setTitle("AVISO");
+                builder.setMessage(mensaje);
+                builder.setCancelable(false);
+                builder.setNegativeButton("Aceptar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }//if
+        }//onPost
+    }//AsyncVersionesApp
+
+
     public void eliminarSqlySP() {//eliminar bd y shared preferences yani(true cuando tambien se incluya la de inventario)
         try{
             SQLiteDatabase db = conn.getWritableDatabase();
             db.delete("INVENTARIOALM",null,null);
             db.delete("INVENTARIO",null,null);
             db.delete("DIFUBIEXIST",null,null);
+            db.delete("RECEPCONT",null,null);
             editor2.clear().commit();
             editor3.clear().commit();
+            editor4.clear().commit();
         }catch(Exception e){}
     }//eliminarSql
 
@@ -245,7 +336,7 @@ public class ActivityMenu extends AppCompatActivity {
         startActivity(intent);
     }//diferencia entre ubicaciones y existenciasinventario
     public void recolectMontCarg(View v){
-        Intent intent = new Intent(ActivityMenu.this, ActivityRecolectMontCarg.class);
+        Intent intent = new Intent(ActivityMenu.this, ActivityResurtBal.class);
         startActivity(intent);
     }//recolectMontCarg
     public void recepCont(View v){

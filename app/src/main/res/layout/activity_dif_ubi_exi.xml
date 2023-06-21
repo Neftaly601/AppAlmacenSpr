@@ -68,7 +68,7 @@
                         android:lines="2"
                         android:text="Buscar Folios"
                         android:textColor="@color/ColorWhite"
-                        android:backgroundTint="@color/colorPrimary"
+                        app:backgroundTint="@color/colorPrimary"
                         android:layout_marginLeft="5dp"
                         android:onClick="buscaFolios"
                         app:icon="@drawable/icons8_lupa"
@@ -158,7 +158,7 @@
                 android:lines="2"
                 android:maxLines="2"
                 android:background="@drawable/roundbutton"
-                android:backgroundTint="@color/colorPrimary"
+                app:backgroundTint="@color/colorPrimary"
                 android:textColor="@color/ColorWhite"
                 android:textSize="14sp"
                 app:icon="@drawable/icon_actualizar"
@@ -190,7 +190,7 @@
                     android:lines="2"
                     android:maxLines="2"
                     android:background="@drawable/roundbutton"
-                    android:backgroundTint="@color/Amarillo"
+                    app:backgroundTint="@color/Amarillo"
                     android:textColor="@color/ColorWhite"
                     android:textSize="14sp"
                     app:icon="@drawable/icons_ubica_inv"
@@ -404,7 +404,7 @@
                     android:layout_marginBottom="5dp"
                     android:text="@string/guardar"
                     android:background="@drawable/roundbutton"
-                    android:backgroundTint="@color/ColorGris"
+                    app:backgroundTint="@color/ColorGris"
                     android:textColor="@color/ColorWhite"
                     android:textSize="14sp"
                     android:enabled="false"/>
@@ -421,7 +421,7 @@
                 android:text="@string/sincronizar"
                 android:textColor="@color/ColorWhite"
                 android:textSize="14sp"
-                android:backgroundTint="@color/Amarillo"/>
+                app:backgroundTint="@color/Amarillo"/>
             <View
                 android:layout_width="match_parent"
                 android:layout_height="2dp"

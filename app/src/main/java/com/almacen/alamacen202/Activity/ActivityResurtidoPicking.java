@@ -86,6 +86,7 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
     private boolean pendientes=false;//saber si hay pendientes o no
     private String urlImagenes,extImg;
     private TextView tvOrigenR,tvCantOrig,tvNecesidad;
+    private EditText txtDestEmpq;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -160,7 +161,7 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
                                     firtMet();
                                     dialogInterface.cancel();
                                 }//onClick
-                            }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                            }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener(){
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     dialogInterface.cancel();
@@ -294,6 +295,7 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
                 // listaCantString.add(listaUbic.get(i).getCantidad());
                 tvOrigenR.setText(listaUbic.get(i).getUbicacion());
                 tvCantOrig.setText(listaUbic.get(i).getCantidad());
+                //txtDestEmpq.setText(listaUbic.get(i).getCantidad());
                 break;
             }
         }//acomodar en lista string las ubicaciones
@@ -327,7 +329,7 @@ public class ActivityResurtidoPicking extends AppCompatActivity {
         final TextView tvDescProdDial = dialogView.findViewById(R.id.tvDescProdDial);
         tvCantOrig = dialogView.findViewById(R.id.tvCantOrig);
         final TextView tvCantEmpq = dialogView.findViewById(R.id.tvCantEmpq);
-        final EditText txtDestEmpq=dialogView.findViewById(R.id.txtDestEmpq);
+        txtDestEmpq=dialogView.findViewById(R.id.txtDestEmpq);
         tvNecesidad = dialogView.findViewById(R.id.tvNecesidad);
         tvOrigenR = dialogView.findViewById(R.id.tvOrigenR);
 

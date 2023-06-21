@@ -216,7 +216,7 @@
                 app:icon="@drawable/icons8_paquete"
                 app:iconTint="@null"
                 android:onClick="guarda"
-                android:backgroundTint="@color/Amarillo"/>
+                app:backgroundTint="@color/Amarillo"/>
 
 
 

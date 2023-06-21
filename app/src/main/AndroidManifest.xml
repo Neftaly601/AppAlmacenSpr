@@ -15,7 +15,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        >
         <activity android:name=".ActivityPerfil"></activity>
         <activity
             android:name=".RecepCompras"
@@ -65,7 +66,7 @@
             android:parentActivityName=".ActivityMenu"/>
 
         <activity
-            android:name=".Activity.ActivityRecolectMontCarg"
+            android:name=".Activity.ActivityResurtBal"
             android:configChanges="screenSize|orientation"
             android:parentActivityName=".ActivityMenu"/>
         <activity

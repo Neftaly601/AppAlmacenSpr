@@ -30,22 +30,12 @@ public class ConexionSQLiteHelper extends SQLiteOpenHelper {
             "ESTATUS INTEGER,"+//CONTADOS 1 NO CONTADOS 0
             "PRIMARY KEY(EMPRESA,PRODUCTO))";
 
-    final String CREAR_TABLA_RECEPCONT = "CREATE TABLE RECEPCONT (" +
-            "FOLIO VARCHAR (15)," +
-            "PRODUCTO VARCHAR (15)," +
-            "CANTIDAD INTEGER (11)," +
-            "PRIORIDAD VARCHAR (2),"+
-            "PALET VARCHAR(50)," +
-            "ESCANMTRZ INTEGER(5),"+
-            "ESCANCDMX INTEGER(5),"+
-            "ESCANCUL INTEGER(5),"+
-            "ESCANMTY INTEGER(5),"+
-            "PRIMARY KEY(FOLIO,PRODUCTO))";
-
-    final String CREAR_TABLA_PALET = "CREATE TABLE PALET (" +
+    final String CREAR_TABLA_RECEPCONT = "CREATE TABLE RECEPCONT(" +
             "FOLIO VARCHAR (15)," +
             "PRODUCTO VARCHAR (15)," +
             "NAMEPALET VARCHAR(50)," +
+            "CANTIDAD INTEGER (11)," +
+            "PRIORIDAD VARCHAR (2),"+
             "PRIMARY KEY(FOLIO,PRODUCTO,NAMEPALET))";
 
 
@@ -60,7 +50,6 @@ public class ConexionSQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(CREAR_TABLA_INVENTARIO);
         db.execSQL(CREAR_TABLA_DIFUBIEXIST);
         db.execSQL(CREAR_TABLA_RECEPCONT);
-        db.execSQL(CREAR_TABLA_PALET);
 
     }//onCreate
 
@@ -70,7 +59,6 @@ public class ConexionSQLiteHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS CREAR_TABLA_INVENTARIO");
         db.execSQL("DROP TABLE IF EXISTS CREAR_TABLA_DIFUBIEXIST");
         db.execSQL("DROP TABLE IF EXISTS CREAR_TABLA_RECEPCONT");
-        db.execSQL("DROP TABLE IF EXISTS CREAR_TABLA_PALET");
         onCreate(db);
     }//onUpgrade
 }

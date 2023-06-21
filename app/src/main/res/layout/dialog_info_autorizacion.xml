@@ -170,7 +170,7 @@
             android:layout_weight="1"
             android:autoSizeTextType="none"
             android:background="@drawable/roundbutton"
-            android:backgroundTint="@color/AzulBack"
+            app:backgroundTint="@color/AzulBack"
             android:onClick="Bitacora"
             android:text="ACEPTAR"
             android:textColor="@color/ColorWhite"

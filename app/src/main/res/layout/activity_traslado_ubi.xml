@@ -79,7 +79,7 @@
                     android:layout_marginRight="10dp"
                     android:layout_weight="1"
                     android:background="@drawable/roundbutton"
-                    android:backgroundTint="@color/AzulBack"
+                    app:backgroundTint="@color/AzulBack"
                     android:onClick="BuquedaManual"
                     android:text="Busqueda Manual"
                     android:textColor="@color/ColorWhite"

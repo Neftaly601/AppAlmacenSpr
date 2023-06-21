@@ -84,9 +84,11 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -100,16 +102,16 @@ public class ActivityRecepConten extends AppCompatActivity {
     private float existMtz=0,existCdmx=0,existCul=0,existMty=0,existRep=0,repMtz=0,repCdmx=0,repCul=0,repMty=0,repAct=0;
     private float faltMtz=0,faltCdmx=0,faltCul=0,faltMty=0;
     private float demBMtz=0,demBCdmx=0,demBCul=0,demBMty=0;
-    private int posicion=0,posF=0;
+    private int posicion=0,posF=0,contReg=0;
     private ArrayAdapter<String> adapterLv;
 
     private String strusr,strpass,strbran,strServer,codeBar,mensaje,producto="",clasf="";
     private String folioAct="",folio1,folio2,folio3,sqlW="",porpalet="";
-    private String[] folios;
+    private ArrayList<String> folios = new ArrayList<>();
     private ArrayList<RecepConten> listaRecep = new ArrayList<>();
     private ArrayList<RecepListSucCont> listaSucRecep = new ArrayList<>();
     private ListView lvFolios;
-    private TextView tvPaletN;
+    private TextView tvFolioR,tvPalet;
     private EditText txtProdR,txtCantRec,txtPalet,txtProdVi;
     private ImageView ivProdR;
     private TextView tvRepMatr,tvRepCdmx,tvRepCul,tvRepMty;
@@ -163,7 +165,8 @@ public class ActivityRecepConten extends AppCompatActivity {
         txtProdVi       = findViewById(R.id.txtProdVi);
         rdXProd         = findViewById(R.id.rdXProd);
         btnPalet        = findViewById(R.id.btnPalet);
-        tvPaletN        = findViewById(R.id.tvPaletN);
+        tvFolioR        = findViewById(R.id.tvFolioR);
+        tvPalet         = findViewById(R.id.tvPalet);
 
         conn = new ConexionSQLiteHelper(ActivityRecepConten.this, "bd_INVENTARIO", null, 1);
         db = conn.getReadableDatabase();//apertura de la base de datos interna
@@ -172,12 +175,15 @@ public class ActivityRecepConten extends AppCompatActivity {
         adapter = new AdaptadorRecepConten(listaRecep);
         keyboard = (InputMethodManager) getSystemService(ActivityRecepConten.INPUT_METHOD_SERVICE);
 
+        txtProdR.setInputType(InputType.TYPE_NULL);
+        txtProdR.requestFocus();
+
         rdXProd.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b==true){
                     porpalet="";
-                    tvPaletN.setVisibility(View.GONE);
+                    tvPalet.setVisibility(View.GONE);
                     lvFolios.performItemClick(lvFolios.getAdapter().getView(posF, null, null),
                             posF,
                             lvFolios.getAdapter().getItemId(posF));
@@ -195,32 +201,48 @@ public class ActivityRecepConten extends AppCompatActivity {
         lvFolios.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String wpal="";
                 view.setSelected(true);
                 posF=i;
-                txtProdR.setText("");
-                posicion=-1;
                 limpiarCampos();
-                if(!porpalet.equals("")){wpal=" AND NAMEPALET='"+porpalet+"' ";}
                 if(i>0){//cuando hay folio seleccionado
-                    folioAct=folios[i];
-                    sqlW="SELECT R.PRODUCTO,R.CANTIDAD,R.PRIORIDAD,R.ESCANMTRZ,R.ESCANCDMX,"+
-                            "R.ESCANCUL,R.ESCANMTY,'',IFNULL(GROUP_CONCAT(P.NAMEPALET,','),'NP') AS NAMEPALET FROM RECEPCONT R "+
-                            "LEFT JOIN(SELECT PRODUCTO,NAMEPALET FROM PALET WHERE " +
-                            "FOLIO='"+folioAct+"' "+wpal+" GROUP BY PRODUCTO,NAMEPALET) P ON(P.PRODUCTO=R.PRODUCTO) " +
-                            "WHERE R.FOLIO='"+folioAct+"' AND NAMEPALET NOT LIKE '%NP%' GROUP BY R.PRODUCTO ORDER BY R.PRODUCTO ";
-                    tipoBusq=true;
-                    consultaSql(sqlW);
+                    folioAct=folios.get(i);
+                    tvFolioR.setText("FOLIO: "+folioAct);
+                    tvFolioR.setVisibility(View.VISIBLE);
+                    if(!porpalet.equals("")){//sin palet
+                        sqlW="SELECT PRODUCTO,CANTIDAD,PRIORIDAD,''," +
+                                "NAMEPALET FROM RECEPCONT " +
+                                "WHERE  FOLIO='"+folioAct+"' AND NAMEPALET='"+porpalet+"'";
+                        tvPalet.setVisibility(View.VISIBLE);
+                        tvPalet.setText("PALET: "+porpalet);
+                    }else{//con palet
+                        sqlW="SELECT R.PRODUCTO,SUM(R.CANTIDAD),R.PRIORIDAD,''," +
+                                "IFNULL(GROUP_CONCAT(R.NAMEPALET,','),'NP') AS PALET FROM RECEPCONT R " +
+                                "WHERE R.FOLIO='"+folioAct+"' GROUP BY R.PRODUCTO,R.PRIORIDAD HAVING PALET NOT LIKE '%NP%' ";
+                    }
                 }else{//cuando es todos los folios
+                    tvFolioR.setVisibility(View.GONE);
                     folioAct="";
-                    sqlW="SELECT R.PRODUCTO,SUM(R.CANTIDAD),R.PRIORIDAD,SUM(R.ESCANMTRZ),SUM(R.ESCANCDMX),"+
-                            "SUM(R.ESCANCUL),SUM(R.ESCANMTY)," +
-                            "(SELECT GROUP_CONCAT(FOLIO,',') FROM RECEPCONT WHERE PRODUCTO=R.PRODUCTO  GROUP BY PRODUCTO), " +
-                            "IFNULL((SELECT GROUP_CONCAT(NAMEPALET,',') FROM PALET WHERE PRODUCTO=R.PRODUCTO "+wpal+" GROUP BY FOLIO),'NP') AS NAMEPALET FROM RECEPCONT R " +
-                            "WHERE NAMEPALET NOT LIKE '%NP%' GROUP BY R.PRODUCTO,R.PRIORIDAD ORDER BY R.PRODUCTO ";
-                    tipoBusq=false;
-                    consultaSql(sqlW);
+                    if(!porpalet.equals("")){//sin palet
+                        sqlW="SELECT PRODUCTO,CANTIDAD,PRIORIDAD,FOLIO," +
+                                "NAMEPALET FROM RECEPCONT " +
+                                "WHERE NAMEPALET='"+porpalet+"'";
+                        tvPalet.setVisibility(View.VISIBLE);
+                        tvPalet.setText("PALET: "+porpalet);
+                    }else{//con palet
+                        /*sqlW="SELECT R.PRODUCTO,SUM(R.CANTIDAD),R.PRIORIDAD,IFNULL((SELECT GROUP_CONCAT(FOLIO,',') " +
+                                "FROM (SELECT DISTINCT FOLIO FROM RECEPCONT WHERE PRODUCTO=R.PRODUCTO)),'')," +
+                                "IFNULL(GROUP_CONCAT(R.NAMEPALET,','),'NP') AS PALET FROM RECEPCONT R " +
+                                " GROUP BY R.PRODUCTO,R.PRIORIDAD HAVING PALET NOT LIKE '%NP%' ";*/
+                        sqlW="SELECT R.PRODUCTO,SUM(R.CANTIDAD),R.PRIORIDAD," +
+                                "IFNULL((SELECT GROUP_CONCAT(FOLIO,',') " +
+                                "FROM (SELECT DISTINCT FOLIO FROM RECEPCONT WHERE PRODUCTO=R.PRODUCTO)),'')," +
+                                "IFNULL((SELECT GROUP_CONCAT(NAMEPALET,',') "+
+                                "FROM (SELECT DISTINCT NAMEPALET FROM RECEPCONT WHERE PRODUCTO=R.PRODUCTO)),'') AS PALET FROM RECEPCONT R " +
+                                " GROUP BY R.PRODUCTO,R.PRIORIDAD ";
+                    }
                 }//else
+                tipoBusq=false;
+                consultaSql(sqlW);
             }
         });
 
@@ -242,25 +264,22 @@ public class ActivityRecepConten extends AppCompatActivity {
                 if(!editable.toString().equals("")){
                     txtProdVi.setText(producto);
                     buscarProd(producto);
-                    consultaSql(sqlW);
+                    lvFolios.performItemClick(lvFolios.getAdapter().getView(posF, null, null),
+                            posF,
+                            lvFolios.getAdapter().getItemId(posF));
+                    txtProdR.setText("");
                 }//if es diferente a vacio
             }//after
         });//txtProd textchange
 
         if(!folio1.equals("")){
-            int tam=2;
-            if(!folio3.equals("")){
-                tam=4;
-            }if(!folio2.equals("")){
-                tam=3;
-            }//else if
-            folios= new String[tam];
-            folios[0]="--Todos--";
-            folios[1]=folio1;
+            folios.clear();
+            folios.add("--Todos--");
+            folios.add(folio1);
             if(!folio2.equals("")){
-                folios[2]=folio2;
-            }else if(!folio3.equals("")){
-                folios[3]=folio3;
+                folios.add(folio2);
+            }if(!folio3.equals("")){
+                folios.add(folio3);
             }//else
             listaFolios();
             consultaSql(sqlW);
@@ -277,7 +296,7 @@ public class ActivityRecepConten extends AppCompatActivity {
             if(!folioAct.equals("")){
                 whe=" WHERE FOLIO='"+folioAct+"'";
             }
-            @SuppressLint("Recycle") Cursor fila = db.rawQuery("SELECT NAMEPALET FROM PALET  "+whe+" GROUP BY NAMEPALET ORDER BY NAMEPALET", null);
+            @SuppressLint("Recycle") Cursor fila = db.rawQuery("SELECT NAMEPALET FROM RECEPCONT  "+whe+" GROUP BY NAMEPALET ORDER BY NAMEPALET", null);
             int t=fila.getCount();
             palets= new String[t];
             if (fila != null && fila.moveToFirst()) {
@@ -296,8 +315,8 @@ public class ActivityRecepConten extends AppCompatActivity {
                     lvFolios.performItemClick(lvFolios.getAdapter().getView(posF, null, null),
                             posF,
                             lvFolios.getAdapter().getItemId(posF));
-                    tvPaletN.setVisibility(View.VISIBLE);
-                    tvPaletN.setText("PALET: "+porpalet);
+                    tvPalet.setVisibility(View.VISIBLE);
+                    tvPalet.setText("PALET: "+porpalet);
                     rdXProd.setChecked(false);
                 }
             }).setNegativeButton("Cancelar",null);
@@ -335,7 +354,10 @@ public class ActivityRecepConten extends AppCompatActivity {
         tvRepCdmx.setText("0");
         tvRepCul.setText("0");
         tvRepMty.setText("0");
-        tvPaletN.setText("");
+        tvFolioR.setText("");
+        tvFolioR.setVisibility(View.GONE);
+        tvPalet.setText("");
+        tvPalet.setVisibility(View.GONE);
         ivProdR.setImageResource(R.drawable.logokepler);
     }//limpiarCampos
 
@@ -525,19 +547,27 @@ public class ActivityRecepConten extends AppCompatActivity {
 
     public void buscarProd(String prod){
         try{
-            String sqlP="";
-            if(!folioAct.equals("")){
-                sqlP="SELECT PALET,CANTIDAD FROM RECEPCONT WHERE PRODUCTO=''"+prod+"' AND FOLIO='"+folioAct+"'";
+            String cant="",palet="";
+            boolean band=false;
+            for(int i=0;i<listaRecep.size();i++){
+                if(listaRecep.get(i).getProducto().equals(prod)){
+                    cant=listaRecep.get(i).getCantidad();
+                    palet=listaRecep.get(i).getPalet();
+                    band=true;
+                    posicion=i;
+                    break;
+                }
+            }//for
+            if(band==true){
+                new AsyncRecepXProd(prod,cant,palet).execute();
             }else{
-                sqlP="SELECT GROUP_CONCAT(P.PALET,','),SUM(R.CANTIDAD) FROM RECEPCONT LEFT JOIN PALET P ON" +
-                        "(P.PRODUCTO=R.PRODUCTO AND P.FOLIO=R.FOLIO) WHERE R.PRODUCTO=''"+prod+"' GROUP BY R.FOLIO";
+                limpiarCampos();
+                producto="";
+                Toast.makeText(this, "Puede que el producto no exista en el folio seleccionado y/o palet", Toast.LENGTH_SHORT).show();
             }
-            @SuppressLint("Recycle") Cursor fila = db.rawQuery(sqlP, null);
-            if (fila != null && fila.moveToFirst()) {
-                new AsyncRecepXProd(producto,fila.getString(0),fila.getString(1)).execute();
-            }//if
-            fila.close();
         }catch(Exception e){
+            limpiarCampos();
+            producto="";
             Toast.makeText(ActivityRecepConten.this, "No se encontró el producto", Toast.LENGTH_SHORT).show();
         }//catch
     }
@@ -547,16 +577,18 @@ public class ActivityRecepConten extends AppCompatActivity {
             listaRecep.clear();
             rvRecep.setAdapter(null);
             int j=0;
+            int gu=-1;
             @SuppressLint("Recycle") Cursor fila = db.rawQuery(sql, null);
             if (fila != null && fila.moveToFirst()) {
                 do {
                     j++;
                     if(producto.equals(fila.getString(0))){
-                        posicion=j-1;
+                        gu=j-1;
                     }
-                    listaRecep.add(new RecepConten(j+"",fila.getString(0),fila.getString(1),fila.getString(2),fila.getString(3),
-                            fila.getString(4),fila.getString(5),fila.getString(6),fila.getString(7),fila.getString(8)));
+                    listaRecep.add(new RecepConten(j+"",fila.getString(0),fila.getString(1),
+                            fila.getString(2),fila.getString(3),fila.getString(4)));
                 } while (fila.moveToNext());
+                posicion=gu;
                 mostrarLista();
             }//if
             fila.close();
@@ -566,42 +598,19 @@ public class ActivityRecepConten extends AppCompatActivity {
         }//catch
     }//consultaSql
 
-    public boolean insertarSqlPalet(String folio,String prod,String palet){
-        boolean res=false;
-            try {
-                ContentValues valores;
-                String[] paltCu = palet.split(",");
-                for(int i=0;i< paltCu.length;i++){
-                    valores = new ContentValues();
-                    valores.put("FOLIO", folio);
-                    valores.put("PRODUCTO", prod);
-                    valores.put("NAMEPALET", paltCu[i]);
-                    db.insertOrThrow("PALET",null,valores);
-                    res=true;
-                }//for
-            }catch (SQLException sqlException){
-                sqlException=sqlException;
-            }catch (Exception e){
-        }
-        return res;
-    }//insertarSqlPalet
 
-
-    public boolean insertarSql(String folio,String prod,String cant,String prior,String escanMtrz,String escanCdmx,String escanCul,String escanMty,String palet){
+    public boolean insertarSql(String folio,String prod,String palet,String cantp,String prior){
         boolean res=false;
         try{
             ContentValues valores = new ContentValues();
             valores.put("FOLIO", folio);
             valores.put("PRODUCTO", prod);
-            valores.put("CANTIDAD", cant);
+            valores.put("NAMEPALET", palet);
+            valores.put("CANTIDAD", cantp);
             valores.put("PRIORIDAD", prior);
-            //valores.put("PALET", palet);
-            valores.put("ESCANMTRZ", escanMtrz);
-            valores.put("ESCANCDMX", escanCdmx);
-            valores.put("ESCANCUL", escanCul);
-            valores.put("ESCANMTY", escanMty);
             db.insertOrThrow("RECEPCONT", null, valores);
             res=true;
+            contReg++;
         }catch(SQLException sqlException){
             sqlException=sqlException;
         } catch(Exception e){
@@ -657,14 +666,11 @@ public class ActivityRecepConten extends AppCompatActivity {
                     JSONObject jsonObj = new JSONObject(jsonStr);
                     // Obtener array de datos
                     JSONArray jsonArray = jsonObj.getJSONArray("Response");
+                    contReg=0;
                     for(int i=0;i<jsonArray.length();i++){
                         JSONObject dato = jsonArray.getJSONObject(i);//Conjunto de datos
-                        insertarSql(dato.getString("k_fol"),dato.getString("k_prod"),dato.getString("k_cant"),dato.getString("k_prio"),
-                                "0","0","0","0",dato.getString("k_paletCaja"));
-                        insertarSqlPalet(dato.getString("k_fol"),dato.getString("k_prod"),dato.getString("k_paletCaja"));
-                        listaRecep.add(new RecepConten((i+1)+"",dato.getString("k_prod"),dato.getString("k_cant"),
-                                dato.getString("k_prio"),"0","0","0","0",
-                                dato.getString("k_fol"),dato.getString("k_paletCaja")));
+                        insertarSql(dato.getString("k_fol"),dato.getString("k_prod"),
+                                dato.getString("k_paletCaja"),dato.getString("k_cant"),dato.getString("k_prio"));
                         mensaje="";
                     }//for
                 } catch (final JSONException e) {
@@ -692,7 +698,7 @@ public class ActivityRecepConten extends AppCompatActivity {
         protected void onPostExecute(Void aBoolean) {
             super.onPostExecute(aBoolean);
             mDialog.dismiss();
-            if (listaRecep.size()==0) {
+            if (contReg==0) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepConten.this);
                 builder.setTitle("AVISO");
                 builder.setMessage(mensaje);
@@ -701,6 +707,7 @@ public class ActivityRecepConten extends AppCompatActivity {
                 AlertDialog dialog = builder.create();
                 dialog.show();
             }else{
+                listaFolios();
                 editor.putString("folio1", folio1);
                 editor.putString("folio2", folio2);
                 editor.putString("folio3", folio3);
@@ -708,6 +715,8 @@ public class ActivityRecepConten extends AppCompatActivity {
                 posicion=-1;
                 //mostrarLista();
                 consultaSql(sqlW);
+                txtProdR.requestFocus();
+                txtProdR.setInputType(InputType.TYPE_NULL);
             }//else
         }//onPost
     }//AsyncRecepCon
@@ -727,6 +736,7 @@ public class ActivityRecepConten extends AppCompatActivity {
             mDialog.show();
             mensaje="";
             listaSucRecep.clear();
+            limpiarCampos();
         }//onPreExecute
 
         @Override
@@ -796,7 +806,7 @@ public class ActivityRecepConten extends AppCompatActivity {
             super.onPreExecute();
             mDialog.show();
             mensaje="";
-            folios = new String[12];
+            folios.clear();
             limpiarCampos();
         }//onPreExecute
 
@@ -813,7 +823,7 @@ public class ActivityRecepConten extends AppCompatActivity {
                     JSONArray jsonArray = jsonObj.getJSONArray("Response");
                     for(int i=0;i<jsonArray.length();i++){
                         JSONObject dato = jsonArray.getJSONObject(i);//Conjunto de datos
-                        folios[i]=dato.getString("k_folio")+":"+dato.getString("k_fecha");
+                        folios.add(dato.getString("k_folio")+":"+dato.getString("k_fecha"));
                         mensaje="";
                     }//for
                 }catch (final JSONException e) {
@@ -840,7 +850,7 @@ public class ActivityRecepConten extends AppCompatActivity {
         protected void onPostExecute(Void aBoolean) {
             super.onPostExecute(aBoolean);
             mDialog.dismiss();
-            if(folios.length==0) {
+            if(folios.size()==0) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepConten.this);
                 builder.setTitle("AVISO");
                 builder.setMessage(mensaje);
@@ -850,46 +860,67 @@ public class ActivityRecepConten extends AppCompatActivity {
                 dialog.show();
                 txtProdVi.setText("");
             }else{
-                ArrayList <String>selectedItems = new ArrayList();
-                folio1 = "";folio2="";folio3="";
+                folio1="";folio2="";folio3="";
+                ArrayList<String>selectedItems = new ArrayList<>();
+                CharSequence[] items = folios.toArray(new CharSequence[3]);
+
                 AlertDialog.Builder alert = new AlertDialog.Builder(ActivityRecepConten.this);
-                alert.setTitle("Lista de Folios").setMultiChoiceItems(folios, null, new DialogInterface.OnMultiChoiceClickListener() {
+                alert.setTitle("Lista de Folios");
+                alert.setMultiChoiceItems(items, null, new DialogInterface.OnMultiChoiceClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i, boolean b) {
-                        if (b){
-                            String[] sp = folios[i].split(":");
-                            if((selectedItems.size()+1)<4){
-                                selectedItems.add(sp[0]);
-                            }else{
+                        if(b){
+                            String[] sp = folios.get(i).split(":");
+                            if (selectedItems.size() < 3) {
+                                selectedItems.add(0, sp[0]);
+                            } else {
                                 ((AlertDialog) dialogInterface).getListView().setItemChecked(i, false);
                                 Toast.makeText(ActivityRecepConten.this, "3 folios máximo", Toast.LENGTH_SHORT).show();
                             }//else
-                        }else if (selectedItems.contains(i)) {
-                            selectedItems.remove(i);
+                        }else{
+                            if(selectedItems.size()==1){
+                                selectedItems.clear();
+                            }else{
+                                selectedItems.remove(i);
+                            }
                         }
-                    }//setmultiitems
-                }).setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                    }
+                });
+                alert.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        folios = new String[selectedItems.size()+1];
-                        for(int j=0;j<selectedItems.size()+1;j++){
-                            if(j==0){
-                                folios[j]="--Todos--";
-                            }else{
-                                folios[j]=selectedItems.get(j-1);
-                                if(folio1.equals("")){folio1=folios[j];}
-                                else{
-                                    if(folio2.equals("")){folio2=folios[j];}
-                                    else{
-                                        folio3=folios[j];
-                                    }//else
-                                }//else
-                            }//else
-                        }//for
-                        listaFolios();
-                        new AsyncRecepCon(folio1,folio2,folio3).execute();
+                        if(selectedItems.size()>0){
+                            folios.clear();
+                            folios.add("--Todos--");
+                            for (int j = 1; j<(selectedItems.size()+1); j++) {
+                                folios.add(selectedItems.get(j-1));
+                            }//for
+                            switch (folios.size()){
+                                case 2:
+                                    folio1=folios.get(1);
+                                    break;
+                                case 3:
+                                    folio1=folios.get(1);
+                                    folio2=folios.get(2);
+                                    break;
+                                case 4:
+                                    folio1=folios.get(1);
+                                    folio2=folios.get(2);
+                                    folio3=folios.get(3);
+                                    break;
+                            }
+                            new AsyncRecepCon(folio1, folio2, folio3).execute();
+                        }else{
+                            Toast.makeText(ActivityRecepConten.this, "Sin folios para consultar", Toast.LENGTH_SHORT).show();
+                        }//else
                     }//onclick
-                }).setNegativeButton("Cancelar",null);
+                });
+                alert.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                    }
+                });
                 alert.create();
                 AlertDialog dialog = alert.create();
                 dialog.show();

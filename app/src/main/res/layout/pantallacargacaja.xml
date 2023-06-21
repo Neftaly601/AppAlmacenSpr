@@ -30,12 +30,12 @@
                 android:text="CERRANDO LA CAJA..."
                 android:textColor="#000000"
                 android:textSize="12sp"
-                android:textStyle="bold"></TextView>
+                android:textStyle="bold"/>
 
             <pl.droidsonroids.gif.GifImageView
                 android:layout_width="160dp"
                 android:layout_height="149dp"
-                android:src="@drawable/gif_box"></pl.droidsonroids.gif.GifImageView>
+                android:src="@drawable/gif_box"/>
 
                   <View
                 android:layout_width="160dp"

@@ -161,4 +161,6 @@ public class ActivitySplash extends AppCompatActivity {
             }
         }, 5000);
     }
+
+
 }

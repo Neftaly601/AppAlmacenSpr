@@ -62,7 +62,7 @@
                 android:layout_marginRight="10dp"
                 android:layout_weight="1"
                 android:background="@drawable/roundbutton"
-                android:backgroundTint="@color/AzulBack"
+                app:backgroundTint="@color/AzulBack"
                 android:text="@string/buscar"
                 android:textColor="@color/ColorWhite"
                 android:textSize="14sp" />
@@ -411,7 +411,7 @@
                     android:layout_margin="3dp"
                     android:layout_weight="1.5"
                     android:background="@drawable/roundbutton"
-                    android:backgroundTint="@color/ColorGris"
+                    app:backgroundTint="@color/ColorGris"
                     android:enabled="false"
                     android:maxLines="1"
                     android:text="Anterior"
@@ -437,7 +437,7 @@
                     app:icon="@drawable/icons8_paquete"
                     app:iconTint="@null"
                     android:onClick="guardarXprod"
-                    android:backgroundTint="@color/ColorGris"
+                    app:backgroundTint="@color/ColorGris"
                     android:enabled="false"/>
 
                 <com.google.android.material.button.MaterialButton
@@ -456,7 +456,7 @@
                     app:icon="@drawable/ic_baseline_arrow_forward_24"
                     app:iconTint="@null"
                     app:iconGravity="start"
-                    android:backgroundTint="@color/ColorGris"
+                    app:backgroundTint="@color/ColorGris"
                     android:enabled="false"/>
             </LinearLayout>
 
@@ -472,7 +472,7 @@
                 android:text="Terminar"
                 android:textColor="@color/ColorWhite"
                 android:textSize="14sp"
-                android:backgroundTint="@color/ColorGris"
+                app:backgroundTint="@color/ColorGris"
                 android:enabled="false"/>
 
 

@@ -5,23 +5,14 @@ public class RecepConten {
     private String producto;
     private String cantidad;
     private String prioridad;
-    private String escanMtrz;
-    private String escanCdmx;
-    private String escanCul;
-    private String escanMty;
     private String folio;
     private String palet;
 
-    public RecepConten(String num, String producto, String cantidad, String prioridad,
-                       String escanMtrz, String escanCdmx, String escanCul, String escanMty, String folio,String palet) {
+    public RecepConten(String num, String producto, String cantidad, String prioridad, String folio,String palet) {
         this.num = num;
         this.producto = producto;
         this.cantidad = cantidad;
         this.prioridad = prioridad;
-        this.escanMtrz = escanMtrz;
-        this.escanCdmx = escanCdmx;
-        this.escanCul = escanCul;
-        this.escanMty = escanMty;
         this.folio = folio;
         this.palet=palet;
     }
@@ -56,38 +47,6 @@ public class RecepConten {
 
     public void setPrioridad(String prioridad) {
         this.prioridad = prioridad;
-    }
-
-    public String getEscanMtrz() {
-        return escanMtrz;
-    }
-
-    public void setEscanMtrz(String escanMtrz) {
-        this.escanMtrz = escanMtrz;
-    }
-
-    public String getEscanCdmx() {
-        return escanCdmx;
-    }
-
-    public void setEscanCdmx(String escanCdmx) {
-        this.escanCdmx = escanCdmx;
-    }
-
-    public String getEscanCul() {
-        return escanCul;
-    }
-
-    public void setEscanCul(String escanCul) {
-        this.escanCul = escanCul;
-    }
-
-    public String getEscanMty() {
-        return escanMty;
-    }
-
-    public void setEscanMty(String escanMty) {
-        this.escanMty = escanMty;
     }
 
     public String getFolio() {

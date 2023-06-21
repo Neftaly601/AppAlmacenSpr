@@ -70,6 +70,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
     private int posicion=0,datPSinc=0;//para contar los registros que se escanearon y se van a sincronizar
     private String strusr,strpass,strbran,strServer,codeBar,mensaje,Producto="",serv;
     private ArrayList<Traspasos> listaTrasp = new ArrayList<>();
+    private ArrayList<Traspasos> listaSincro = new ArrayList<>();
     private EditText txtProd,txtCantidad,txtCantSurt;
     private ImageView ivProd;
     private TextView tvProd;
@@ -257,9 +258,12 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
 
     public int datPSincro(){//saber cuantos datos son para sincronizar(cantidad de surtido no sea 0) o sea que se escaneo
         int num=0,cont=0;
+        listaSincro.clear();
         for(int i=0;i<listaTrasp.size();i++){
             num=Integer.parseInt(listaTrasp.get(i).getCantSurt());
             if(num>0){
+                listaSincro.add(new Traspasos("",listaTrasp.get(i).getProducto(),"",
+                        num+"",""));
                 cont++;
             }//if
         }//for
@@ -420,7 +424,6 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
     private class AsyncRecepMultiSuc extends AsyncTask<Void, Integer, Void> {//WEBSERVICE PARA ACTUALIZAR DATOS
         private String pro,cc;
         private int contador=0;
-        private int contador2=0;
         private boolean conn=true;
         @Override
         protected void onPreExecute() {progressDialog.show();}
@@ -430,27 +433,19 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             escaneo=false;
             mensaje="";
             if(firtMet()==true){//si hay conexión a internet
-                progressDialog.setMax(listaTrasp.size());
+                progressDialog.setMax(listaSincro.size());
                 String fecha =new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault()).format(new Date());
                 String hora=new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
-                for(int i=0;i<listaTrasp.size();i++){
+                for(int i=0;i<listaSincro.size();i++){
                     try {
-                        pro=listaTrasp.get(i).getProducto();
-                        cc=listaTrasp.get(i).getCantSurt();
-                        if(Integer.parseInt(cc)>0){
-                            conectaRecepMultSuc(pro,cc,fecha,hora);
-                            if(mensaje.equals("SINCRONIZADO")){
-                                eliminarSql("AND PRODUCTO='"+pro+"'");//si se sincroniza se elimina de la base de datos sqlite del telefono
-                                contador++;
-                                mensaje="";
-                            }else{
-                                contador2++;
-                            }//else
-                        }else{
+                        pro=listaSincro.get(i).getProducto();
+                        cc=listaSincro.get(i).getCantSurt();
+                        conectaRecepMultSuc(pro,cc,fecha,hora);
+                        if(mensaje.equals("SINCRONIZADO")){
                             eliminarSql("AND PRODUCTO='"+pro+"'");//si se sincroniza se elimina de la base de datos sqlite del telefono
-                            contador2++;
-                        }//else
-
+                            contador++;
+                            mensaje="";
+                        }
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
                         return null;
@@ -472,10 +467,11 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         protected void onPostExecute(Void result) {
             progressDialog.dismiss();
             if (contador==datPSincro()) {
+                eliminarSql("");
                 AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
                 builder.setPositiveButton("OK", null);
                 builder.setCancelable(false);
-                builder.setTitle("Resultado Sincronización").setMessage("Total de productos escaneados: "+datPSinc+"\n"+" Datos sincronizados: "+contador+"\n"+" Datos no sincronizados: "+contador2).create().show();
+                builder.setTitle("Resultado Sincronización").setMessage("Total de productos escaneados: "+datPSinc+"\n"+" Datos sincronizados: "+contador).create().show();
                 txtProd.setText("");
                 consultaSql();
                 tvProd.setText("");
