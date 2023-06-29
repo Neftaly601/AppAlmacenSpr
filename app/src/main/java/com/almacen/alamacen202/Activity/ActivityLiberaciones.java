@@ -198,6 +198,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
     String fecha;
     String hora;
 
+    boolean bandnextback=true;
 
     private SharedPreferences preference;
     private SharedPreferences.Editor editor;
@@ -3404,7 +3405,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
 
     //Boton hacia adelante prodcuto
     public void NextProd(View view) {
-
+        bandnextback= true;
         builder6 = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.pantallacargacarrito, null);
@@ -3517,6 +3518,234 @@ public class ActivityLiberaciones extends AppCompatActivity {
 
     //Boton hacia atras  producto
     public void BackProd(View view) {
+
+        bandnextback=false;
+        builder6 = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.pantallacargacarrito, null);
+        builder6.setView(dialogView);
+        builder6.setCancelable(false);
+        dialog6 = builder6.create();
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+        if (networkInfo != null && networkInfo.isConnected()) {
+
+
+            Calendar c = Calendar.getInstance();
+            SimpleDateFormat dateformatActually = new SimpleDateFormat("yyyy-MM-dd");
+            fecha = dateformatActually.format(c.getTime());
+
+
+            Calendar calendar1 = Calendar.getInstance();
+            SimpleDateFormat dateformatActually1 = new SimpleDateFormat("HH:mm:ss");
+            hora = dateformatActually1.format(calendar1.getTime());
+
+            botonsumores = 0;
+
+            Documento = listaProduAduana.get(contlis).getDocumento();
+            Folio = listaProduAduana.get(contlis).getFolio();
+            PartidaP = listaProduAduana.get(contlis).getPPrevias();
+            Producto1 = listaProduAduana.get(contlis).getProducto();
+            Cantidad2 = listaProduAduana.get(contlis).getCantidadSurtida();
+
+            dialog6.show();
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    dialog6.dismiss();
+                }
+            }, 2000);
+
+
+            if(listaUbicaciones.size()!=0){
+                UbicacionOri = listaUbicaciones.get(SpUbicacion.getSelectedItemPosition()).getUbicaciones();
+            }else{
+                UbicacionOri = "";
+            }
+
+            Fecha = fecha;
+            Hora = hora;
+            if (Integer.parseInt(listaProduAduana.get(contlis).getCantidad()) != Integer.parseInt(listaProduAduana.get(contlis).getCantidadSurtida())) {
+
+                ActivityLiberaciones.ActualizSurtido task = new ActivityLiberaciones.ActualizSurtido();
+                task.execute();
+
+            } else {
+
+                if (contlis > 0) {
+
+
+                    contlis--;
+                    listaUbicaciones.clear();
+                    txtCliente.setText(listaProduAduana.get(contlis).getNombre());
+                    txtVia.setText(listaProduAduana.get(contlis).getVia());
+
+                    int CantidadSurtida, Cantidad;
+                    Cantidad = Integer.parseInt(listaProduAduana.get(contlis).getCantidad());
+                    CantidadSurtida = Integer.parseInt(listaProduAduana.get(contlis).getCantidadSurtida());
+                    txtCantidadSurtida.setText(Html.fromHtml((Cantidad > CantidadSurtida) ? "<font color ='#FF0000'>" + listaProduAduana.get(contlis).getCantidadSurtida() + " " + listaProduAduana.get(contlis).getUnidad() + "</font>" : "<font color ='#4CAF50'>" + listaProduAduana.get(contlis).getCantidadSurtida() + " " + listaProduAduana.get(contlis).getUnidad() + "</font>"));
+
+                    if (contlis == 0) {
+                        botonAtras.setVisibility(View.INVISIBLE);
+                    } else {
+                        botonAtras.setVisibility(View.VISIBLE);
+                    }
+
+                    if (contlis == listaProduAduana.size() - 1) {
+                        botonAdelante.setVisibility(View.INVISIBLE);
+                    } else {
+                        botonAdelante.setVisibility(View.VISIBLE);
+                    }
+
+                    txtProducto.setText(listaProduAduana.get(contlis).getProducto());
+                    txtCantidad.setText(listaProduAduana.get(contlis).getCantidad() + " " + listaProduAduana.get(contlis).getUnidad());
+
+                    Picasso.with(getApplicationContext()).
+                            load(urlImagenes + listaProduAduana.get(contlis).getProducto() + extImg)
+                            .error(R.drawable.aboutlogo)
+                            .fit()
+                            .centerInside()
+                            .into(imgVi);
+                    listaCajas = new ArrayList<>();
+                    ActivityLiberaciones.ConsultaCajas2 task = new ActivityLiberaciones.ConsultaCajas2();
+                    task.execute();
+
+                }
+            }
+
+        } else {
+            AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
+            alerta.setMessage("NO HAY CONEXION A INTERNET").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+                }
+            });
+
+            AlertDialog titulo = alerta.create();
+            titulo.setTitle("¡ERROR DE CONEXION!");
+            titulo.show();
+
+        }
+    }
+
+
+    public void NextProdvalida() {
+
+        builder6 = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.pantallacargacarrito, null);
+        builder6.setView(dialogView);
+        builder6.setCancelable(false);
+        dialog6 = builder6.create();
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+        if (networkInfo != null && networkInfo.isConnected()) {
+            Calendar c = Calendar.getInstance();
+            SimpleDateFormat dateformatActually = new SimpleDateFormat("yyyy-MM-dd");
+            fecha = dateformatActually.format(c.getTime());
+
+
+            Calendar calendar1 = Calendar.getInstance();
+            SimpleDateFormat dateformatActually1 = new SimpleDateFormat("HH:mm:ss");
+            hora = dateformatActually1.format(calendar1.getTime());
+
+            botonsumores = 1;
+            Documento = listaProduAduana.get(contlis).getDocumento();
+            Folio = listaProduAduana.get(contlis).getFolio();
+            PartidaP = listaProduAduana.get(contlis).getPPrevias();
+            Producto1 = listaProduAduana.get(contlis).getProducto();
+            Cantidad2 = listaProduAduana.get(contlis).getCantidadSurtida();
+
+            dialog6.show();
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    dialog6.dismiss();
+                }
+            }, 2000);
+
+            if(listaUbicaciones.size()!=0){
+                UbicacionOri = listaUbicaciones.get(SpUbicacion.getSelectedItemPosition()).getUbicaciones();
+            }else{
+                UbicacionOri="";
+            }
+
+            Fecha = fecha;
+            Hora = hora;
+            if (Integer.parseInt(listaProduAduana.get(contlis).getCantidad()) != Integer.parseInt(listaProduAduana.get(contlis).getCantidadSurtida())) {
+
+                ActivityLiberaciones.ActualizSurtido task = new ActivityLiberaciones.ActualizSurtido();
+                task.execute();
+
+            } else {
+                if (botonsumores == 1) {
+                    if (contlis < listaProduAduana.size() - 1) {
+                        contlis++;
+                        listaUbicaciones.clear();
+                        txtCliente.setText(listaProduAduana.get(contlis).getNombre());
+                        txtVia.setText(listaProduAduana.get(contlis).getVia());
+
+                        int CantidadSurtida, Cantidad;
+                        Cantidad = Integer.parseInt(listaProduAduana.get(contlis).getCantidad());
+                        CantidadSurtida = Integer.parseInt(listaProduAduana.get(contlis).getCantidadSurtida());
+                        txtCantidadSurtida.setText(Html.fromHtml((Cantidad > CantidadSurtida) ? "<font color ='#FF0000'>" + listaProduAduana.get(contlis).getCantidadSurtida() + " " + listaProduAduana.get(contlis).getUnidad() + "</font>" : "<font color ='#4CAF50'>" + listaProduAduana.get(contlis).getCantidadSurtida() + " " + listaProduAduana.get(contlis).getUnidad() + "</font>"));
+
+
+                        if (contlis == listaProduAduana.size() - 1) {
+                            botonAdelante.setVisibility(View.INVISIBLE);
+                        } else {
+                            botonAdelante.setVisibility(View.VISIBLE);
+                        }
+
+
+                        if (contlis == 0) {
+                            botonAtras.setVisibility(View.INVISIBLE);
+                        } else {
+                            botonAtras.setVisibility(View.VISIBLE);
+                        }
+
+
+                        txtProducto.setText(listaProduAduana.get(contlis).getProducto());
+                        txtCantidad.setText(listaProduAduana.get(contlis).getCantidad() + " " + listaProduAduana.get(contlis).getUnidad());
+                        Picasso.with(getApplicationContext()).
+                                load(urlImagenes+ listaProduAduana.get(contlis).getProducto() +extImg)
+                                .error(R.drawable.aboutlogo)
+                                .fit()
+                                .centerInside()
+                                .into(imgVi);
+
+                        listaCajas = new ArrayList<>();
+                        ActivityLiberaciones.ConsultaCajas2 task = new ActivityLiberaciones.ConsultaCajas2();
+                        task.execute();
+                    }
+
+                }
+            }
+
+        } else {
+            AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
+            alerta.setMessage("NO HAY CONEXION A INTERNET").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+                }
+            });
+
+            AlertDialog titulo = alerta.create();
+            titulo.setTitle("¡ERROR DE CONEXION!");
+            titulo.show();
+
+        }
+    }
+
+    //Boton hacia atras  producto
+    public void BackProdvalida( ) {
 
 
         builder6 = new AlertDialog.Builder(this);
@@ -5285,30 +5514,53 @@ public class ActivityLiberaciones extends AppCompatActivity {
         @RequiresApi(api = Build.VERSION_CODES.P)
         @Override
         protected void onPostExecute(Void result) {
-            String[] opciones = new String[listaUbicaciones.size()];
-            for (int i = 0; i < listaUbicaciones.size(); i++) {
-                opciones[i] = listaUbicaciones.get(i).getUbicaciones();
-                search1[i] = listaUbicaciones.get(i).getUbicaciones();
-            }
 
+            if(listaUbicaciones.size()==0){
+                AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
+                alerta.setMessage("No se encontraron ubicaciones para este producto el producto no se podra aduanar").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.spinner_item, opciones);
-            SpUbicacion.setPadding(5, 5, 5, 5);
-            SpUbicacion.setAdapter(adapter);
-            char letra;
-            for (int i = 0; i < listaUbicaciones.size(); i++) {
-                letra = listaUbicaciones.get(i).getUbicaciones().charAt(0);
-                if ('C' == letra || 'P' == letra) {
-                    SpUbicacion.setSelection(i);
-                    break;
+                        if(bandnextback=true){
+                            NextProdvalida();
+                        }else{
+                           BackProdvalida();
+                        }
+
+                        dialogInterface.cancel();
+                    }
+                });
+
+                AlertDialog titulo = alerta.create();
+                titulo.setTitle("Ubicaciones no encontrada");
+                titulo.show();
+            }else{
+                String[] opciones = new String[listaUbicaciones.size()];
+                for (int i = 0; i < listaUbicaciones.size(); i++) {
+                    opciones[i] = listaUbicaciones.get(i).getUbicaciones();
+                    search1[i] = listaUbicaciones.get(i).getUbicaciones();
                 }
+
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.spinner_item, opciones);
+                SpUbicacion.setPadding(5, 5, 5, 5);
+                SpUbicacion.setAdapter(adapter);
+                char letra;
+                for (int i = 0; i < listaUbicaciones.size(); i++) {
+                    letra = listaUbicaciones.get(i).getUbicaciones().charAt(0);
+                    if ('C' == letra || 'P' == letra) {
+                        SpUbicacion.setSelection(i);
+                        break;
+                    }
+                }
+
+                ProdcutoRefres = listaProduAduana.get(contlis).getProducto();
+                PartidaPreRefres = listaProduAduana.get(contlis).getPPrevias();
+                Foliorefres = listaProduAduana.get(contlis).getFolio();
+                ActivityLiberaciones.RefreshCntid task = new ActivityLiberaciones.RefreshCntid();
+                task.execute();
             }
 
-            ProdcutoRefres = listaProduAduana.get(contlis).getProducto();
-            PartidaPreRefres = listaProduAduana.get(contlis).getPPrevias();
-            Foliorefres = listaProduAduana.get(contlis).getFolio();
-            ActivityLiberaciones.RefreshCntid task = new ActivityLiberaciones.RefreshCntid();
-            task.execute();
         }
     }
 
