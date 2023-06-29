@@ -211,6 +211,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
         MyToolbar.show(this, "", true);
         mDialog = new SpotsDialog.Builder().setContext(ActivityLiberaciones.this).
                 setMessage("Espere un momento...").build();
+        mDialog.setCancelable(false);
         preference = getSharedPreferences("Login", Context.MODE_PRIVATE);
         editor = preference.edit();
 
@@ -979,6 +980,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
         View dialogView = inflater.inflate(R.layout.pantallaimprimiendo, null);
         builder6.setView(dialogView);
         dialog6 = builder6.create();
+        builder6.setCancelable(false);
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         dialog6.show();
@@ -2150,6 +2152,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
         LayoutInflater inflater = this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.pantallaimprimiendo, null);
         builder6.setView(dialogView);
+        builder6.setCancelable(false);
         dialog6 = builder6.create();
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
@@ -3406,6 +3409,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
         LayoutInflater inflater = this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.pantallacargacarrito, null);
         builder6.setView(dialogView);
+        builder6.setCancelable(false);
         dialog6 = builder6.create();
 
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -3519,6 +3523,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
         LayoutInflater inflater = this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.pantallacargacarrito, null);
         builder6.setView(dialogView);
+        builder6.setCancelable(false);
         dialog6 = builder6.create();
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
@@ -4701,6 +4706,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
         CancelarUbicacion = (Button) dialogView.findViewById(R.id.cancelar);
         EdUbicacion = dialogView.findViewById(R.id.txtUbicacionIsla);
         builder6.setView(dialogView);
+        builder6.setCancelable(false);
         dialog6 = builder6.create();
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
@@ -4876,6 +4882,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
         CancelarUbicacion = (Button) dialogView.findViewById(R.id.cancelar);
         EdUbicacion = dialogView.findViewById(R.id.txtUbicacionIsla);
         builder6.setView(dialogView);
+        builder6.setCancelable(false);
         dialog6 = builder6.create();
         dialog6.show();
         EdUbicacion.setFocusable(true);
@@ -4933,6 +4940,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
         LayoutInflater inflater = this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.pantallacargacarrito, null);
         builder6.setView(dialogView);
+        builder6.setCancelable(false);
         dialog6 = builder6.create();
         int position = recyclerDialog2.getChildAdapterPosition(recyclerDialog2.findContainingItemView(view));
         contlist2 =position;

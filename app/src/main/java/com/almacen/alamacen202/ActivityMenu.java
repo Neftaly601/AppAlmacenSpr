@@ -207,7 +207,6 @@ public class ActivityMenu extends AppCompatActivity {
         editor.putString("urlImagenes",urlImagenes);
         editor.putString("ext", extIm);
         editor.commit();
-        new AsyncVersionesApp().execute();
     }
 
     private class AsyncVersionesApp extends AsyncTask<Void, Boolean, Boolean> {

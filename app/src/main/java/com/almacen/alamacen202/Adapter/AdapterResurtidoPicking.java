@@ -49,7 +49,7 @@ public class AdapterResurtidoPicking extends RecyclerView.Adapter<AdapterResurti
             }else{
                 holder.ibRevisado.setVisibility(View.INVISIBLE);
             }
-            holder.lyItem.setBackgroundResource(R.color.ColorGris);
+            holder.lyItem.setBackgroundResource(R.color.ColorTenue);
         }else{
             if(datos.get(position).isRevisado()==true){
                 holder.ibRevisado.setVisibility(View.VISIBLE);

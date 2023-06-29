@@ -214,12 +214,12 @@ public class ActivityResurtBal extends AppCompatActivity {
 
     public void escanear(){
         txtSurt.setText(surtido+"");
-        txtRest.setText((surtido-Integer.parseInt(txtRellenar.getText().toString()))+"");
+        txtRest.setText((totRec-surtido)+"");
     }//escanear
 
-    public void calculoRellCelda(int max){
+    public void calculoRellCelda(){
         int cantCelda=Integer.parseInt(tvCantU.getText().toString());
-        int mitadM=0,rell=0;
+        int max=Integer.parseInt(tvMaxi.getText().toString()),mitadM=0,rell=0;
         int ex=cantCelda;
         if(clasf.equals("A")){
             mitadM=Math.round(max/2);
@@ -546,16 +546,17 @@ public class ActivityResurtBal extends AppCompatActivity {
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                         txtCantUb.setText(listaUb.get(i).getCant());
                         maxU=Integer.parseInt(listaUb.get(i).getMax());
-                        calculoRellCelda(maxU);
+                        calculoRellCelda();
                         txtEscanP.requestFocus();
                     }//onItemClick
                 });//setonitemclick
 
-                if(lista.size()>0){
-                    spUbic.setText(lista.get(0));
+                if(lista.size()>0){//para poner en automatico la posicion 0
+                    spUbic.setText(lista.get(0),false);
                     txtCantUb.setText(listaUb.get(0).getCant());
                     maxU=Integer.parseInt(listaUb.get(0).getMax());
-                    calculoRellCelda(maxU);
+                    calculoRellCelda();
+                    txtRest.setText(totRec+"");
                     txtEscanP.requestFocus();
                 }
 

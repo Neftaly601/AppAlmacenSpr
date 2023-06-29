@@ -26,6 +26,7 @@ import com.almacen.alamacen202.Activity.ActivityInventarioXfolioComp;
 import com.almacen.alamacen202.SetterandGetters.Login;
 import com.almacen.alamacen202.XML.xmlLog;
 import com.almacen.alamacen202.XML.xmlLogin;
+import com.almacen.alamacen202.includes.HttpHandler;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -52,7 +53,7 @@ import java.util.concurrent.CountDownLatch;
 import dmax.dialog.SpotsDialog;
 
 public class MainActivity extends AppCompatActivity {
-    private String user="",name="",lName="",type="",mail="",codB="",branch="",msjToast="";
+    private String user="",name="",lName="",type="",mail="",codB="",branch="",msjToast="",versionApp;
     private String res="";
     int result1 = 0;
     private Button btn1;
@@ -82,6 +83,8 @@ public class MainActivity extends AppCompatActivity {
         editor = preference.edit();
 
         mQueue = Volley.newRequestQueue(this);
+
+        versionApp=getString(R.string.versionNum);
 
 
         btn1.setOnClickListener(new View.OnClickListener() {
@@ -413,9 +416,7 @@ public class MainActivity extends AppCompatActivity {
     private class AsyncCallWS2 extends AsyncTask<Void, Void, Void> {
 
         @Override
-        protected void onPreExecute() {
-
-        }
+        protected void onPreExecute() {}
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -425,13 +426,9 @@ public class MainActivity extends AppCompatActivity {
 
         @RequiresApi(api = Build.VERSION_CODES.P)
         @Override
-        protected void onPostExecute(Void result) {
+        protected void onPostExecute(Void result) {}
 
-
-        }
-
-
-    }
+    }//asyncallws2
 
     private void conectar2() {
         String SOAP_ACTION = "LogAppUs";
@@ -470,6 +467,74 @@ public class MainActivity extends AppCompatActivity {
             mDialog.dismiss();
             mensaje = "Error:" + ex.getMessage();
         }
-    }
+    }//conectar2
+
+    private class AsyncVersionesApp extends AsyncTask<Void, Boolean, Boolean> {
+        String respuesta="";
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mDialog.show();
+        }//onPreExecute
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            HttpHandler sh = new HttpHandler();//separar párametros con &
+            String parametros="Clave=3";
+            String url = "http://"+StrServer+"/resVersionesApp?"+parametros;
+            String jsonStr = sh.makeServiceCall(url,getUsuario, getPass);
+            //Log.e(TAG, "Respuesta de la url: " + jsonStr);
+            if (jsonStr != null) {
+                try {
+                    JSONObject jsonObj = new JSONObject(jsonStr);
+                    // Obtener array de datos
+                    JSONArray jsonArray = jsonObj.getJSONArray("Response");
+                    respuesta=jsonArray.getString(0);
+                }catch (final JSONException e) {
+                    //Log.e(TAG, "Error al convertir Json: " + e.getMessage());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            respuesta=e.getMessage();
+                        }//run
+                    });
+                }//catch JSON EXCEPTION
+            } else {
+                //Log.e(TAG, "Problemas al traer datos");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        respuesta="No fue posible obtener datos del servidor";
+                    }//run
+                });//runUniTthread
+            }//else
+            return null;
+        }//doInBackground
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+            mDialog.dismiss();
+            if(!respuesta.equals(versionApp)){//si la vresion no es la misma
+                if(!respuesta.equals("")){
+                    mensaje="Hay una nueva actualización, favor de instalarla";
+                }else{
+                    mensaje=respuesta;
+                }
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("AVISO");
+                builder.setMessage(mensaje);
+                builder.setCancelable(false);
+                builder.setNegativeButton("Aceptar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }//if
+        }//onPost
+    }//AsyncVersionesApp
 
 }

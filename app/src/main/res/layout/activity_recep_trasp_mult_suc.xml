@@ -43,9 +43,7 @@
                     android:textSize="15dp"
                     android:textColor="#000000"
                     android:inputType="text"
-                    android:enabled="false"
-                    android:imeOptions="actionDone"
-                    tools:ignore="TextContrastCheck"/>
+                    android:enabled="false"/>
             </com.google.android.material.textfield.TextInputLayout>
             <View
                 android:layout_width="match_parent"
