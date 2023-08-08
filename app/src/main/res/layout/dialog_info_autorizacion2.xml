@@ -29,7 +29,12 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp">
+                android:layout_marginLeft="5dp"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusTopStart="10dp"
+                app:boxBackgroundColor="@color/ColorWhite"
+                app:boxStrokeColor="@color/colorPrimary">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/txtClavProdAut"
@@ -49,11 +54,12 @@
                 android:layout_marginTop="10dp"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                android:background="@drawable/roundbutton"
-                app:backgroundTint="@color/AzulBack"
+                android:background="@drawable/btn_background1"
                 android:text="ACEPTAR"
                 android:textColor="@color/ColorWhite"
-                android:textSize="14dp"/>
+                android:textSize="14dp"
+                app:backgroundTint="@null"
+                app:backgroundTintMode="add"/>
 
 
         </LinearLayout>

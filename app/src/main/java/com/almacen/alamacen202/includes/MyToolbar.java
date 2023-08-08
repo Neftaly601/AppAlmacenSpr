@@ -1,5 +1,7 @@
 package com.almacen.alamacen202.includes;
 
+import android.graphics.drawable.Drawable;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -14,6 +16,10 @@ public class MyToolbar {
         activity.setSupportActionBar(toolbar);
         activity.getSupportActionBar().setTitle(title);
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(upButton);
+        Drawable nav = toolbar.getNavigationIcon();
+        if(nav != null) {
+            nav.setTint(activity.getResources().getColor(R.color.ColorWhite));
+        }
     }
 
 }

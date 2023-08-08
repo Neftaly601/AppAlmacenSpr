@@ -808,9 +808,14 @@ public class ActivityInventario extends AppCompatActivity {
         }else{
             try{
                 @SuppressLint("Recycle") Cursor fila = db.rawQuery(
-                        "SELECT PRODUCTO,CANTIDAD from INVENTARIOALM WHERE PRODUCTO='"+prod+"'", null);
+                        "SELECT PRODUCTO,CANTIDAD,ESCANEADO from INVENTARIOALM WHERE PRODUCTO='"+prod+"'", null);
                 if (fila != null && fila.moveToFirst()) {
-                    actualizarSql(prod,Integer.parseInt(cant)+"");
+                    String esc=fila.getString(2);
+                    if(esc.equals("1")){
+
+                    }else{
+                        actualizarSql(prod,Integer.parseInt(cant)+"");
+                    }
                 }else{
                     insertarSql(prod,cant);
                 }

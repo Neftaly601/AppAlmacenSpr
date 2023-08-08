@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".Activity.ActivityInventarioXfolioComp">
+    tools:context=".Activity.ActivityInventarioXfolioComp"
+    android:orientation="vertical"
+    android:theme="@style/Theme.MaterialComponents"
+    app:layout_behavior= "@string/appbar_scrolling_view_behavior">
 
     <include layout="@layout/action_bar_toolbar"/>
 
@@ -26,28 +29,32 @@
                 android:layout_marginTop="5dp">
 
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="10dp"
                     android:hint="Folio Orden de Compra"
+                    android:textColorHint="@color/colorPrimary"
+                    app:hintTextColor="@color/colorPrimary"
                     android:maxLines="1"
                     app:boxBackgroundMode="outline"
                     app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusTopStart="10dp"
-                    app:startIconTint="@null">
+                    app:startIconTint="@null"
+                    app:boxBackgroundColor="@color/ColorWhite"
+                    app:boxStrokeColor="@color/colorPrimary">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/txtFolioOrden"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="phone"
                         android:digits="0123456789"
+                        android:inputType="phone"
                         android:maxLength="10"
                         android:singleLine="true"
                         android:textColor="@color/AzulBack"
-                        android:textSize="15dp" />
+                        android:textSize="15dp"
+                        tools:ignore="SpeakableTextPresentCheck" />
                 </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -61,11 +68,13 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_weight="1"
-                android:background="@drawable/roundbutton"
-                app:backgroundTint="@color/AzulBack"
+                android:background="@drawable/btn_background1"
                 android:text="@string/buscar"
                 android:textColor="@color/ColorWhite"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:layout_marginTop="5dp"
+                app:backgroundTint="@null"
+                app:backgroundTintMode="add"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -190,7 +199,6 @@
                 android:layout_marginTop="5dp"
                 android:orientation="horizontal">
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -202,7 +210,9 @@
                     app:boxBackgroundMode="outline"
                     app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusTopStart="10dp"
-                    app:startIconTint="@null">
+                    app:startIconTint="@null"
+                    app:boxBackgroundColor="@color/ColorWhite"
+                    app:boxStrokeColor="@color/colorPrimary">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/txtSumCant"
                         android:layout_width="match_parent"
@@ -218,7 +228,6 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -230,7 +239,9 @@
                     app:boxBackgroundMode="outline"
                     app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusTopStart="10dp"
-                    app:startIconTint="@null">
+                    app:startIconTint="@null"
+                    app:boxBackgroundColor="@color/ColorWhite"
+                    app:boxStrokeColor="@color/colorPrimary">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/txtExistAlm"
                         android:layout_width="match_parent"
@@ -261,19 +272,21 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
                         <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginStart="5dp"
                             android:layout_marginEnd="10dp"
                             android:hint="Ubicación Principal"
+                            android:textColorHint="@color/colorBlack"
                             app:hintTextColor="@color/colorPrimary"
                             android:maxLines="1"
                             app:boxBackgroundMode="outline"
                             app:boxCornerRadiusTopEnd="10dp"
                             app:boxCornerRadiusTopStart="10dp"
-                            app:startIconTint="@null">
+                            app:startIconTint="@null"
+                            app:boxBackgroundColor="@color/ColorWhite"
+                            app:boxStrokeColor="@color/colorPrimary">
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/txtUbicacion"
                                 android:layout_width="match_parent"
@@ -310,17 +323,19 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
                         <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginStart="5dp"
                             android:layout_marginEnd="10dp"
                             android:hint="Cantidad en Ubic."
+                            android:textColorHint="@color/colorBlack"
                             app:boxBackgroundMode="outline"
                             app:boxCornerRadiusTopEnd="10dp"
                             app:boxCornerRadiusTopStart="10dp"
-                            app:startIconTint="@null">
+                            app:startIconTint="@null"
+                            app:boxBackgroundColor="@color/ColorWhite"
+                            app:boxStrokeColor="@color/colorPrimary">
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/txtCantProdOrd"
                                 android:layout_width="match_parent"
@@ -336,11 +351,12 @@
                         </com.google.android.material.textfield.TextInputLayout>
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnTransf"
-                            android:layout_width="25dp"
+                            android:layout_width="35dp"
                             android:layout_height="35dp"
                             android:layout_gravity="bottom"
+                            android:gravity="center"
                             android:background="@drawable/roundbutton"
-                            android:backgroundTint="@color/ColorGris"
+                            app:backgroundTint="@color/ColorGris"
                             app:icon="@drawable/icon_tranf"
                             app:iconPadding="2dp"
                             app:iconSize="18dp"
@@ -370,17 +386,19 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="10dp"
                     android:hint="En Proceso"
+                    android:textColorHint="@color/AzulBack"
                     app:boxBackgroundMode="outline"
                     app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusTopStart="10dp"
-                    app:startIconTint="@null">
+                    app:startIconTint="@null"
+                    app:boxBackgroundColor="@color/ColorWhite"
+                    app:boxStrokeColor="@color/colorPrimary">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/txtCantAcum"
                         android:layout_width="match_parent"
@@ -400,7 +418,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginTop="5dp">
 
 
                 <com.google.android.material.button.MaterialButton
@@ -410,7 +429,7 @@
                     android:layout_gravity="start"
                     android:layout_margin="3dp"
                     android:layout_weight="1.5"
-                    android:background="@drawable/roundbutton"
+                    android:background="@drawable/btn_background3"
                     app:backgroundTint="@color/ColorGris"
                     android:enabled="false"
                     android:maxLines="1"
@@ -420,7 +439,7 @@
                     android:textSize="8dp"
                     app:icon="@drawable/ic_baseline_arrow_back_24"
                     app:iconGravity="start"
-                    app:iconTint="@null" />
+                    app:iconTint="@null"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnGuardar"
@@ -430,7 +449,7 @@
                     android:layout_gravity="start"
                     android:maxLines="1"
                     android:layout_margin="3dp"
-                    android:background="@drawable/roundbutton"
+                    android:background="@drawable/btn_background2"
                     android:textSize="8dp"
                     android:text="Guardar"
                     android:textColor="@color/cardview_light_background"
@@ -448,7 +467,7 @@
                     android:layout_gravity="start"
                     android:maxLines="1"
                     android:layout_margin="3dp"
-                    android:background="@drawable/roundbutton"
+                    android:background="@drawable/btn_background3"
                     android:textSize="8dp"
                     android:text="Siguiente"
                     android:textColor="@color/cardview_light_background"
@@ -465,10 +484,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginTop="5dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_weight="1"
-                android:background="@drawable/roundbutton"
+                android:background="@drawable/btn_background1"
                 android:text="Terminar"
                 android:textColor="@color/ColorWhite"
                 android:textSize="14sp"
@@ -482,4 +502,4 @@
     </ScrollView>
 
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

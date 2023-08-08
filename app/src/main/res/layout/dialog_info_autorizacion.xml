@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="3dp"
             android:layout_marginTop="5dp"
-            android:background="@color/AzulBack"></View>
+            android:background="@color/AzulBack"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -25,7 +25,7 @@
             android:text="Autorizacion"
             android:textColor="#000000"
             android:textAlignment="center"
-            android:textSize="20dp"></TextView>
+            android:textSize="20dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -44,7 +44,7 @@
                     android:id="@+id/gifocult"
                     android:layout_width="160dp"
                     android:layout_height="149dp"
-                    android:src="@drawable/animation_200_kr571csi"></pl.droidsonroids.gif.GifImageView>
+                    android:src="@drawable/animation_200_kr571csi"/>
                 <TextView
                     android:id="@+id/InstruccionesEscaneo"
                     android:layout_width="match_parent"
@@ -53,8 +53,7 @@
                     android:text="Escane su gafete..."
                     android:textAlignment="center"
                     android:textColor="#000000"
-                    android:textSize="15sp"
-                    ></TextView>
+                    android:textSize="15sp"/>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/TXTSHOWUSERNAME"
@@ -88,15 +87,19 @@
             android:text="Ingrese la cantidad de piezas a autorizar..."
             android:textColor="#000000"
             android:textSize="15sp"
-            android:visibility="gone"
-            ></TextView>
+            android:visibility="gone"/>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/TEXESCANERVISTA"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginLeft="5dp">
+            android:layout_marginLeft="5dp"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusTopEnd="10dp"
+            app:boxCornerRadiusTopStart="10dp"
+            app:boxBackgroundColor="@color/ColorWhite"
+            app:boxStrokeColor="@color/colorPrimary"
+            android:visibility="gone">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/TEXTESCANER"
@@ -116,8 +119,13 @@
             android:id="@+id/TEXSHOWCANTI"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginLeft="5dp">
+            android:layout_marginLeft="5dp"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusTopEnd="10dp"
+            app:boxCornerRadiusTopStart="10dp"
+            app:boxBackgroundColor="@color/ColorWhite"
+            app:boxStrokeColor="@color/colorPrimary"
+            android:visibility="gone">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/txtCantiAutoED"
@@ -137,13 +145,18 @@
             android:text="Razon por la que se realiza la autorización..."
             android:textColor="#000000"
             android:textSize="15sp"
-            android:visibility="gone"></TextView>
+            android:visibility="gone"/>
 
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/TEXSHOWRAZON"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusTopEnd="10dp"
+            app:boxCornerRadiusTopStart="10dp"
+            app:boxBackgroundColor="@color/ColorWhite"
+            app:boxStrokeColor="@color/colorPrimary"
             android:layout_marginLeft="5dp"
             android:visibility="gone">
 
@@ -169,12 +182,13 @@
             android:layout_marginRight="10dp"
             android:layout_weight="1"
             android:autoSizeTextType="none"
-            android:background="@drawable/roundbutton"
-            app:backgroundTint="@color/AzulBack"
+            android:background="@drawable/btn_background1"
             android:onClick="Bitacora"
             android:text="ACEPTAR"
             android:textColor="@color/ColorWhite"
             android:textSize="14dp"
+            app:backgroundTint="@null"
+            app:backgroundTintMode="add"
             android:visibility="gone"/>
 
         <View
@@ -182,7 +196,7 @@
             android:layout_height="3dp"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
-            android:background="@color/AzulBack"></View>
+            android:background="@color/AzulBack"/>
     </LinearLayout>
 
 

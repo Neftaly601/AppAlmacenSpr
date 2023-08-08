@@ -10,7 +10,9 @@ public class ConexionSQLiteHelper extends SQLiteOpenHelper {
 
     final String CREAR_TABLA_INVENTARIOALM = "CREATE TABLE INVENTARIOALM (" +
             "PRODUCTO VARCHAR (45)," +
-            "CANTIDAD INTEGER (11),PRIMARY KEY(PRODUCTO))";
+            "CANTIDAD INTEGER (11)," +
+            "ESCANEADO INTEGER(11),"+//1 SI 0 NO
+            "PRIMARY KEY(PRODUCTO))";
 
     final String CREAR_TABLA_INVENTARIO = "CREATE TABLE INVENTARIO (" +
             "EMPRESA VARCHAR (15)," +

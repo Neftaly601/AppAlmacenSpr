@@ -117,8 +117,7 @@
                         app:boxCornerRadiusTopStart="10dp"
                         app:startIconDrawable="@drawable/icons_contrase_a"
                         app:startIconTint="@null"
-                        app:passwordToggleEnabled="true"
-                        >
+                        app:passwordToggleEnabled="true">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/txtinCla"

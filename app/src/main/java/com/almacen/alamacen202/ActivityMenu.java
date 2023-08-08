@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 
 import com.almacen.alamacen202.Activity.ActivityConsultaPA;
 import com.almacen.alamacen202.Activity.ActivityDifUbiExi;
+import com.almacen.alamacen202.Activity.ActivityEnvTraspMultSuc;
 import com.almacen.alamacen202.Activity.ActivityInventario;
 import com.almacen.alamacen202.Activity.ActivityInventarioXProd;
 import com.almacen.alamacen202.Activity.ActivityLiberaciones;
@@ -346,6 +347,9 @@ public class ActivityMenu extends AppCompatActivity {
         Intent intent = new Intent(ActivityMenu.this, ActivityRepEtiquetas.class);
         startActivity(intent);
     }//reporte de etiquetas
+    public void envRecepTrasp(View v){
+        startActivity(new Intent(ActivityMenu.this, ActivityEnvTraspMultSuc.class));
+    }
 
 
 

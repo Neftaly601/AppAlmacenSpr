@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".Activity.ActivityLiberaciones">
+    tools:context=".Activity.ActivityLiberaciones"
+    android:orientation="vertical"
+    android:theme="@style/Theme.MaterialComponents"
+    app:layout_behavior= "@string/appbar_scrolling_view_behavior">
 
     <include layout="@layout/action_bar_toolbar"></include>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
             android:orientation="vertical">
 
             <LinearLayout
@@ -39,14 +41,15 @@
                         android:layout_marginTop="2dp"
                         android:layout_marginRight="10dp"
                         android:layout_weight="1"
-                        android:background="@drawable/roundbutton"
-                        app:backgroundTint="@color/AzulBack"
+                        android:background="@drawable/btn_background1"
                         android:onClick="TODFOLIOS"
                         android:text="@string/folios"
                         android:textColor="@color/ColorWhite"
                         android:textSize="14sp"
                         app:icon="@drawable/icons8_lupa"
-                        app:iconTint="@null" />
+                        app:iconTint="@null"
+                        app:backgroundTint="@null"
+                        app:backgroundTintMode="add"/>
 
 
 
@@ -102,17 +105,18 @@
 
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="10dp"
-                android:hint="Provedor"
+                android:hint="Proveedor"
+                android:textColorHint="@color/colorBlack"
                 android:maxLines="1"
                 app:boxBackgroundMode="outline"
                 app:boxCornerRadiusTopEnd="10dp"
                 app:boxCornerRadiusTopStart="10dp"
-                >
+                app:boxBackgroundColor="@color/ColorWhite"
+                app:boxStrokeColor="@color/colorPrimary">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/txtProvedor"
@@ -156,13 +160,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
-                android:layout_weight="1"></androidx.recyclerview.widget.RecyclerView>
-
-
-
+                android:layout_weight="1"/>
 
             </LinearLayout>
 
 
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

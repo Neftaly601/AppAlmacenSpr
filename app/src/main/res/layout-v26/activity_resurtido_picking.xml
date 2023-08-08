@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".Activity.ActivityResurtidoPicking">
+    tools:context=".Activity.ActivityResurtidoPicking"
+    android:orientation="vertical"
+    android:theme="@style/Theme.MaterialComponents"
+    app:layout_behavior= "@string/appbar_scrolling_view_behavior">
 
     <include layout="@layout/action_bar_toolbar"/>
 
@@ -62,11 +65,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
-                    android:background="@drawable/roundbutton"
-                    app:backgroundTint="@color/Amarillo"
+                    android:background="@drawable/btn_background2"
                     android:text="Buscar Productos"
                     android:textColor="@color/ColorWhite"
-                    android:textSize="14sp"/>
+                    android:textSize="14sp"
+                    app:backgroundTint="@null"
+                    app:backgroundTintMode="add"/>
                 <CheckBox
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -219,7 +223,6 @@
                 android:layout_marginTop="5dp"
                 android:orientation="horizontal">
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -231,6 +234,7 @@
                     app:boxBackgroundMode="outline"
                     app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusTopStart="10dp"
+                    app:boxStrokeColor="@color/colorPrimary"
                     app:startIconTint="@null">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/txtSumUbiPick"
@@ -247,7 +251,6 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -259,6 +262,7 @@
                     app:boxBackgroundMode="outline"
                     app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusTopStart="10dp"
+                    app:boxStrokeColor="@color/colorPrimary"
                     app:startIconTint="@null">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/txtSumAlmPick"
@@ -292,48 +296,52 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
+
                         <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:layout_marginStart="5dp"
                             android:layout_marginEnd="10dp"
+                            android:layout_weight="1"
                             android:hint="Máximo"
-                            app:hintTextColor="@color/colorPrimary"
                             android:maxLines="1"
+                            android:textColorHint="@color/colorPrimary"
+                            app:boxBackgroundColor="@color/ColorWhite"
                             app:boxBackgroundMode="outline"
                             app:boxCornerRadiusTopEnd="10dp"
                             app:boxCornerRadiusTopStart="10dp"
+                            app:boxStrokeColor="@color/colorPrimary"
                             app:startIconTint="@null">
+
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/txtMax"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:inputType="text"
                                 android:clickable="true"
-                                android:maxLines="1"
-                                android:imeOptions="actionDone"
+                                android:enabled="false"
                                 android:focusable="false"
-                                android:textSize="15dp"
+                                android:imeOptions="actionDone"
+                                android:inputType="text"
+                                android:maxLines="1"
                                 android:textColor="@color/AzulBack"
-                                android:enabled="false"/>
+                                android:textSize="15dp" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginStart="5dp"
                             android:layout_marginEnd="10dp"
                             android:hint="Minímo"
-                            app:hintTextColor="@color/colorPrimary"
+                            android:textColorHint="@color/colorPrimary"
                             android:maxLines="1"
                             app:boxBackgroundMode="outline"
                             app:boxCornerRadiusTopEnd="10dp"
                             app:boxCornerRadiusTopStart="10dp"
-                            app:startIconTint="@null">
+                            app:startIconTint="@null"
+                            app:boxBackgroundColor="@color/ColorWhite"
+                            app:boxStrokeColor="@color/colorPrimary">
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/txtMin"
                                 android:layout_width="match_parent"
@@ -354,19 +362,20 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
                         <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginStart="5dp"
                             android:layout_marginEnd="10dp"
                             android:hint="Ubicación Picking"
-                            app:hintTextColor="@color/colorPrimary"
+                            android:textColorHint="@color/colorPrimary"
                             android:maxLines="1"
                             app:boxBackgroundMode="outline"
                             app:boxCornerRadiusTopEnd="10dp"
                             app:boxCornerRadiusTopStart="10dp"
-                            app:startIconTint="@null">
+                            app:startIconTint="@null"
+                            app:boxBackgroundColor="@color/ColorWhite"
+                            app:boxStrokeColor="@color/colorPrimary">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/txtUbicPick"
@@ -404,17 +413,19 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
                         <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:layout_marginStart="5dp"
                             android:layout_marginEnd="10dp"
                             android:hint="Cantidad en Ubic."
+                            android:textColorHint="@color/colorBlack"
                             app:boxBackgroundMode="outline"
                             app:boxCornerRadiusTopEnd="10dp"
                             app:boxCornerRadiusTopStart="10dp"
-                            app:startIconTint="@null">
+                            app:startIconTint="@null"
+                            app:boxBackgroundColor="@color/ColorWhite"
+                            app:boxStrokeColor="@color/colorPrimary">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/txtCantUbicPick"
@@ -461,7 +472,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
                         android:maxLines="1"
-                        android:background="@drawable/roundbutton"
+                        android:background="@drawable/btn_background2"
                         app:backgroundTint="@color/ColorGris"
                         android:enabled="false"
                         android:text="Resurtir"
@@ -486,10 +497,13 @@
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="10dp"
                     android:hint="En Proceso"
+                    android:textColorHint="@color/AzulBack"
                     app:boxBackgroundMode="outline"
                     app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusTopStart="10dp"
-                    app:startIconTint="@null">
+                    app:startIconTint="@null"
+                    app:boxBackgroundColor="@color/ColorWhite"
+                    app:boxStrokeColor="@color/colorPrimary">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/txtCantAcum"
                         android:layout_width="match_parent"
@@ -522,7 +536,7 @@
                     android:layout_gravity="start"
                     android:layout_marginRight="1.6dp"
                     android:layout_weight="1.5"
-                    android:background="@drawable/roundbutton"
+                    android:background="@drawable/btn_background3"
                     android:maxLines="1"
                     android:text="ANTERIOR"
                     android:textAlignment="textStart"
@@ -540,7 +554,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:layout_marginLeft="1.6dp"
-                    android:background="@drawable/roundbutton"
+                    android:background="@drawable/btn_background1"
                     android:text="Terminar"
                     android:textSize="8dp"
                     android:textColor="@color/cardview_light_background"
@@ -555,7 +569,7 @@
                     android:layout_gravity="start"
                     android:maxLines="1"
                     android:layout_marginLeft="1.6dp"
-                    android:background="@drawable/roundbutton"
+                    android:background="@drawable/btn_background3"
                     android:textSize="8dp"
                     android:text="SIGUIENTE"
                     android:textColor="@color/cardview_light_background"
@@ -575,4 +589,4 @@
     </ScrollView>
 
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

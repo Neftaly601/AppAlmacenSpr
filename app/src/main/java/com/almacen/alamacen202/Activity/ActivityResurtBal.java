@@ -165,7 +165,6 @@ public class ActivityResurtBal extends AppCompatActivity {
                     builder.setNegativeButton("CANCELAR",null);
                     AlertDialog dialog = builder.create();
                     dialog.show();
-
                 }else{
                     AlertDialog.Builder builder = new AlertDialog.Builder(ActivityResurtBal.this);
                     builder.setTitle("AVISO");

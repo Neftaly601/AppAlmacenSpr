@@ -89,14 +89,15 @@
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
                         android:layout_marginTop="10dp"
-                        android:background="@drawable/roundbutton"
-                        app:backgroundTint="@color/AzulBack"
+                        android:background="@drawable/btn_background1"
                         android:text="Seleccionar"
                         android:textSize="10dp"
                         app:icon="@drawable/icon_seleccionar"
                         app:iconSize="20dp"
                         android:tooltipText="Actualización de cantidades"
-                        app:iconGravity="textStart"/>
+                        app:iconGravity="textStart"
+                        app:backgroundTint="@null"
+                        app:backgroundTintMode="add"/>
                 </LinearLayout>
 
 

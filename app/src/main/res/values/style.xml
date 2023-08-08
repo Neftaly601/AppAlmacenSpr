@@ -9,6 +9,9 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="AppTheme2">
+    </style>
+
 
     <style name="ThemeOverlay.MaterialComponents.TextInputEditText.OutlinedBox." parent="ThemeOverlay.MaterialComponents.TextInputEditText.OutlinedBox" >
         <!-- Customize your theme here. -->
@@ -24,4 +27,9 @@
         <item name="colorControlNormal">@color/ColorWhite</item>
         <item name="titleTextColor">@color/ColorWhite</item>
     </style>
+
+    <style name="StyleTheme.AppCompat.Light" parent="Base.Theme.AppCompat.Light">
+        <item name="color">@color/ColorWhite</item>
+    </style>
+
 </resources>

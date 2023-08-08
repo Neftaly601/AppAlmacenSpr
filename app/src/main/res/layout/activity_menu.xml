@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".ActivityMenu">
+    tools:context=".ActivityMenu"
+    android:orientation="vertical"
+    android:theme="@style/Theme.MaterialComponents"
+    app:layout_behavior= "@string/appbar_scrolling_view_behavior">
 
     <include layout="@layout/action_bar_toolbar"></include>
 
@@ -58,12 +61,13 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                    android:layout_margin="5dp"
-                    android:background="@drawable/roundbutton"
-                    android:backgroundTint="@color/AzulBack"
+                    android:background="@drawable/btn_background1"
                     android:gravity="center"
                     android:onClick="Perfildelusuario"
                     android:orientation="vertical"
-                    android:padding="2dp">
+                    android:padding="2dp"
+                    app:backgroundTint="@null"
+                    app:backgroundTintMode="add">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -98,12 +102,13 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_margin="5dp"
-                        android:background="@drawable/roundbutton"
-                        android:backgroundTint="@color/AzulBack"
+                        android:background="@drawable/btn_background1"
                         android:gravity="center"
                         android:onClick="ConsultaProductoMenu"
                         android:orientation="vertical"
-                        android:padding="2dp">
+                        android:padding="2dp"
+                        app:backgroundTint="@null"
+                        app:backgroundTintMode="add">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -134,12 +139,13 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_margin="5dp"
-                        android:background="@drawable/roundbutton"
-                        android:backgroundTint="@color/AzulBack"
+                        android:background="@drawable/btn_background1"
                         android:gravity="center"
                         android:onClick="LiberacionesMenu"
                         android:orientation="vertical"
-                        android:padding="2dp">
+                        android:padding="2dp"
+                        app:backgroundTint="@null"
+                        app:backgroundTintMode="add">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -175,12 +181,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:background="@drawable/roundbutton"
-                        android:backgroundTint="@color/AzulBack"
+                        android:background="@drawable/btn_background1"
                         android:gravity="center"
                         android:layout_margin="5dp"
                         android:onClick="trasladoUbiMenu"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        app:backgroundTint="@null"
+                        app:backgroundTintMode="add">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -210,12 +217,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:background="@drawable/roundbutton"
-                        android:backgroundTint="@color/AzulBack"
+                        android:background="@drawable/btn_background1"
                         android:gravity="center"
                         android:layout_margin="5dp"
                         android:onClick="RepcionCompras"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        app:backgroundTint="@null"
+                        app:backgroundTintMode="add">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -257,12 +265,13 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:background="@drawable/roundbutton"
-                            android:backgroundTint="@color/AzulBack"
+                            android:background="@drawable/btn_background1"
                             android:gravity="center"
                             android:layout_margin="5dp"
                             android:onClick="invXFolComp"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            app:backgroundTint="@null"
+                            app:backgroundTintMode="add">
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -292,12 +301,13 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:background="@drawable/roundbutton"
-                            android:backgroundTint="@color/AzulBack"
+                            android:background="@drawable/btn_background1"
                             android:gravity="center"
                             android:layout_margin="5dp"
                             android:onClick="invXProd"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            app:backgroundTint="@null"
+                            app:backgroundTintMode="add">
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -333,12 +343,13 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:background="@drawable/roundbutton"
-                            android:backgroundTint="@color/AzulBack"
+                            android:background="@drawable/btn_background1"
                             android:gravity="center"
                             android:layout_margin="5dp"
                             android:orientation="vertical"
-                            android:onClick="resurtPick">
+                            android:onClick="resurtPick"
+                            app:backgroundTint="@null"
+                            app:backgroundTintMode="add">
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -368,12 +379,13 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:background="@drawable/roundbutton"
-                            android:backgroundTint="@color/AzulBack"
+                            android:background="@drawable/btn_background1"
                             android:gravity="center"
                             android:layout_margin="5dp"
                             android:orientation="vertical"
-                            android:onClick="inventario">
+                            android:onClick="inventario"
+                            app:backgroundTint="@null"
+                            app:backgroundTintMode="add">
 
 
                             <TextView
@@ -410,12 +422,13 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:background="@drawable/roundbutton"
-                            android:backgroundTint="@color/AzulBack"
+                            android:background="@drawable/btn_background1"
                             android:gravity="center"
                             android:layout_margin="5dp"
                             android:orientation="vertical"
-                            android:onClick="traspasos">
+                            android:onClick="traspasos"
+                            app:backgroundTint="@null"
+                            app:backgroundTintMode="add">
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -446,12 +459,13 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:background="@drawable/roundbutton"
-                            android:backgroundTint="@color/AzulBack"
+                            android:background="@drawable/btn_background1"
                             android:gravity="center"
                             android:layout_margin="5dp"
                             android:orientation="vertical"
-                            android:onClick="difUbiExis">
+                            android:onClick="difUbiExis"
+                            app:backgroundTint="@null"
+                            app:backgroundTintMode="add">
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -473,6 +487,78 @@
                                 android:layout_margin="5dp"
                                 android:contentDescription="Manos"
                                 android:src="@drawable/icon_dif" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@drawable/btn_background1"
+                            android:gravity="center"
+                            android:layout_margin="5dp"
+                            android:orientation="vertical"
+                            android:onClick="envRecepTrasp"
+                            app:backgroundTint="@null"
+                            app:backgroundTintMode="add">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5dp"
+                                android:lines="2"
+                                android:maxLines="2"
+                                android:padding="5dp"
+                                android:textAlignment="center"
+                                android:text="Envios Traspaso Multisucursal"
+                                android:textColor="@color/ColorWhite"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="35dp"
+                                android:layout_margin="5dp"
+                                android:src="@drawable/icon_carrito_trasp" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="@drawable/roundbutton"
+                            android:backgroundTint="@color/AzulBack"
+                            android:gravity="center"
+                            android:layout_margin="5dp"
+                            android:orientation="vertical"
+                            android:visibility="invisible">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="5dp"
+                                android:lines="2"
+                                android:maxLines="2"
+                                android:padding="5dp"
+                                android:textAlignment="center"
+                                android:textColor="@color/ColorWhite"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="35dp"
+                                android:layout_margin="5dp"
+                                android:contentDescription="Manos"
+                                android:src="@drawable/icon_montacarga"/>
                         </LinearLayout>
 
                     </LinearLayout>
@@ -682,20 +768,10 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:visibility="invisible">
-
-
                         </LinearLayout>
-
                     </LinearLayout>
-
                 </LinearLayout>
-
-
             </LinearLayout>
-
-
         </LinearLayout>
-
     </ScrollView>
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

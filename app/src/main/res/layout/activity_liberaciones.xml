@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".Activity.ActivityLiberaciones">
+    tools:context=".Activity.ActivityLiberaciones"
+    android:orientation="vertical"
+    android:theme="@style/Theme.MaterialComponents"
+    app:layout_behavior= "@string/appbar_scrolling_view_behavior">
 
     <include layout="@layout/action_bar_toolbar"/>
 
@@ -38,15 +41,16 @@
                     android:layout_gravity="center"
                     android:layout_margin="5dp"
                     android:layout_weight="1"
-                    android:background="@drawable/roundbutton"
-                    app:backgroundTint="@color/AzulBack"
+                    android:background="@drawable/btn_background1"
                     android:onClick="ListaLiberaciones"
                     android:text="@string/folios"
                     android:textColor="@color/ColorWhite"
                     android:textSize="14sp"
                     app:icon="@drawable/icons8_lupa"
                     app:iconTint="@null"
-                    app:iconGravity="textEnd"/>
+                    app:iconGravity="textEnd"
+                    app:backgroundTint="@null"
+                    app:backgroundTintMode="add"/>
 
 
                 <LinearLayout
@@ -59,13 +63,19 @@
                         android:id="@+id/UbicProSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Ubicacion/Producto          " />
+                        android:textColor="@color/colorBlack"
+                        android:text="Ubicacion/Producto"
+                        android:track="@drawable/roundbutton"
+                        android:trackTint="#DFEEF8"/>
 
                     <Switch
                         android:id="@+id/AscDescSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Ascendente/Descendente" />
+                        android:textColor="@color/colorBlack"
+                        android:text="Ascendente/Descendente"
+                        android:track="@drawable/roundbutton"
+                        android:trackTint="#DFEEF8"/>
                 </LinearLayout>
 
             </LinearLayout>
@@ -103,10 +113,13 @@
                             android:layout_marginEnd="10dp"
                             android:layout_marginTop="5dp"
                             android:hint="Cliente"
+                            android:textColorHint="@color/AzulBack"
                             android:maxLines="1"
                             app:boxBackgroundMode="outline"
                             app:boxCornerRadiusTopEnd="10dp"
-                            app:boxCornerRadiusTopStart="10dp">
+                            app:boxCornerRadiusTopStart="10dp"
+                            app:boxBackgroundColor="@color/ColorWhite"
+                            app:boxStrokeColor="@color/colorPrimary">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/txtCliente"
@@ -130,10 +143,13 @@
                             android:layout_marginEnd="10dp"
                             android:layout_marginTop="5dp"
                             android:hint="@string/via_de_embarque"
+                            android:textColorHint="@color/AzulBack"
                             android:maxLines="1"
                             app:boxBackgroundMode="outline"
                             app:boxCornerRadiusTopEnd="10dp"
-                            app:boxCornerRadiusTopStart="10dp">
+                            app:boxCornerRadiusTopStart="10dp"
+                            app:boxBackgroundColor="@color/ColorWhite"
+                            app:boxStrokeColor="@color/colorPrimary">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/txtVia"
@@ -239,12 +255,12 @@
                             android:layout_margin="5dp"
                             android:layout_marginLeft="20dp"
                             android:layout_weight="0.9"
-                            android:background="@drawable/roundbutton"
-                            android:backgroundTint="@color/AzulBack"
+                            android:background="@drawable/btn_background1"
                             android:onClick="NumeroCaja"
-
                             android:orientation="horizontal"
-                            android:padding="2dp">
+                            android:padding="2dp"
+                            app:backgroundTint="@null"
+                            app:backgroundTintMode="add">
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -354,9 +370,13 @@
                                 android:layout_marginStart="5dp"
                                 android:layout_marginEnd="10dp"
                                 android:hint="Cantidad"
+                                android:textColorHint="@color/colorBlack"
                                 android:maxLines="1"
-
-                               >
+                                app:boxBackgroundMode="outline"
+                                app:boxCornerRadiusTopEnd="10dp"
+                                app:boxCornerRadiusTopStart="10dp"
+                                app:boxBackgroundColor="@color/ColorWhite"
+                                app:boxStrokeColor="@color/colorPrimary">
 
                                 <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/txtCantidad"
@@ -398,11 +418,13 @@
                                 android:layout_marginTop="8dp"
                                 android:layout_marginEnd="10dp"
                                 android:hint="SURTIDO"
+                                android:textColorHint="@color/colorBlack"
                                 android:maxLines="1"
                                 app:boxBackgroundMode="outline"
                                 app:boxCornerRadiusTopEnd="10dp"
                                 app:boxCornerRadiusTopStart="10dp"
-                                >
+                                app:boxBackgroundColor="@color/ColorWhite"
+                                app:boxStrokeColor="@color/colorPrimary">
 
                                 <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/txtCantidadSurtida"
@@ -414,7 +436,7 @@
                                     android:imeOptions="actionDone"
                                     android:inputType="text"
                                     android:maxLines="1"
-                                    android:textSize="12sp" />
+                                    android:textSize="12sp"/>
                             </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -556,4 +578,4 @@
     </ScrollView>
 
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

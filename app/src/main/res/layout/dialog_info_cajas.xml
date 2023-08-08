@@ -44,7 +44,7 @@
                     android:gravity="center"
                     android:textStyle="bold"
                     android:textColor="@color/ColorWhite"
-                    android:text="Articulo"></TextView>
+                    android:text="Articulo"/>
 
 
                 <TextView
@@ -54,7 +54,7 @@
                     android:gravity="center"
                     android:textStyle="bold"
                     android:textColor="@color/ColorWhite"
-                    android:text="Cantidad"></TextView>
+                    android:text="Cantidad"/>
 
                 <TextView
                     android:layout_width="0dp"
@@ -63,7 +63,7 @@
                     android:gravity="center"
                     android:textStyle="bold"
                     android:textColor="@color/ColorWhite"
-                    android:text="Caja"></TextView>
+                    android:text="Caja"/>
 
             </LinearLayout>
             <androidx.recyclerview.widget.RecyclerView
@@ -72,7 +72,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:layout_weight="1"></androidx.recyclerview.widget.RecyclerView>
+                android:layout_weight="1"/>
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -101,7 +101,7 @@
             android:text="Imprimir"
             android:textColor="@color/AzulBack"
             android:layout_marginTop="5dp"
-            android:textSize="25dp"></TextView>
+            android:textSize="25dp"/>
 
     </LinearLayout>
 
