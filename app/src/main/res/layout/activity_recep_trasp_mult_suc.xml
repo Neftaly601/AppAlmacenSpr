@@ -23,14 +23,29 @@
             android:layout_marginRight="10dp"
             android:layout_marginTop="10dp">
 
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBuscar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/btn_background1"
+                android:text="@string/buscar"
+                android:textColor="@color/ColorWhite"
+                android:textSize="14sp"
+                android:tag="Buscar existencias en almacén de tránsito"
+                app:backgroundTint="@null"
+                app:backgroundTintMode="add"/>
+
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="10dp"
-                android:hint="@string/producto"
+                android:hint="@string/escanear"
                 android:textColorHint="@color/AzulBack"
                 app:hintTextColor="@color/AzulBack"
                 android:maxLines="1"
@@ -57,70 +72,17 @@
                 android:background="@color/AzulBack"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"/>
-            <LinearLayout
+            <TextView
+                android:id="@+id/tvProd"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:textColor="@color/Amarillo"
+                android:textSize="18dp"
+                android:textStyle="bold"
+                android:maxLines="2"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="5dp"/>
 
-                <TextView
-                    android:id="@+id/tvProd"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:textColor="@color/Amarillo"
-                    android:textSize="18dp"
-                    android:textStyle="bold"
-                    android:maxLines="2"
-                    android:gravity="center_vertical"
-                    android:layout_marginLeft="5dp"/>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnBuscar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="@drawable/btn_background1"
-                    android:text="@string/buscar"
-                    android:textColor="@color/ColorWhite"
-                    android:textSize="14sp"
-                    android:tag="Buscar existencias en almacén de tránsito"
-                    app:backgroundTint="@null"
-                    app:backgroundTintMode="add"/>
-            </LinearLayout>
-
-
-            <!--<LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginRight="3dp"
-                android:layout_marginLeft="3dp">
-
-                <TextView
-                    android:id="@+id/tvProd"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:layout_gravity="center_vertical"
-                    android:text="Clave"
-                    android:textColor="@color/Amarillo"
-                    android:textSize="18dp"
-                    android:textStyle="bold" />
-                <TextView
-                    android:id="@+id/tvDescP"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Descripción Producto"
-                    android:textColor="@color/AzulBack"
-                    android:textSize="15dp"
-                    android:lines="3"
-                    android:maxLines="3"
-                    android:textStyle="bold" />
-            </LinearLayout>-->
 
 
 
@@ -235,18 +197,18 @@
                     android:layout_height="match_parent"
                     android:layout_margin="3dp"
                     android:layout_weight="1.5"
-                    android:background="@drawable/btn_background1"
-                    app:backgroundTint="@color/ColorGris"
-                    android:enabled="false"
+                    android:background="@drawable/btn_background2"
                     android:maxLines="1"
-                    android:text="Corregir"
+                    android:text="Restar"
                     android:textAlignment="textStart"
-                    android:textColor="@color/cardview_light_background"
+                    android:textColor="@color/ColorWhite"
                     android:textSize="8dp"
-                    app:icon="@drawable/icon_termina"
-                    app:iconSize="10dp"
+                    app:icon="@drawable/icon_menos"
+                    app:iconSize="15dp"
                     app:iconGravity="start"
-                    app:iconTint="@null" />
+                    app:iconTint="@color/ColorWhite"
+                    app:backgroundTint="@color/ColorGris"
+                    android:enabled="false"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnAdelante"
@@ -267,19 +229,6 @@
                     android:enabled="false"/>
             </LinearLayout>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSincro"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/btn_background2"
-                android:text="@string/sincronizar"
-                android:textColor="@color/ColorWhite"
-                android:textSize="14sp"
-                app:backgroundTint="@null"
-                app:backgroundTintMode="add"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -355,7 +304,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvTraspasos"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:background="@color/ColorGris"/>
 
             </LinearLayout>

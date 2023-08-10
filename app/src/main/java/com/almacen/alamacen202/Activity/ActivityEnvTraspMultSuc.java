@@ -62,10 +62,10 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
     private String strusr,strpass,strbran,strServer,codeBar,mensaje,Producto="",serv;
     private ArrayList<Traspasos> listaTrasp = new ArrayList<>();
     private ArrayList<Traspasos> listaSincro = new ArrayList<>();
-    private EditText txtProd,txtCantidad,txtCantSurt;
+    private EditText txtFolBusq,txtCantidad,txtCantSurt;
     private ImageView ivProd;
     private TextView tvProd;
-    private Button btnBuscar,btnAtras,btnAdelante,btnSincro,btnCorr;
+    private Button btnBuscar,btnAtras,btnAdelante,btnCorr;
     private RecyclerView rvTraspasos;
     private AdaptadorTraspasos adapter;
     private AlertDialog mDialog;
@@ -110,14 +110,13 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setCancelable(false);
 
-        txtProd    = findViewById(R.id.txtProducto);
+        txtFolBusq    = findViewById(R.id.txtFolBusq);
         txtCantidad = findViewById(R.id.txtCantidad);
         txtCantSurt = findViewById(R.id.txtCantSurt);
         tvProd      = findViewById(R.id.tvProd);
         btnBuscar  = findViewById(R.id.btnBuscar);
         btnAtras    = findViewById(R.id.btnAtras);
         btnAdelante =findViewById(R.id.btnAdelante);
-        btnSincro   = findViewById(R.id.btnSincro);
         ivProd      = findViewById(R.id.ivProd);
 
         conn = new ConexionSQLiteHelper(ActivityEnvTraspMultSuc.this, "bd_INVENTARIO", null, 1);
@@ -127,10 +126,9 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         adapter = new AdaptadorTraspasos(listaTrasp);
         keyboard = (InputMethodManager) getSystemService(ActivityEnvTraspMultSuc.INPUT_METHOD_SERVICE);
 
-        txtProd.setInputType(InputType.TYPE_NULL);
-        //txtProd.requestFocus();
+        txtFolBusq.requestFocus();
 
-        txtProd.addTextChangedListener(new TextWatcher() {
+        txtFolBusq.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override
@@ -141,14 +139,14 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 if(!editable.toString().equals("") && escaneo==true){
                     if (codeBar.equals("Zebra")) {
                         buscarEnSql(Producto);
-                        txtProd.setText("");
+                        txtFolBusq.setText("");
                     }else{
                         for (int i = 0; i < editable.length(); i++) {
                             char ban;
                             ban = editable.charAt(i);
                             if (ban == '\n') {
                                 buscarEnSql(Producto);
-                                txtProd.setText("");
+                                txtFolBusq.setText("");
                                 break;
                             }//if
                         }//for
@@ -164,26 +162,6 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             }//onclick
         });//btnGuardar setonclick
 
-        btnSincro.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                datPSinc=datPSincro();
-                if(listaTrasp.size()>0 && datPSinc>0){
-                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
-                    builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            new AsyncRecepMultiSuc().execute();
-                        }//onclick
-                    });//positive button
-                    builder.setNegativeButton("CANCELAR",null);
-                    builder.setCancelable(false);
-                    builder.setTitle("Confirmación").setMessage(datPSinc+" productos escaneados ¿Desea sincronizar?").create().show();
-                }else{
-                    Toast.makeText(ActivityEnvTraspMultSuc.this, "Sin datos para sincronizar", Toast.LENGTH_SHORT).show();
-                }
-            }//onclick
-        });//btnSincro setonclick
 
         btnAdelante.setOnClickListener(new View.OnClickListener() {//boton adelante
             @Override
@@ -208,19 +186,6 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         db.close();
     }//onDestroy
 
-    public int datPSincro(){//saber cuantos datos son para sincronizar(cantidad de surtido no sea 0) o sea que se escaneo
-        int num=0,cont=0;
-        listaSincro.clear();
-        for(int i=0;i<listaTrasp.size();i++){
-            num=Integer.parseInt(listaTrasp.get(i).getCantSurt());
-            if(num>0){
-                listaSincro.add(new Traspasos("",listaTrasp.get(i).getProducto(),"",
-                        num+"",""));
-                cont++;
-            }//if
-        }//for
-        return cont;
-    }//datPSincro
 
     public boolean firtMet() {//firtMet
         ConnectivityManager connectivityManager =
@@ -418,13 +383,13 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void result) {
             progressDialog.dismiss();
-            if (contador==datPSincro()) {
+            if (contador==0) {
                 eliminarSql("");
                 AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
                 builder.setPositiveButton("OK", null);
                 builder.setCancelable(false);
                 builder.setTitle("Resultado Sincronización").setMessage("Total de productos escaneados: "+datPSinc+"\n"+" Datos sincronizados: "+contador).create().show();
-                txtProd.setText("");
+                //txtProd.setText("");
                 consultaSql();
                 tvProd.setText("");
                 txtCantidad.setText("");
@@ -446,7 +411,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 Toast.makeText(ActivityEnvTraspMultSuc.this, "Sin conexión a internet", Toast.LENGTH_SHORT).show();
             }else{
                 Toast.makeText(ActivityEnvTraspMultSuc.this, "Error al actualizar datos", Toast.LENGTH_SHORT).show();
-                txtProd.setText("");
+                //txtProd.setText("");
                 consultaSql();
             }//else
         }//onPostExecute
@@ -462,7 +427,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
 
             SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
             XMLRecepMultSuc soapEnvelope = new XMLRecepMultSuc(SoapEnvelope.VER11);
-            soapEnvelope.XMLTrasp(strusr, strpass, strbran, producto,cant,fecha,hora);
+            //soapEnvelope.XMLTrasp(strusr, strpass, strbran, producto,cant,fecha,hora);
             soapEnvelope.dotNet = true;
             soapEnvelope.implicitTypes = true;
             soapEnvelope.setOutputSoapObject(Request);
@@ -493,7 +458,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             @SuppressLint("Recycle") Cursor fila = db.rawQuery("SELECT PRODUCTO,CANTIDAD,SURTIDO,UBICACION FROM INVENTARIO WHERE EMPRESA='"+serv+"' ORDER BY UBICACION ", null);
             if (fila != null && fila.moveToFirst()) {
                 do {
-                    listaTrasp.add(new Traspasos((i++)+"",fila.getString(0),fila.getString(1),fila.getString(2),fila.getString(3)));
+                    //listaTrasp.add(new Traspasos((i++)+"",fila.getString(0),fila.getString(1),fila.getString(2),fila.getString(3)));
                 } while (fila.moveToNext());
                 adapter = new AdaptadorTraspasos(listaTrasp);
                 rvTraspasos.setAdapter(adapter);
@@ -504,8 +469,8 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                         break;
                     }//if
                 }//for
-                txtProd.setEnabled(true);
-                txtProd.requestFocus();
+                //txtProd.setEnabled(true);
+                //txtProd.requestFocus();
                 mostrarDetalleProd();
             }//if
             fila.close();

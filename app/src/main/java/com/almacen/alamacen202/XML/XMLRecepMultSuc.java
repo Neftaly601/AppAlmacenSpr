@@ -12,21 +12,17 @@ public class XMLRecepMultSuc extends SoapSerializationEnvelope {
     private String suc;
     private String prod;
     private String cant;
-    private String fecha;
-    private String hora;
 
     public XMLRecepMultSuc(int version) {
         super(version);
     }
 
-    public void XMLTrasp(String usuario, String contrasena,String suc,String prod,String cant,String fecha,String hora) {
+    public void XMLTrasp(String usuario, String contrasena,String suc,String prod,String cant) {
         this.usuario = usuario;
         this.contrasena = contrasena;
         this.suc = suc;
         this.prod = prod;
         this.cant=cant;
-        this.fecha=fecha;
-        this.hora=hora;
     }//void
 
     @Override
@@ -68,14 +64,6 @@ public class XMLRecepMultSuc extends SoapSerializationEnvelope {
         writer.startTag(tem, "k_Usuario");
         writer.text(usuario);
         writer.endTag(tem, "k_Usuario");
-
-        writer.startTag(tem, "k_Fecha");
-        writer.text(fecha);
-        writer.endTag(tem, "k_Fecha");
-
-        writer.startTag(tem, "k_Hora");
-        writer.text(hora);
-        writer.endTag(tem, "k_Hora");
 
         writer.endTag(tem, "RecepMultiSuc");
 

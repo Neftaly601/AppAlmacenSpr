@@ -6,13 +6,15 @@ public class Traspasos {
     private String cantidad;
     private String cantSurt;
     private String ubic;
+    private boolean sincronizado;
 
-    public Traspasos(String  num, String producto, String cantidad,String cantSurt,String ubic) {
+    public Traspasos(String  num, String producto, String cantidad,String cantSurt,String ubic,boolean sincronizado) {
         this.num = num;
         this.producto = producto;
         this.cantidad = cantidad;
         this.cantSurt = cantSurt;
         this.ubic=ubic;
+        this.sincronizado=sincronizado;
     }//constructor
 
     public String getNum() {
@@ -53,5 +55,13 @@ public class Traspasos {
 
     public void setUbic(String ubic) {
         this.ubic = ubic;
+    }
+
+    public boolean isSincronizado() {
+        return sincronizado;
+    }
+
+    public void setSincronizado(boolean sincronizado) {
+        this.sincronizado = sincronizado;
     }
 }//clase

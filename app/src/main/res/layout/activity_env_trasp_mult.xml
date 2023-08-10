@@ -26,7 +26,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="@string/producto"
+                android:hint="@string/folio"
                 android:textColorHint="@color/AzulBack"
                 app:hintTextColor="@color/AzulBack"
                 app:boxBackgroundMode="outline"
@@ -35,27 +35,35 @@
                 app:boxBackgroundColor="@color/ColorWhite"
                 app:boxStrokeColor="@color/colorPrimary">
                 <EditText
-                    android:id="@+id/txtProducto"
+                    android:id="@+id/txtFolBusq"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:focusable="false"
                     android:inputType="text"
-                    android:maxLength="25"
+                    android:maxLength="20"
                     android:textSize="15sp"
-                    android:textColor="@color/colorBlack"
-                    android:enabled="false"/>
+                    android:textColor="@color/colorBlack"/>
             </com.google.android.material.textfield.TextInputLayout>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/AzulBack"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp">
 
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBuscar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_background1"
+                    android:text="@string/buscar"
+                    android:textColor="@color/ColorWhite"
+                    app:icon="@drawable/icons8_lupa"
+                    app:iconTint="@null"
+                    app:iconSize="20dp"
+                    app:backgroundTint="@null"
+                    app:backgroundTintMode="add"
+                    android:layout_marginRight="5dp"/>
                 <TextView
                     android:id="@+id/tvProd"
                     android:layout_width="match_parent"
@@ -65,24 +73,7 @@
                     android:textSize="18dp"
                     android:textStyle="bold"
                     android:maxLines="2"
-                    android:gravity="center_vertical"
-                    android:layout_marginLeft="5dp"/>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnBuscar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/btn_background1"
-                    android:text="@string/buscar"
-                    android:layout_marginRight="5dp"
-                    android:layout_marginLeft="5dp"
-                    android:textColor="@color/ColorWhite"
-                    app:icon="@drawable/icons8_lupa"
-                    app:iconTint="@null"
-                    app:iconSize="20dp"
-                    app:backgroundTint="@null"
-                    app:backgroundTintMode="add"/>
+                    android:gravity="center_vertical"/>
             </LinearLayout>
 
             <LinearLayout
@@ -202,20 +193,6 @@
                     android:enabled="false"/>
             </LinearLayout>
 
-            <Button
-                android:id="@+id/btnSincro"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/btn_background2"
-                android:text="@string/sincronizar"
-                android:textColor="@color/ColorWhite"
-                android:textSize="14sp"
-                app:backgroundTint="@null"
-                app:backgroundTintMode="add"/>
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -272,7 +249,7 @@
                         android:textStyle="bold"
                         android:textSize="10dp"
                         android:textColor="@color/ColorWhite"
-                        android:text="EXIST"/>
+                        android:text="CANT"/>
                     <View
                         android:layout_width="2dp"
                         android:layout_height="match_parent"/>
@@ -284,7 +261,8 @@
                         android:textStyle="bold"
                         android:textSize="10dp"
                         android:textColor="@color/ColorWhite"
-                        android:text="CANT"/>
+                        android:text="EXIST"/>
+
                     <View
                         android:layout_width="2dp"
                         android:layout_height="match_parent"/>

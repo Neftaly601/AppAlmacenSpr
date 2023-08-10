@@ -1,5 +1,6 @@
 package com.almacen.alamacen202.Adapter;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,9 +39,24 @@ public class AdaptadorTraspasos extends RecyclerView.Adapter<AdaptadorTraspasos.
         holder.ubi.setText(datos.get(position).getUbic());
 
         if(index==position){
-            holder.lyaout.setBackgroundResource(R.color.ColorGris);
+            holder.lyaout.setBackgroundResource(R.color.ColorTenue);
+
         }else{
             holder.lyaout.setBackgroundColor(0);
+        }
+
+        if(datos.get(position).isSincronizado()){
+            holder.Producto.setTextColor(Color.parseColor("#000000"));
+            holder.Cantidad.setTextColor(Color.parseColor("#ECBF15"));
+            holder.n.setTextColor(Color.parseColor("#043B72"));
+            holder.CantSurt.setTextColor(Color.parseColor("#043B72"));
+            holder.ubi.setTextColor(Color.parseColor("#043B72"));
+        }else{
+            holder.Producto.setTextColor(Color.parseColor("#2196F3"));
+            holder.Cantidad.setTextColor(Color.parseColor("#2196F3"));
+            holder.n.setTextColor(Color.parseColor("#2196F3"));
+            holder.CantSurt.setTextColor(Color.parseColor("#2196F3"));
+            holder.ubi.setTextColor(Color.parseColor("#2196F3"));
         }
     }//onBindViewHolder
 

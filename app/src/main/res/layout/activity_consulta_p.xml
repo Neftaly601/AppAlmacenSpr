@@ -57,6 +57,7 @@
                         android:layout_weight="1"
                         android:hint="@string/producto"
                         android:textColorHint="@color/AzulBack"
+                        app:hintTextColor="@color/AzulBack"
                         app:boxBackgroundMode="outline"
                         app:boxCornerRadiusTopEnd="10dp"
                         app:boxCornerRadiusTopStart="10dp"
