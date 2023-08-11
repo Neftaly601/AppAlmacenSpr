@@ -18,28 +18,44 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.almacen.alamacen202.Adapter.AdaptadorCajas;
+import com.almacen.alamacen202.Adapter.AdaptadorCajaxProd;
+import com.almacen.alamacen202.Adapter.AdaptadorEnvTraspasos;
+import com.almacen.alamacen202.Adapter.AdaptadorListAlmacenes;
 import com.almacen.alamacen202.Adapter.AdaptadorTraspasos;
+import com.almacen.alamacen202.Adapter.AdapterDifUbiExi;
 import com.almacen.alamacen202.R;
+import com.almacen.alamacen202.SetterandGetters.CAJASSANDG;
+import com.almacen.alamacen202.SetterandGetters.CajaXProd;
+import com.almacen.alamacen202.SetterandGetters.EnvTraspasos;
 import com.almacen.alamacen202.SetterandGetters.Traspasos;
 import com.almacen.alamacen202.Sqlite.ConexionSQLiteHelper;
 import com.almacen.alamacen202.XML.XMLRecepConsul;
 import com.almacen.alamacen202.XML.XMLRecepMultSuc;
+import com.almacen.alamacen202.includes.HttpHandler;
 import com.almacen.alamacen202.includes.MyToolbar;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.SoapFault;
 import org.ksoap2.serialization.SoapObject;
@@ -47,6 +63,7 @@ import org.ksoap2.transport.HttpTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -58,19 +75,16 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private SharedPreferences preference;
     private boolean escaneo=false,datos=false;
-    private int posicion=0,datPSinc=0;//para contar los registros que se escanearon y se van a sincronizar
-    private String strusr,strpass,strbran,strServer,codeBar,mensaje,Producto="",serv;
-    private ArrayList<Traspasos> listaTrasp = new ArrayList<>();
-    private ArrayList<Traspasos> listaSincro = new ArrayList<>();
-    private EditText txtFolBusq,txtCantidad,txtCantSurt;
+    private int posicion=0,posicion2=0,posG=0,CAJAACT=1;
+    private String strusr,strpass,strbran,strServer,codeBar,mensaje,Producto="",serv,Folio="";
+    private ArrayList<EnvTraspasos> lista = new ArrayList<>();
+    private EditText txtFolBusq,txtCantidad,txtCantSurt,txtProducto,tvCaja;
     private ImageView ivProd;
     private TextView tvProd;
-    private Button btnBuscar,btnAtras,btnAdelante,btnCorr;
-    private RecyclerView rvTraspasos;
-    private AdaptadorTraspasos adapter;
+    private Button btnBuscarFol,btnAtras,btnAdelante,btnAggCaja,btnListaCajas,btnVerCajas;
+    private RecyclerView rvEnvTrasp;
+    private AdaptadorEnvTraspasos adapter;
     private AlertDialog mDialog;
-    private ConexionSQLiteHelper conn;
-    private SQLiteDatabase db;
     private InputMethodManager keyboard;
     private String urlImagenes,extImg;
     @Override
@@ -88,18 +102,6 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         urlImagenes=preference.getString("urlImagenes", "null");
         extImg=preference.getString("ext", "null");
 
-        switch (strServer) {
-            case "sprautomotive.servehttp.com:9090":
-                serv="RODATECH";
-                break;
-            case "sprautomotive.servehttp.com:9095":
-                serv="PARTECH";
-                break;
-            case "sprautomotive.servehttp.com:9080":
-                serv="TG";
-                break;
-        }
-
         mDialog = new SpotsDialog.Builder().setContext(ActivityEnvTraspMultSuc.this).
                 setMessage("Espere un momento...").build();
         mDialog.setCancelable(false);
@@ -114,19 +116,23 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         txtCantidad = findViewById(R.id.txtCantidad);
         txtCantSurt = findViewById(R.id.txtCantSurt);
         tvProd      = findViewById(R.id.tvProd);
-        btnBuscar  = findViewById(R.id.btnBuscar);
+        btnBuscarFol  = findViewById(R.id.btnBuscarFol);
         btnAtras    = findViewById(R.id.btnAtras);
         btnAdelante =findViewById(R.id.btnAdelante);
         ivProd      = findViewById(R.id.ivProd);
+        txtProducto = findViewById(R.id.txtProducto);
+        tvCaja = findViewById(R.id.tvCaja);
+        btnAggCaja = findViewById(R.id.btnAggCaja);
+        btnListaCajas = findViewById(R.id.btnListaCajas);
+        btnVerCajas = findViewById(R.id.btnVerCajas);
 
-        conn = new ConexionSQLiteHelper(ActivityEnvTraspMultSuc.this, "bd_INVENTARIO", null, 1);
-        db = conn.getReadableDatabase();//apertura de la base de datos interna
-        rvTraspasos    = findViewById(R.id.rvTraspasos);
-        rvTraspasos.setLayoutManager(new LinearLayoutManager(ActivityEnvTraspMultSuc.this));
-        adapter = new AdaptadorTraspasos(listaTrasp);
+        rvEnvTrasp    = findViewById(R.id.rvEnvTrasp);
+        rvEnvTrasp.setLayoutManager(new LinearLayoutManager(ActivityEnvTraspMultSuc.this));
+        adapter = new AdaptadorEnvTraspasos(lista);
         keyboard = (InputMethodManager) getSystemService(ActivityEnvTraspMultSuc.INPUT_METHOD_SERVICE);
 
         txtFolBusq.requestFocus();
+        txtProducto.setInputType(InputType.TYPE_NULL);
 
         txtFolBusq.addTextChangedListener(new TextWatcher() {
             @Override
@@ -135,18 +141,33 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override
             public void afterTextChanged(Editable editable) {
+                if(!editable.toString().equals("")){
+                    Folio= editable.toString();
+                }//if es diferente a vacio
+            }//after
+        });//txtProd textchange
+
+        txtProducto.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void afterTextChanged(Editable editable) {
                 Producto=editable.toString();
-                if(!editable.toString().equals("") && escaneo==true){
+                if(!editable.toString().equals("")){
                     if (codeBar.equals("Zebra")) {
-                        buscarEnSql(Producto);
-                        txtFolBusq.setText("");
+                        posicion2=posG;
+                        cambio(Producto,true);
+                        txtProducto.setText("");
                     }else{
                         for (int i = 0; i < editable.length(); i++) {
                             char ban;
                             ban = editable.charAt(i);
                             if (ban == '\n') {
-                                buscarEnSql(Producto);
-                                txtFolBusq.setText("");
+                                posicion2=posG;
+                                cambio(Producto,true);
+                                txtProducto.setText("");
                                 break;
                             }//if
                         }//for
@@ -155,10 +176,16 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             }//after
         });//txtProd textchange
 
-        btnBuscar.setOnClickListener(new View.OnClickListener() {
+        btnBuscarFol.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(ActivityEnvTraspMultSuc.this, "Buscar", Toast.LENGTH_SHORT).show();
+                if(!Folio.equals("")){
+                    Folio=folio(Folio);
+                    new AsyncConsulEnvTrasp(strbran,Folio).execute();
+                }else{
+                    Toast.makeText(ActivityEnvTraspMultSuc.this, "Folio vacío", Toast.LENGTH_SHORT).show();
+                }
+
             }//onclick
         });//btnGuardar setonclick
 
@@ -178,13 +205,215 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 mostrarDetalleProd();
             }//onclick
         });//btnatras setonclicklistener
+
+        btnAggCaja.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
+                builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        CAJAACT++;
+                        mostrarDetalleProd();
+                    }
+                });
+                builder.setNegativeButton("CANCELAR",null);
+                builder.setCancelable(false);
+                builder.setTitle("AVISO").setMessage("¿Desea agregar caja?").create().show();
+            }
+        });
+
+        btnListaCajas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new AsyncConsultCA(strbran,Folio).execute();
+            }
+        });//btnListaCajas
+
+        btnVerCajas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new AsyncConsultCP(strbran,Folio,tvProd.getText().toString()).execute();
+            }
+        });//btnVerCajas
     }//onCreate
 
-    @Override
-    protected void onDestroy() {//para cerrar db de base de datos interna cuando se cierre la aplicacion
-        super.onDestroy();
-        db.close();
-    }//onDestroy
+    public String folio(String folio){
+        if (folio.length() < 7) {
+            int fo = folio.length();
+            switch (fo) {
+                case 1:
+                    folio = "000000" + folio;
+                    break;
+                case 2:
+                    folio = "00000" + folio;
+                    break;
+                case 3:
+                    folio ="0000" + folio;
+                    break;
+                case 4:
+                    folio ="000" + folio;
+                    break;
+                case 5:
+                    folio ="00" + folio;
+                    break;
+                case 6:
+                    folio = "0" + folio;
+                    break;
+                default:
+                    folio=folio;
+                    break;
+            }//switch
+        }//if
+        return folio;
+    }
+
+    public void verLista(){
+        adapter = new AdaptadorEnvTraspasos(lista);
+        rvEnvTrasp.setAdapter(adapter);
+        txtProducto.setEnabled(true);
+        txtProducto.requestFocus();
+        posicion=0;
+        mostrarDetalleProd();
+    }
+    public void mostrarDetalleProd(){//detalle por producto seleccionado
+        adapter.index(posicion);
+        adapter.notifyDataSetChanged();
+        rvEnvTrasp.scrollToPosition(posicion);
+        //Producto=listaTrasp.get(posicion).getProducto();
+        tvProd.setText(lista.get(posicion).getProducto());
+        txtCantidad.setText(lista.get(posicion).getCantidad());
+        txtCantSurt.setText(lista.get(posicion).getCantSurt());
+
+        if(Integer.parseInt(lista.get(posicion).getCantidad())==Integer.parseInt(lista.get(posicion).getCantSurt())){
+            txtCantSurt.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+        }else{
+            txtCantSurt.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.ColorGris)));
+        }
+        tvCaja.setText(CAJAACT+"");
+        cambiaProd();
+
+        Picasso.with(getApplicationContext()).
+                load(urlImagenes +
+                        tvProd.getText().toString() + extImg)
+                .error(R.drawable.aboutlogo)
+                .fit()
+                .centerInside()
+                .into(ivProd);
+        posG=posicion;
+    }//mostrarDetalleProd
+
+    public void cambiaProd(){
+        if(posicion==0){
+            btnAdelante.setEnabled(true);
+            btnAdelante.setBackgroundTintList(null);
+            btnAdelante.setBackgroundResource(R.drawable.btn_background3);
+            btnAtras.setEnabled(false);
+            btnAtras.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.ColorGris)));
+
+        }else if(posicion+1==lista.size()){
+            btnAtras.setEnabled(true);
+            btnAtras.setBackgroundTintList(null);
+            btnAtras.setBackgroundResource(R.drawable.btn_background3);
+            btnAdelante.setEnabled(false);
+            btnAdelante.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.ColorGris)));
+        }else{
+            btnAtras.setEnabled(true);
+            btnAtras.setBackgroundTintList(null);
+            btnAtras.setBackgroundResource(R.drawable.btn_background3);
+            btnAdelante.setEnabled(true);
+            btnAdelante.setBackgroundTintList(null);
+            btnAdelante.setBackgroundResource(R.drawable.btn_background3);
+        }//else
+    }//cambiaProd
+
+    public void onClickListaE(View v){//cada vez que se seleccione un producto en la lista
+        if(posicion>=0 && lista.get(posicion).isSincronizado()==false){
+            posicion2=posG;
+            Producto=lista.get(rvEnvTrasp.getChildPosition(rvEnvTrasp.findContainingItemView(v))).getProducto();
+        }else{
+            posicion2 = rvEnvTrasp.getChildPosition(rvEnvTrasp.findContainingItemView(v));
+        }
+        cambio("change",false);
+    }//onClickLista
+
+    public void cambio(String var,boolean sumar){
+        if(!lista.get(posicion2).getProducto().equals(Producto) && posG!=-1 && lista.get(posicion2).isSincronizado()==false){//identificando que prod anterior no se sincronizó
+            //new ActivityRecepTraspMultSuc.AsyncAct(listaTrasp.get(posicion2).getProducto(),listaTrasp.get(posicion2).getCantSurt(),var,sumar,Producto).execute();
+            Toast.makeText(this, "Sinronizado", Toast.LENGTH_SHORT).show();
+        }else{//cuando se escanea o por botones de adelante, atras y onclick en lista
+            if(sumar==true){//al escanear
+                evaluarEscaneo(Producto);
+            }else{
+                tipoCambio(var);
+                mostrarDetalleProd();
+            }
+        }//else
+    }//alert
+
+    public void tipoCambio(String var){
+        switch (var){
+            case "next":
+                posicion++;break;
+            case "back":
+                posicion--;break;
+            case "change":
+                posicion=posicion2;
+                posicion2=0;break;
+            default:posicion=encontrarPosEnLista(var);break;
+        }
+    }//tipoCambio
+
+    public int encontrarPosEnLista(String prod){
+        int p=posG;
+        for(int i=0;i<lista.size();i++){
+            if(lista.get(i).getProducto().equals(prod)){
+                p=i;
+                break;
+            }//if
+        }
+        return p;
+    }
+
+    public void evaluarEscaneo(String prod){
+        limpiar();
+        boolean existe=false;
+        for(int i=0;i<lista.size();i++){
+            if(lista.get(i).getProducto().equals(prod)){
+                posicion=i;
+                existe=true;
+                int cant=Integer.parseInt(lista.get(i).getCantidad());
+                int cantS=Integer.parseInt(lista.get(i).getCantSurt());
+                if((cantS+1)<=cant){
+                    cantS++;
+                    lista.get(i).setCantSurt(cantS+"");
+                    lista.get(i).setSincronizado(false);
+                }else{
+                    Toast.makeText(this, "Excede cantidad", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            }//if
+        }
+        if(existe==false){
+            Toast.makeText(this, "No existe "+prod+" en la lista", Toast.LENGTH_SHORT).show();
+        }
+        mostrarDetalleProd();
+    }//evaluar
+
+    public void limpiar(){
+        txtCantidad.setText("");
+        txtCantSurt.setText("");
+        ivProd.setImageResource(R.drawable.logokepler);
+        btnAtras.setEnabled(false);
+        btnAtras.setBackgroundTintList(ColorStateList.
+                valueOf(getResources().getColor(R.color.ColorGris)));
+        btnAdelante.setEnabled(false);
+        btnAdelante.setBackgroundTintList(ColorStateList.
+                valueOf(getResources().getColor(R.color.ColorGris)));
+        posG=-1;
+    }//limpiar
 
 
     public boolean firtMet() {//firtMet
@@ -198,345 +427,283 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         }//else
     }//FirtMet saber si hay conexion a internet
 
-    public void cambiaProd(){
-        btnCorr.setEnabled(true);
-        btnCorr.setBackgroundTintList(ColorStateList.
-                valueOf(getResources().getColor(R.color.ColorFinalizado)));
-        if(posicion==0){
-            btnAdelante.setEnabled(true);
-            btnAdelante.setBackgroundTintList(ColorStateList.
-                    valueOf(getResources().getColor(R.color.colorPrimary)));
-            btnAtras.setEnabled(false);
-            btnAtras.setBackgroundTintList(ColorStateList.
-                    valueOf(getResources().getColor(R.color.ColorGris)));
 
-        }else if(posicion+1==listaTrasp.size()){
-            btnAtras.setEnabled(true);
-            btnAtras.setBackgroundTintList(ColorStateList.
-                    valueOf(getResources().getColor(R.color.colorPrimary)));
-            btnAdelante.setEnabled(false);
-            btnAdelante.setBackgroundTintList(ColorStateList.
-                    valueOf(getResources().getColor(R.color.ColorGris)));
-        }else{
-            btnAtras.setEnabled(true);
-            btnAtras.setBackgroundTintList(ColorStateList.
-                    valueOf(getResources().getColor(R.color.colorPrimary)));
-            btnAdelante.setEnabled(true);
-            btnAdelante.setBackgroundTintList(ColorStateList.
-                    valueOf(getResources().getColor(R.color.colorPrimary)));
-        }//else
-    }//cambiaProd
+    private class AsyncConsulEnvTrasp extends AsyncTask<Void, Void, Void> {
 
-    public void onClickLista(View v){//cada vez que se seleccione un producto en la lista
-        posicion = rvTraspasos.getChildPosition(rvTraspasos.findContainingItemView(v));
-        mostrarDetalleProd();
-    }//onClickLista
+        private String suc,folio;
 
-    public void mostrarDetalleProd(){//detalle por producto seleccionado
-        adapter.index(posicion);
-        adapter.notifyDataSetChanged();
-        rvTraspasos.scrollToPosition(posicion);
-        Producto=listaTrasp.get(posicion).getProducto();
-        tvProd.setText(Producto);
-        txtCantidad.setText(listaTrasp.get(posicion).getCantidad());
-        txtCantSurt.setText(listaTrasp.get(posicion).getCantSurt());
-
-        if(Integer.parseInt(listaTrasp.get(posicion).getCantidad())==Integer.parseInt(listaTrasp.get(posicion).getCantSurt())){
-            txtCantSurt.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
-        }else{
-            txtCantSurt.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.ColorGris)));
-        }
-        cambiaProd();
-        Picasso.with(getApplicationContext()).
-                load(urlImagenes +
-                        tvProd.getText().toString() + extImg)
-                .error(R.drawable.aboutlogo)
-                .fit()
-                .centerInside()
-                .into(ivProd);
-        escaneo=true;
-    }//mostrarDetalleProd
-
-
-
-    private class AsyncRecepConsul extends AsyncTask<Void, Void, Void> {//WEBSERVICE PARA CONSULTAR LOS PRODUCTOS
-        private boolean conn=true;
-        @Override
-        protected void onPreExecute() {mDialog.show();}
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            datos=false;
-            if(firtMet()==true){
-                escaneo=false;
-                eliminarSql("");
-                listaTrasp.clear();
-                conectaRecepCon();
-            }else{conn=false;}//else
-            return null;
+        public AsyncConsulEnvTrasp(String suc, String folio) {
+            this.suc = suc;
+            this.folio = folio;
         }
 
-        @RequiresApi(api = Build.VERSION_CODES.P)
         @Override
-        protected void onPostExecute(Void result) {
-            if(conn=false){
-                mDialog.dismiss();
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
-                builder.setPositiveButton("ACEPTAR",null);
-                builder.setCancelable(false);
-                builder.setTitle("AVISO").setMessage("Sin conexión a internet").create().show();
-            }else if(mensaje.equals("PENDIENTES")){
-                mDialog.dismiss();
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
-                builder.setPositiveButton("ACEPTAR",null);
-                builder.setCancelable(false);
-                builder.setTitle("AVISO").setMessage("Existen productos pendientes por procesar en kepler, para continuar valide en kepler").create().show();
-            }else if(datos==true) {
-                consultaSql();
-                mDialog.dismiss();
-            }else{
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
-                builder.setPositiveButton("ACEPTAR",null);
-                builder.setCancelable(false);
-                builder.setTitle("AVISO").setMessage("Ningun Dato").create().show();
-                consultaSql();
-                mDialog.dismiss();
-            }//else
-        }//onPostExecute
-    }//AsynInsertInv
-
-
-    private void conectaRecepCon() {
-        String SOAP_ACTION = "RecepcionConsulta";
-        String METHOD_NAME = "RecepcionConsulta";
-        String NAMESPACE = "http://" + strServer + "/WSk75AlmacenesApp/";
-        String URL = "http://" + strServer + "/WSk75AlmacenesApp";
-        try {
-            SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
-            XMLRecepConsul soapEnvelope = new XMLRecepConsul(SoapEnvelope.VER11);
-            soapEnvelope.XMLRecepCon(strusr, strpass,strbran);
-            soapEnvelope.dotNet = true;
-            soapEnvelope.implicitTypes = true;
-            soapEnvelope.setOutputSoapObject(Request);
-            HttpTransportSE trasport = new HttpTransportSE(URL);
-            trasport.debug = true;
-            trasport.call(SOAP_ACTION, soapEnvelope);
-            SoapObject response = (SoapObject) soapEnvelope.bodyIn;
-            for (int i = 0; i < response.getPropertyCount(); i++) {
-                SoapObject response0 = (SoapObject) soapEnvelope.bodyIn;
-                response0 = (SoapObject) response0.getProperty(i);
-                mensaje=(response0.getPropertyAsString("MENSAJE").equals("anyType{}") ? "": response0.getPropertyAsString("MENSAJE"));
-                if(mensaje.equals("PENDIENTES")){break;}
-
-                String clave=(response0.getPropertyAsString("PRODUCTO").equals("anyType{}") ? " " : response0.getPropertyAsString("PRODUCTO"));
-                String can=(response0.getPropertyAsString("CANTIDAD").equals("anyType{}") ? "" : response0.getPropertyAsString("CANTIDAD"));
-                String ub=(response0.getPropertyAsString("UBICACION").equals("anyType{}") ? "" : response0.getPropertyAsString("UBICACION"));
-                String surt="0";
-                insertarSql(clave, can,surt,ub);
-                datos=true;
-            }//for
-        } catch (Exception ex) {mensaje="";}//catch
-    }//conectaListInv
-
-    private class AsyncRecepMultiSuc extends AsyncTask<Void, Integer, Void> {//WEBSERVICE PARA ACTUALIZAR DATOS
-        private String pro,cc;
-        private int contador=0;
-        private boolean conn=true;
-        @Override
-        protected void onPreExecute() {progressDialog.show();}
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            escaneo=false;
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mDialog.show();
+            limpiar();
             mensaje="";
-            if(firtMet()==true){//si hay conexión a internet
-                progressDialog.setMax(listaSincro.size());
-                String fecha =new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault()).format(new Date());
-                String hora=new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
-                for(int i=0;i<listaSincro.size();i++){
-                    try {
-                        pro=listaSincro.get(i).getProducto();
-                        cc=listaSincro.get(i).getCantSurt();
-                        conectaRecepMultSuc(pro,cc,fecha,hora);
-                        if(mensaje.equals("SINCRONIZADO")){
-                            eliminarSql("AND PRODUCTO='"+pro+"'");//si se sincroniza se elimina de la base de datos sqlite del telefono
-                            contador++;
-                            mensaje="";
-                        }
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        return null;
-                    }//catch
-                    progressDialog.setProgress(i);
-                }//for
-            }else{conn=false;}
-            return null;
-        }
+            posicion=-1;
+            lista.clear();
+            CAJAACT=1;
+            rvEnvTrasp.setAdapter(null);
+            btnAggCaja.setEnabled(false);
+            btnListaCajas.setEnabled(false);
+            btnVerCajas.setEnabled(false);
+            btnAggCaja.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.ColorGris)));
+            btnListaCajas.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.ColorGris)));
+            btnVerCajas.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.ColorGris)));
+        }//onPreExecute
 
         @Override
-        protected void onProgressUpdate(Integer... progress) {
-            super.onProgressUpdate(progress);
-            progressDialog.setProgress(progress[0]);
-        }
-
-        @RequiresApi(api = Build.VERSION_CODES.P)
-        @Override
-        protected void onPostExecute(Void result) {
-            progressDialog.dismiss();
-            if (contador==0) {
-                eliminarSql("");
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
-                builder.setPositiveButton("OK", null);
-                builder.setCancelable(false);
-                builder.setTitle("Resultado Sincronización").setMessage("Total de productos escaneados: "+datPSinc+"\n"+" Datos sincronizados: "+contador).create().show();
-                //txtProd.setText("");
-                consultaSql();
-                tvProd.setText("");
-                txtCantidad.setText("");
-                txtCantSurt.setText("");
-                Picasso.with(getApplicationContext()).
-                        load(R.drawable.aboutlogo)
-                        .error(R.drawable.aboutlogo)
-                        .fit()
-                        .centerInside()
-                        .into(ivProd);
-                btnAdelante.setEnabled(false);
-                btnAtras.setEnabled(false);
-                btnAdelante.setBackgroundTintList(ColorStateList.
-                        valueOf(getResources().getColor(R.color.ColorGris)));
-                btnAtras.setBackgroundTintList(ColorStateList.
-                        valueOf(getResources().getColor(R.color.ColorGris)));
-                datPSinc=0;
-            }else if(conn==false){
-                Toast.makeText(ActivityEnvTraspMultSuc.this, "Sin conexión a internet", Toast.LENGTH_SHORT).show();
-            }else{
-                Toast.makeText(ActivityEnvTraspMultSuc.this, "Error al actualizar datos", Toast.LENGTH_SHORT).show();
-                //txtProd.setText("");
-                consultaSql();
+        protected Void doInBackground(Void... voids) {
+            HttpHandler sh = new HttpHandler();
+            String parametros="k_suc="+suc+"&k_fol="+folio+"";
+            String url = "http://"+strServer+"/"+getString(R.string.resConsEnvTrasp)+"?"+parametros;
+            String jsonStr = sh.makeServiceCall(url,strusr,strpass);
+            //Log.e(TAG, "Respuesta de la url: " + jsonStr);
+            if (jsonStr != null) {
+                try {
+                    JSONObject jsonObj = new JSONObject(jsonStr);
+                    // Obtener array de datos
+                    JSONArray jsonArray = jsonObj.getJSONArray("Response");
+                    int num=1;
+                    for(int i=0;i<jsonArray.length();i++){
+                        JSONObject dato = jsonArray.getJSONObject(i);//Conjunto de datos
+                        lista.add(new EnvTraspasos(num+"",dato.getString("k_prod"),dato.getString("k_ubi"),
+                                dato.getString("k_exist"),dato.getString("k_cant"),dato.getString("k_part"),
+                                dato.getString("k_cants"),true));
+                        num++;
+                        mensaje="";
+                    }//for
+                } catch (final JSONException e) {
+                    //Log.e(TAG, "Error al convertir Json: " + e.getMessage());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mensaje="Puede que el folio no exista o no haya datos";
+                        }//run
+                    });
+                }//catch JSON EXCEPTION
+            }else {
+                //Log.e(TAG, "Problemas al traer datos");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mensaje="No fue posible obtener datos del servidor";
+                    }//run
+                });//runUniTthread
             }//else
-        }//onPostExecute
-    }//AsynInsertInv
+            return null;
+        }//doInBackground
 
-
-    private void conectaRecepMultSuc (String producto, String cant,String fecha,String hora) {
-        String SOAP_ACTION = "RecepcionMultisucursal";
-        String METHOD_NAME = "RecepcionMultisucursal";
-        String NAMESPACE = "http://" + strServer + "/WSk75AlmacenesApp/";
-        String URL = "http://" + strServer + "/WSk75AlmacenesApp";
-        try {
-
-            SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
-            XMLRecepMultSuc soapEnvelope = new XMLRecepMultSuc(SoapEnvelope.VER11);
-            //soapEnvelope.XMLTrasp(strusr, strpass, strbran, producto,cant,fecha,hora);
-            soapEnvelope.dotNet = true;
-            soapEnvelope.implicitTypes = true;
-            soapEnvelope.setOutputSoapObject(Request);
-            HttpTransportSE trasport = new HttpTransportSE(URL);
-            trasport.debug = true;
-            trasport.call(SOAP_ACTION, soapEnvelope);
-            SoapObject response = (SoapObject) soapEnvelope.bodyIn;
-            response = (SoapObject) response.getProperty("PRODUCTO");
-
-            mensaje=(response.getPropertyAsString("MENSAJE").equals("anyType{}") ? null : response.getPropertyAsString("MENSAJE"));
-        }catch (SoapFault soapFault) {
-            mensaje=soapFault.getMessage();
-        }catch (XmlPullParserException e) {
-            mensaje=e.getMessage();
-        }catch (IOException e) {
-            mensaje=e.getMessage();
-        }catch (Exception ex) {
-            mensaje=ex.getMessage();
-        }//catch
-    }//conectaActualiza
-
-    public void consultaSql(){
-        try{
-            int i=1;
-            escaneo=false;
-            listaTrasp.clear();
-            rvTraspasos.setAdapter(null);
-            @SuppressLint("Recycle") Cursor fila = db.rawQuery("SELECT PRODUCTO,CANTIDAD,SURTIDO,UBICACION FROM INVENTARIO WHERE EMPRESA='"+serv+"' ORDER BY UBICACION ", null);
-            if (fila != null && fila.moveToFirst()) {
-                do {
-                    //listaTrasp.add(new Traspasos((i++)+"",fila.getString(0),fila.getString(1),fila.getString(2),fila.getString(3)));
-                } while (fila.moveToNext());
-                adapter = new AdaptadorTraspasos(listaTrasp);
-                rvTraspasos.setAdapter(adapter);
-                posicion=0;
-                for (int j =0 ; j<listaTrasp.size();j++){//para tomar posicion de producto y que con eso se pueda posicionar en el producto en la lista
-                    if (Producto.equals(listaTrasp.get(j).getProducto())){
-                        posicion=j;
-                        break;
-                    }//if
-                }//for
-                //txtProd.setEnabled(true);
-                //txtProd.requestFocus();
-                mostrarDetalleProd();
-            }//if
-            fila.close();
-        }catch(Exception e){
-            Toast.makeText(ActivityEnvTraspMultSuc.this,
-                    "Error al consultar datos de la base de datos interna", Toast.LENGTH_SHORT).show();
-        }//catch
-    }//consultaSql
-
-    public void buscarEnSql(String prod){
-        try{
-            int cant=0,cantS=0;
-            @SuppressLint("Recycle") Cursor fila = db.rawQuery(
-                    "SELECT PRODUCTO,CANTIDAD,SURTIDO FROM INVENTARIO WHERE PRODUCTO='"+prod+"' AND EMPRESA='"+serv+"'", null);
-            if (fila != null && fila.moveToFirst()) {
-                cant=Integer.parseInt(fila.getString(1));
-                cantS=Integer.parseInt(fila.getString(2));
-                if((cantS+1)<=cant){
-                    cantS++;
-                    actualizarSql(prod,cantS+"");
-                }else{
-                    Toast.makeText(this, "Excede cantidad", Toast.LENGTH_SHORT).show();
-                }
+        @Override
+        protected void onPostExecute(Void aBoolean) {
+            super.onPostExecute(aBoolean);
+            mDialog.dismiss();
+            if (lista.size()==0) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
+                builder.setTitle("AVISO");
+                builder.setMessage(mensaje);
+                builder.setCancelable(false);
+                builder.setNegativeButton("OK",null);
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }else{
-                Toast.makeText(this, "No existe el producto en la lista", Toast.LENGTH_SHORT).show();
-                escaneo=false;
-            }
-            fila.close();
-        }catch(Exception e){
-            Toast.makeText(ActivityEnvTraspMultSuc.this,
-                    e+"", Toast.LENGTH_SHORT).show();
-        }//catch
-        consultaSql();
-    }//consultaSql
+                btnAggCaja.setEnabled(true);
+                btnListaCajas.setEnabled(true);
+                btnVerCajas.setEnabled(true);
+                btnAggCaja.setBackgroundTintList(null);
+                btnAggCaja.setBackgroundResource(R.drawable.btn_background4);
 
-    public void insertarSql(String prod,String cant,String cantS,String ubi){
-        try{
-            if(db != null){
-                ContentValues valores = new ContentValues();
-                valores.put("EMPRESA", serv);
-                valores.put("PRODUCTO", prod);
-                valores.put("CANTIDAD", cant);
-                valores.put("SURTIDO", cantS);
-                valores.put("UBICACION", ubi);
-                db.insert("INVENTARIO", null, valores);
-            }
-        }catch(Exception e){
-            Toast.makeText(this, "Problema al guardar producto", Toast.LENGTH_SHORT).show();
+                btnListaCajas.setBackgroundTintList(null);
+                btnListaCajas.setBackgroundResource(R.drawable.btn_background3);
+
+                btnVerCajas.setBackgroundTintList(null);
+                btnVerCajas.setBackgroundResource(R.drawable.btn_background2);
+                txtFolBusq.setText(Folio);
+                keyboard.hideSoftInputFromWindow(txtFolBusq.getWindowToken(), 0);
+                verLista();
+            }//else
+        }//onPost
+    }//AsyncConsulEnvTrasp
+
+    private class AsyncConsultCP extends AsyncTask<Void, Void, Void> {
+
+        private String suc,folio,producto;
+        private ArrayList<CajaXProd> listaCajaXProd= new ArrayList<>();
+
+        public AsyncConsultCP(String suc, String folio,String producto) {
+            this.suc = suc;
+            this.folio = folio;
+            this.producto=producto;
         }
-    }//insertarSql
 
-    public void actualizarSql(String prod,String cantSurt){
-        try{
-            ContentValues valores = new ContentValues();
-            valores.put("SURTIDO", cantSurt);
-            db.update("INVENTARIO", valores, " PRODUCTO='" + prod+"' AND EMPRESA='"+serv+"'", null);
-        }catch(Exception e){
-            Toast.makeText(this, "Problema al actualizar la cantidad del producto", Toast.LENGTH_SHORT).show();
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mDialog.show();
+            mensaje="";
+        }//onPreExecute
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            HttpHandler sh = new HttpHandler();
+            String parametros="k_Folio="+folio+"&k_Sucursal="+suc+"&k_Producto="+producto+"";
+            String url = "http://"+strServer+"/ConsultCP?"+parametros;
+            String jsonStr = sh.makeServiceCall(url,strusr,strpass);
+            if (jsonStr != null) {
+                try {
+                    JSONObject jsonObj = new JSONObject(jsonStr);
+                    // Obtener array de datos
+                    JSONArray jsonArray = jsonObj.getJSONArray("Response");
+                    for(int i=0;i<jsonArray.length();i++){
+                        JSONObject dato = jsonArray.getJSONObject(i);//Conjunto de datos
+                        listaCajaXProd.add(new CajaXProd(dato.getString("k_NumeroCajas"),dato.getString("k_Cantidad")));
+                        mensaje="";
+                    }//for
+                } catch (final JSONException e) {
+                    //Log.e(TAG, "Error al convertir Json: " + e.getMessage());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mensaje="No se ha guardado esta caja";
+                        }//run
+                    });
+                }//catch JSON EXCEPTION
+            }else {
+                //Log.e(TAG, "Problemas al traer datos");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mensaje="Problema al consultar caja";
+                    }//run
+                });//runUniTthread
+            }//else
+            return null;
+        }//doInBackground
+
+        @Override
+        protected void onPostExecute(Void aBoolean) {
+            super.onPostExecute(aBoolean);
+            mDialog.dismiss();
+            if (listaCajaXProd.size()==0) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
+                builder.setTitle("AVISO");
+                builder.setMessage(mensaje);
+                builder.setCancelable(false);
+                builder.setNegativeButton("OK",null);
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }else{
+                AlertDialog.Builder alert = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
+                LayoutInflater inflater = ActivityEnvTraspMultSuc.this.getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.dialog_cajaxprod, null);
+                alert.setView(dialogView);
+                alert.setCancelable(false);
+                alert.setNegativeButton("ACEPTAR",null);
+
+                RecyclerView rvCaja =  dialogView.findViewById(R.id.rvCaja);
+                GridLayoutManager gl = new GridLayoutManager(ActivityEnvTraspMultSuc.this, 1);
+                rvCaja.setLayoutManager(gl);
+
+                AdaptadorCajaxProd adap  = new AdaptadorCajaxProd(listaCajaXProd);
+                rvCaja.setAdapter(adap);
+                AlertDialog mm = alert.create();
+                mm.show();
+            }
+        }//onPost
+    }//AsyncConsultCP
+
+    private class AsyncConsultCA extends AsyncTask<Void, Void, Void> {
+
+        private String suc,folio;
+        private ArrayList<CAJASSANDG> listaCajas = new ArrayList<>();
+
+        public AsyncConsultCA(String suc, String folio) {
+            this.suc = suc;
+            this.folio = folio;
         }
-    }//actualizarSql
 
-    public void eliminarSql(String sentProd) {//Se envia (AND PRODUCTO='"+prod+"') si se usa para eliminar un producto, vacio para todos los productos
-        try{
-            SQLiteDatabase db = conn.getWritableDatabase();
-            db.delete("INVENTARIO","EMPRESA='"+serv+"' "+sentProd,null);
-        }catch(Exception e){}
-    }//eliminarSql
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mDialog.show();
+            mensaje="";
+        }//onPreExecute
 
-}//ActivityInventario
+        @Override
+        protected Void doInBackground(Void... voids) {
+            HttpHandler sh = new HttpHandler();
+            String parametros="k_Folio="+folio+"&k_Sucursal="+suc+"";
+            String url = "http://"+strServer+"/ConsultCA?"+parametros;
+            String jsonStr = sh.makeServiceCall(url,strusr,strpass);
+            if (jsonStr != null) {
+                try {
+                    JSONObject jsonObj = new JSONObject(jsonStr);
+                    JSONArray jsonArray = jsonObj.getJSONArray("Response");
+                    for(int i=0;i<jsonArray.length();i++){
+                        JSONObject dato = jsonArray.getJSONObject(i);//Conjunto de datos
+                        listaCajas.add(new CAJASSANDG("","","",
+                                dato.getString("k_Producto"),dato.getString("k_Cantidad"),dato.getString("k_NumeroCajas")));
+                        mensaje="";
+                    }//for
+                } catch (final JSONException e) {
+                    //Log.e(TAG, "Error al convertir Json: " + e.getMessage());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mensaje="No hay lista de cajas guardadas";
+                        }//run
+                    });
+                }//catch JSON EXCEPTION
+            }else {
+                //Log.e(TAG, "Problemas al traer datos");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mensaje="Problema al consultar lista de cajas";
+                    }//run
+                });//runUniTthread
+            }//else
+            return null;
+        }//doInBackground
+
+        @Override
+        protected void onPostExecute(Void aBoolean) {
+            super.onPostExecute(aBoolean);
+            mDialog.dismiss();
+            if (listaCajas.size()==0) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
+                builder.setTitle("AVISO");
+                builder.setMessage(mensaje);
+                builder.setCancelable(false);
+                builder.setNegativeButton("OK",null);
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }else{
+                AlertDialog.Builder alert = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
+                LayoutInflater inflater = ActivityEnvTraspMultSuc.this.getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.dialog_info_cajas, null);
+                alert.setView(dialogView);
+
+                RecyclerView recyclerDialog2 =  dialogView.findViewById(R.id.recyclerCaja);
+                LinearLayout CageNext = dialogView.findViewById(R.id.CageNext);
+                LinearLayout CageBack = dialogView.findViewById(R.id.CageBack);
+                GridLayoutManager gl = new GridLayoutManager(ActivityEnvTraspMultSuc.this, 1);
+                recyclerDialog2.setLayoutManager(gl);
+
+
+                AdaptadorCajas adapter = new AdaptadorCajas(listaCajas);
+                recyclerDialog2.setAdapter(null);
+                recyclerDialog2.setAdapter(adapter);
+                AlertDialog mm = alert.create();
+                mm.show();
+            }//else
+        }//onPost
+    }//AsyncConsultCA
+
+}//Activity
