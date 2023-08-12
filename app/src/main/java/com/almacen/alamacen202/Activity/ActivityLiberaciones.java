@@ -64,10 +64,14 @@ import com.almacen.alamacen202.XML.XMLRefreshCant;
 import com.almacen.alamacen202.XML.XMLReportInici;
 import com.almacen.alamacen202.XML.XMLValdiSuper;
 import com.almacen.alamacen202.XML.XMListProAdua;
+import com.almacen.alamacen202.includes.HttpHandler;
 import com.almacen.alamacen202.includes.MyToolbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.SoapFault;
 import org.ksoap2.serialization.SoapObject;
@@ -188,7 +192,7 @@ public class ActivityLiberaciones extends AppCompatActivity {
     AlertDialog.Builder builder6;
     AlertDialog dialog6 = null;
     private AlertDialog mDialog;
-
+    String Caja1ori="",Caja2des="";
     String FolioLiberacion;
     String Filtro;
     String FiltroAscDesc;
@@ -5998,7 +6002,6 @@ public class ActivityLiberaciones extends AppCompatActivity {
         }
     }
 
-
     private void ReporInci() {
         String SOAP_ACTION = "ReportInci";
         String METHOD_NAME = "ReportInci";
@@ -6095,6 +6098,77 @@ public class ActivityLiberaciones extends AppCompatActivity {
     }
 
 
+    public void cambiarcajas(View view){
+
+        int tamaño=listaProduAduana.size();
+
+        if(tamaño!=0){
+
+
+            builder2 = new AlertDialog.Builder(this);
+            LayoutInflater inflater = this.getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.dialog_info_cajascambio, null);
+            builder2.setView(dialogView);
+
+            Button btncambiar;
+            EditText cajaorigen;
+            EditText cajadestino;
+            EditText cantidad;
+            String producto;
+            producto=txtProducto.getText().toString();
+
+
+
+            btncambiar =  dialogView.findViewById(R.id.btnCambiar);
+            cajaorigen =dialogView.findViewById(R.id.txtCajaOrigen);
+            cajadestino =  dialogView.findViewById(R.id.txtCajaDestino);
+            cantidad =  dialogView.findViewById(R.id.txtCantidad);
+
+            dialog2 = builder2.create();
+            dialog2.show();
+
+
+            btncambiar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Caja1ori= cajaorigen.getText().toString();
+                    Caja2des=cajadestino.getText().toString();
+                    String cantidapro=cantidad.getText().toString();
+                    if (Integer.parseInt(Caja1ori) <= ContCajas && Integer.parseInt(Caja2des) <= ContCajas){
+                        new CambiarCajas(strcodBra,FolioLiberacion,producto,cantidapro,Caja1ori,Caja2des);
+
+                    }else{
+                        AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
+                        alerta.setMessage("No existe cantidad de cajas suficiente para agregar las piezas").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.cancel();
+                            }
+                        });
+
+                        AlertDialog titulo = alerta.create();
+                        titulo.setTitle("¡Hubo un Problema!");
+                        titulo.show();
+                    }
+
+                }
+            });
+        }else{
+            AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
+            alerta.setMessage("No tienes ningun folio seleccionado ").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+                }
+            });
+
+            AlertDialog titulo = alerta.create();
+            titulo.setTitle("¡Hubo un Problema!");
+            titulo.show();
+
+        }
+
+    }
     private void listInci() {
         String SOAP_ACTION = "MensaInci";
         String METHOD_NAME = "MensaInci";
@@ -6134,6 +6208,68 @@ public class ActivityLiberaciones extends AppCompatActivity {
         } catch (Exception ex) {
         }
     }
+
+
+    private class CambiarCajas extends AsyncTask<Void, Void, Void> {
+
+        private String suc, folio,producto,cantidad,caja1,caja2;
+        public CambiarCajas(String suc, String folio,String producto,String cantidad,String caja1,String caja2) {
+            this.suc = suc;
+            this.folio = folio;
+            this.producto=producto;
+            this.cantidad=cantidad;
+            this.caja1=caja1;
+            this.caja2=caja2;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mDialog.show();
+        }//onPreExecute
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            HttpHandler sh = new HttpHandler();
+            String parametros = "sucursal=" + suc + "&folio=" + folio + "&producto=" + producto +  "&cantidad=" + cantidad + "&caja1=" + caja1 +"&caja2=" + caja2+"";
+            String url = "http://" + StrServer + "/CambiarPC?" + parametros;
+            String jsonStr = sh.makeServiceCall(url, strusr, strpass);
+            if (jsonStr != null) {
+                try {
+                    JSONObject jsonObj = new JSONObject(jsonStr);
+                    JSONArray jsonArray = jsonObj.getJSONArray("Response");
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject dato = jsonArray.getJSONObject(i);//Conjunto de datos
+
+                    }//for
+                } catch (final JSONException e) {
+                    //Log.e(TAG, "Error al convertir Json: " + e.getMessage());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                        }//run
+                    });
+                }//catch JSON EXCEPTION
+            } else {
+                //Log.e(TAG, "Problemas al traer datos");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                    }//run
+                });//runUniTthread
+            }//else
+            return null;
+        }//doInBackground
+
+        @Override
+        protected void onPostExecute(Void aBoolean) {
+            super.onPostExecute(aBoolean);
+            mDialog.dismiss();
+
+        }//onPost
+    }//AsyncConsultCA
 
     public void nextliscage(View view) {
         contfiltrocajas = 0;
