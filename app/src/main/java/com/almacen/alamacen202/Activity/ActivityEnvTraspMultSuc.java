@@ -22,6 +22,9 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -41,6 +44,7 @@ import com.almacen.alamacen202.Adapter.AdaptadorEnvTraspasos;
 import com.almacen.alamacen202.Adapter.AdaptadorListAlmacenes;
 import com.almacen.alamacen202.Adapter.AdaptadorTraspasos;
 import com.almacen.alamacen202.Adapter.AdapterDifUbiExi;
+import com.almacen.alamacen202.Adapter.AdapterListaCajas;
 import com.almacen.alamacen202.R;
 import com.almacen.alamacen202.SetterandGetters.CAJASSANDG;
 import com.almacen.alamacen202.SetterandGetters.CajaXProd;
@@ -51,6 +55,7 @@ import com.almacen.alamacen202.XML.XMLRecepConsul;
 import com.almacen.alamacen202.XML.XMLRecepMultSuc;
 import com.almacen.alamacen202.includes.HttpHandler;
 import com.almacen.alamacen202.includes.MyToolbar;
+import com.google.android.material.textfield.TextInputLayout;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -63,6 +68,7 @@ import org.ksoap2.transport.HttpTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -75,15 +81,18 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private SharedPreferences preference;
     private boolean escaneo=false,datos=false;
-    private int posicion=0,posicion2=0,posG=0,CAJAACT=1;
-    private String strusr,strpass,strbran,strServer,codeBar,mensaje,Producto="",serv,Folio="";
+    private int posicion=0,posicion2=0,posG=0,CAJAACT=1,posCaja=0,cantCajaOr;
+    private String strusr,strpass,strbran,strServer,codeBar,mensaje,Producto="",serv,Folio="",prodSelectCaj="";
     private ArrayList<EnvTraspasos> lista = new ArrayList<>();
+    private ArrayList<CAJASSANDG> listaCajas = new ArrayList<>();
+    private ArrayList<String> nomCajas= new ArrayList<>();
     private EditText txtFolBusq,txtCantidad,txtCantSurt,txtProducto,tvCaja;
     private ImageView ivProd;
     private TextView tvProd;
     private Button btnBuscarFol,btnAtras,btnAdelante,btnAggCaja,btnListaCajas,btnVerCajas;
-    private RecyclerView rvEnvTrasp;
+    private RecyclerView rvEnvTrasp,rvListaCajas;
     private AdaptadorEnvTraspasos adapter;
+    private AdapterListaCajas adapListCaj = new AdapterListaCajas(listaCajas);
     private AlertDialog mDialog;
     private InputMethodManager keyboard;
     private String urlImagenes,extImg;
@@ -304,7 +313,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
     }//mostrarDetalleProd
 
     public void cambiaProd(){
-        if(posicion==0){
+        if(posicion==0 && lista.size()>1){
             btnAdelante.setEnabled(true);
             btnAdelante.setBackgroundTintList(null);
             btnAdelante.setBackgroundResource(R.drawable.btn_background3);
@@ -312,10 +321,17 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             btnAtras.setBackgroundTintList(ColorStateList.
                     valueOf(getResources().getColor(R.color.ColorGris)));
 
-        }else if(posicion+1==lista.size()){
+        }else if(posicion+1==lista.size() && lista.size()>1){
             btnAtras.setEnabled(true);
             btnAtras.setBackgroundTintList(null);
             btnAtras.setBackgroundResource(R.drawable.btn_background3);
+            btnAdelante.setEnabled(false);
+            btnAdelante.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.ColorGris)));
+        }else if(lista.size()==1){
+            btnAtras.setEnabled(false);
+            btnAtras.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.ColorGris)));
             btnAdelante.setEnabled(false);
             btnAdelante.setBackgroundTintList(ColorStateList.
                     valueOf(getResources().getColor(R.color.ColorGris)));
@@ -426,11 +442,38 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             return false;
         }//else
     }//FirtMet saber si hay conexion a internet
+    public void inFinBt(boolean var){
+        if(var==true){
+
+            btnAggCaja.setEnabled(false);
+            btnListaCajas.setEnabled(false);
+            btnVerCajas.setEnabled(false);
+            btnAggCaja.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.ColorGris)));
+            btnListaCajas.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.ColorGris)));
+            btnVerCajas.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.ColorGris)));
+        }else{
+            btnAggCaja.setEnabled(true);
+            btnListaCajas.setEnabled(true);
+            btnVerCajas.setEnabled(true);
+            btnAggCaja.setBackgroundTintList(null);
+            btnAggCaja.setBackgroundResource(R.drawable.btn_background4);
+
+            btnListaCajas.setBackgroundTintList(null);
+            btnListaCajas.setBackgroundResource(R.drawable.btn_background3);
+
+            btnVerCajas.setBackgroundTintList(null);
+            btnVerCajas.setBackgroundResource(R.drawable.btn_background2);
+        }//else
+    }
 
 
     private class AsyncConsulEnvTrasp extends AsyncTask<Void, Void, Void> {
 
         private String suc,folio;
+        private boolean conn;
 
         public AsyncConsulEnvTrasp(String suc, String folio) {
             this.suc = suc;
@@ -447,57 +490,52 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             lista.clear();
             CAJAACT=1;
             rvEnvTrasp.setAdapter(null);
-            btnAggCaja.setEnabled(false);
-            btnListaCajas.setEnabled(false);
-            btnVerCajas.setEnabled(false);
-            btnAggCaja.setBackgroundTintList(ColorStateList.
-                    valueOf(getResources().getColor(R.color.ColorGris)));
-            btnListaCajas.setBackgroundTintList(ColorStateList.
-                    valueOf(getResources().getColor(R.color.ColorGris)));
-            btnVerCajas.setBackgroundTintList(ColorStateList.
-                    valueOf(getResources().getColor(R.color.ColorGris)));
+            inFinBt(true);
         }//onPreExecute
 
         @Override
         protected Void doInBackground(Void... voids) {
-            HttpHandler sh = new HttpHandler();
-            String parametros="k_suc="+suc+"&k_fol="+folio+"";
-            String url = "http://"+strServer+"/"+getString(R.string.resConsEnvTrasp)+"?"+parametros;
-            String jsonStr = sh.makeServiceCall(url,strusr,strpass);
-            //Log.e(TAG, "Respuesta de la url: " + jsonStr);
-            if (jsonStr != null) {
-                try {
-                    JSONObject jsonObj = new JSONObject(jsonStr);
-                    // Obtener array de datos
-                    JSONArray jsonArray = jsonObj.getJSONArray("Response");
-                    int num=1;
-                    for(int i=0;i<jsonArray.length();i++){
-                        JSONObject dato = jsonArray.getJSONObject(i);//Conjunto de datos
-                        lista.add(new EnvTraspasos(num+"",dato.getString("k_prod"),dato.getString("k_ubi"),
-                                dato.getString("k_exist"),dato.getString("k_cant"),dato.getString("k_part"),
-                                dato.getString("k_cants"),true));
-                        num++;
-                        mensaje="";
-                    }//for
-                } catch (final JSONException e) {
-                    //Log.e(TAG, "Error al convertir Json: " + e.getMessage());
+            conn=firtMet();
+            if(conn==true){
+                HttpHandler sh = new HttpHandler();
+                String parametros="k_suc="+suc+"&k_fol="+folio+"";
+                String url = "http://"+strServer+"/"+getString(R.string.resConsEnvTrasp)+"?"+parametros;
+                String jsonStr = sh.makeServiceCall(url,strusr,strpass);
+                //Log.e(TAG, "Respuesta de la url: " + jsonStr);
+                if (jsonStr != null) {
+                    try {
+                        JSONObject jsonObj = new JSONObject(jsonStr);
+                        // Obtener array de datos
+                        JSONArray jsonArray = jsonObj.getJSONArray("Response");
+                        int num=1;
+                        for(int i=0;i<jsonArray.length();i++){
+                            JSONObject dato = jsonArray.getJSONObject(i);//Conjunto de datos
+                            lista.add(new EnvTraspasos(num+"",dato.getString("k_prod"),dato.getString("k_ubi"),
+                                    dato.getString("k_exist"),dato.getString("k_cant"),dato.getString("k_part"),
+                                    dato.getString("k_cants"),true));
+                            num++;mensaje="";
+                        }//for
+                    } catch (final JSONException e) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mensaje="Puede que el folio no exista o no haya datos";
+                            }//run
+                        });
+                    }//catch JSON EXCEPTION
+                }else {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            mensaje="Puede que el folio no exista o no haya datos";
+                            mensaje="No fue posible obtener datos del servidor";
                         }//run
-                    });
-                }//catch JSON EXCEPTION
-            }else {
-                //Log.e(TAG, "Problemas al traer datos");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mensaje="No fue posible obtener datos del servidor";
-                    }//run
-                });//runUniTthread
-            }//else
-            return null;
+                    });//runUniTthread
+                }//else
+                return null;
+            }else{
+                mensaje="Problemas de conexión";
+                return null;
+            }
         }//doInBackground
 
         @Override
@@ -513,17 +551,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 AlertDialog dialog = builder.create();
                 dialog.show();
             }else{
-                btnAggCaja.setEnabled(true);
-                btnListaCajas.setEnabled(true);
-                btnVerCajas.setEnabled(true);
-                btnAggCaja.setBackgroundTintList(null);
-                btnAggCaja.setBackgroundResource(R.drawable.btn_background4);
-
-                btnListaCajas.setBackgroundTintList(null);
-                btnListaCajas.setBackgroundResource(R.drawable.btn_background3);
-
-                btnVerCajas.setBackgroundTintList(null);
-                btnVerCajas.setBackgroundResource(R.drawable.btn_background2);
+                inFinBt(false);
                 txtFolBusq.setText(Folio);
                 keyboard.hideSoftInputFromWindow(txtFolBusq.getWindowToken(), 0);
                 verLista();
@@ -535,6 +563,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
 
         private String suc,folio,producto;
         private ArrayList<CajaXProd> listaCajaXProd= new ArrayList<>();
+        private boolean conn;
 
         public AsyncConsultCP(String suc, String folio,String producto) {
             this.suc = suc;
@@ -551,39 +580,46 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            HttpHandler sh = new HttpHandler();
-            String parametros="k_Folio="+folio+"&k_Sucursal="+suc+"&k_Producto="+producto+"";
-            String url = "http://"+strServer+"/ConsultCP?"+parametros;
-            String jsonStr = sh.makeServiceCall(url,strusr,strpass);
-            if (jsonStr != null) {
-                try {
-                    JSONObject jsonObj = new JSONObject(jsonStr);
-                    // Obtener array de datos
-                    JSONArray jsonArray = jsonObj.getJSONArray("Response");
-                    for(int i=0;i<jsonArray.length();i++){
-                        JSONObject dato = jsonArray.getJSONObject(i);//Conjunto de datos
-                        listaCajaXProd.add(new CajaXProd(dato.getString("k_NumeroCajas"),dato.getString("k_Cantidad")));
-                        mensaje="";
-                    }//for
-                } catch (final JSONException e) {
-                    //Log.e(TAG, "Error al convertir Json: " + e.getMessage());
+            conn=firtMet();
+            if(conn==true){
+                HttpHandler sh = new HttpHandler();
+                String parametros="k_Folio="+folio+"&k_Sucursal="+suc+"&k_Producto="+producto+"";
+                String url = "http://"+strServer+"/ConsultCP?"+parametros;
+                String jsonStr = sh.makeServiceCall(url,strusr,strpass);
+                if (jsonStr != null) {
+                    try {
+                        JSONObject jsonObj = new JSONObject(jsonStr);
+                        // Obtener array de datos
+                        JSONArray jsonArray = jsonObj.getJSONArray("Response");
+                        for(int i=0;i<jsonArray.length();i++){
+                            JSONObject dato = jsonArray.getJSONObject(i);//Conjunto de datos
+                            listaCajaXProd.add(new CajaXProd(dato.getString("k_NumeroCajas"),dato.getString("k_Cantidad")));
+                            mensaje="";
+                        }//for
+                    } catch (final JSONException e) {
+                        //Log.e(TAG, "Error al convertir Json: " + e.getMessage());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mensaje="No se ha guardado esta caja";
+                            }//run
+                        });
+                    }//catch JSON EXCEPTION
+                }else {
+                    //Log.e(TAG, "Problemas al traer datos");
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            mensaje="No se ha guardado esta caja";
+                            mensaje="Problema al consultar caja";
                         }//run
-                    });
-                }//catch JSON EXCEPTION
-            }else {
-                //Log.e(TAG, "Problemas al traer datos");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mensaje="Problema al consultar caja";
-                    }//run
-                });//runUniTthread
-            }//else
-            return null;
+                    });//runUniTthread
+                }//else
+                return null;
+            }else{
+                mensaje="Problemas de conexión";
+                return null;
+            }
+
         }//doInBackground
 
         @Override
@@ -621,7 +657,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
     private class AsyncConsultCA extends AsyncTask<Void, Void, Void> {
 
         private String suc,folio;
-        private ArrayList<CAJASSANDG> listaCajas = new ArrayList<>();
+        private boolean conn;
 
         public AsyncConsultCA(String suc, String folio) {
             this.suc = suc;
@@ -632,44 +668,51 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             mDialog.show();
+            listaCajas.clear();
             mensaje="";
         }//onPreExecute
 
         @Override
         protected Void doInBackground(Void... voids) {
-            HttpHandler sh = new HttpHandler();
-            String parametros="k_Folio="+folio+"&k_Sucursal="+suc+"";
-            String url = "http://"+strServer+"/ConsultCA?"+parametros;
-            String jsonStr = sh.makeServiceCall(url,strusr,strpass);
-            if (jsonStr != null) {
-                try {
-                    JSONObject jsonObj = new JSONObject(jsonStr);
-                    JSONArray jsonArray = jsonObj.getJSONArray("Response");
-                    for(int i=0;i<jsonArray.length();i++){
-                        JSONObject dato = jsonArray.getJSONObject(i);//Conjunto de datos
-                        listaCajas.add(new CAJASSANDG("","","",
-                                dato.getString("k_Producto"),dato.getString("k_Cantidad"),dato.getString("k_NumeroCajas")));
-                        mensaje="";
-                    }//for
-                } catch (final JSONException e) {
-                    //Log.e(TAG, "Error al convertir Json: " + e.getMessage());
+            conn=firtMet();
+            if(conn==true){
+                HttpHandler sh = new HttpHandler();
+                String parametros="k_Folio="+folio+"&k_Sucursal="+suc+"";
+                String url = "http://"+strServer+"/ConsultCA?"+parametros;
+                String jsonStr = sh.makeServiceCall(url,strusr,strpass);
+                if (jsonStr != null) {
+                    try {
+                        JSONObject jsonObj = new JSONObject(jsonStr);
+                        JSONArray jsonArray = jsonObj.getJSONArray("Response");
+                        for(int i=0;i<jsonArray.length();i++){
+                            JSONObject dato = jsonArray.getJSONObject(i);//Conjunto de datos
+                            listaCajas.add(new CAJASSANDG("","","",
+                                    dato.getString("k_Producto"),dato.getString("k_Cantidad"),dato.getString("k_NumeroCajas")));
+                            mensaje="";
+                        }//for
+                    } catch (final JSONException e) {
+                        //Log.e(TAG, "Error al convertir Json: " + e.getMessage());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mensaje="No hay lista de cajas guardadas";
+                            }//run
+                        });
+                    }//catch JSON EXCEPTION
+                }else {
+                    //Log.e(TAG, "Problemas al traer datos");
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            mensaje="No hay lista de cajas guardadas";
+                            mensaje="Problema al consultar lista de cajas";
                         }//run
-                    });
-                }//catch JSON EXCEPTION
-            }else {
-                //Log.e(TAG, "Problemas al traer datos");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mensaje="Problema al consultar lista de cajas";
-                    }//run
-                });//runUniTthread
+                    });//runUniTthread
+                }//else
+                return null;
+            }else{
+                mensaje="Problemas de conexión";
+                return null;
             }//else
-            return null;
         }//doInBackground
 
         @Override
@@ -685,25 +728,260 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 AlertDialog dialog = builder.create();
                 dialog.show();
             }else{
-                AlertDialog.Builder alert = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
-                LayoutInflater inflater = ActivityEnvTraspMultSuc.this.getLayoutInflater();
-                View dialogView = inflater.inflate(R.layout.dialog_info_cajas, null);
-                alert.setView(dialogView);
-
-                RecyclerView recyclerDialog2 =  dialogView.findViewById(R.id.recyclerCaja);
-                LinearLayout CageNext = dialogView.findViewById(R.id.CageNext);
-                LinearLayout CageBack = dialogView.findViewById(R.id.CageBack);
-                GridLayoutManager gl = new GridLayoutManager(ActivityEnvTraspMultSuc.this, 1);
-                recyclerDialog2.setLayoutManager(gl);
-
-
-                AdaptadorCajas adapter = new AdaptadorCajas(listaCajas);
-                recyclerDialog2.setAdapter(null);
-                recyclerDialog2.setAdapter(adapter);
-                AlertDialog mm = alert.create();
-                mm.show();
+                mostrarListaCajas(listaCajas);
             }//else
         }//onPost
     }//AsyncConsultCA
+
+    private class AsyncCambiarCajas extends AsyncTask<Void, Void, Void> {
+
+        private String suc, folio,producto,cantidad,caja1,caja2;
+        private AlertDialog mm1,mm;
+        private boolean conn;
+        public AsyncCambiarCajas(String suc, String folio,String producto,
+                                 String cantidad,String caja1,String caja2,
+                                 AlertDialog mm1,AlertDialog mm) {
+            this.suc = suc;
+            this.folio = folio;
+            this.producto=producto;
+            this.cantidad=cantidad;
+            this.caja1=caja1;
+            this.caja2=caja2;
+            this.mm1 = mm1;
+            this.mm = mm;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mDialog.show();
+        }//onPreExecute
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            conn=firtMet();
+            if(conn==true){
+                HttpHandler sh = new HttpHandler();
+                String parametros = "sucursal=" + suc + "&folio=" + folio + "&producto=" +
+                        producto +  "&cantidad=" + cantidad + "&numCaja1=" + caja1 +"&numCaja2=" + caja2+"";
+                String url = "http://" + strServer + "/CambiarPC?" + parametros;
+                String jsonStr = sh.makeServiceCall(url, strusr, strpass);
+                if (jsonStr != null) {
+                    try {
+                        JSONObject jsonObj = new JSONObject(jsonStr);
+                        JSONArray jsonArray = jsonObj.getJSONArray("Response");
+                        JSONObject dato = jsonArray.getJSONObject(0);
+                        mensaje=dato.getString("message");
+                    } catch (final JSONException e) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mensaje="Problemas al cambiar caja";
+                            }//run
+                        });
+                    }//catch JSON EXCEPTION
+                }else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mensaje="Problemas con el servidor";
+                        }//run
+                    });//runUniTthread
+                }//else
+                return null;
+            }else{
+                mensaje="Problemas de conexión";
+                return null;
+            }
+        }//doInBackground
+
+        @Override
+        protected void onPostExecute(Void aBoolean) {
+            super.onPostExecute(aBoolean);
+            mDialog.dismiss();
+            if(mensaje.equals("Registro Exitoso") || mensaje.equals("Actualizacion Exitosa")){
+                mm.dismiss();
+                mm1.dismiss();
+            }else{
+                Toast.makeText(ActivityEnvTraspMultSuc.this, mensaje, Toast.LENGTH_SHORT).show();
+            }//else
+        }//onPost
+    }//CambiarCajas
+
+    public void mostrarListaCajas(ArrayList<CAJASSANDG> listaCajas){
+        AlertDialog.Builder alert = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
+        LayoutInflater inflater = ActivityEnvTraspMultSuc.this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_lista_cajas, null);
+        alert.setView(dialogView);
+        alert.setCancelable(false);
+        alert.setNegativeButton("SALIR",null);
+
+        TextView tvCajaNom = dialogView.findViewById(R.id.tvCajaNom);
+        rvListaCajas =  dialogView.findViewById(R.id.rvListaCajas);
+        Button btnBack = dialogView.findViewById(R.id.btnBack);
+        Button btnNext = dialogView.findViewById(R.id.btnNext);
+        Button btnCambiar = dialogView.findViewById(R.id.btnCambiar);
+        GridLayoutManager gl = new GridLayoutManager(ActivityEnvTraspMultSuc.this, 1);
+        rvListaCajas.setLayoutManager(gl);
+        AlertDialog mm1 = alert.create();
+
+        //LISTA DE NOMBRE DE LAS CAJAS
+        final int[] pC = {0};
+        String cajaAct="";
+        nomCajas.clear();
+        prodSelectCaj=listaCajas.get(0).getClavedelProdcuto();//se situa en el primer producto asi que le asigno valores
+        cantCajaOr=Integer.parseInt(listaCajas.get(0).getCantidadUnidades());
+
+        //hacer lista de solo nombres de cajas
+        cajaAct=listaCajas.get(0).getNumCajas();
+        nomCajas.add(cajaAct);
+        for(int i=0;i<listaCajas.size();i++){
+            if(!cajaAct.equals(listaCajas.get(i).getNumCajas())){
+                nomCajas.add(listaCajas.get(i).getNumCajas());
+                cajaAct=listaCajas.get(i).getNumCajas();
+            }//if
+        }//for
+        cajaAct=listaCajas.get(0).getNumCajas();
+        tvCajaNom.setText(cajaAct);
+
+        final String[] finalCajaAct = {cajaAct};
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pC[0]--;
+                finalCajaAct[0] =nomCajas.get(pC[0]);
+                tvCajaNom.setText(finalCajaAct[0]);
+                rvListaCajas.setAdapter(null);
+                adapListCaj= new AdapterListaCajas(lista2(btnBack,btnNext, pC[0],listaCajas, finalCajaAct[0],nomCajas));
+                rvListaCajas.setAdapter(adapListCaj);
+            }
+        });
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pC[0]++;
+                finalCajaAct[0] =nomCajas.get(pC[0]);
+                tvCajaNom.setText(finalCajaAct[0]);
+                rvListaCajas.setAdapter(null);
+                adapListCaj= new AdapterListaCajas(lista2(btnBack,btnNext, pC[0],listaCajas, finalCajaAct[0],nomCajas));
+                rvListaCajas.setAdapter(adapListCaj);
+            }
+        });
+        btnCambiar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cambiarCajasAlert(prodSelectCaj,Integer.parseInt(listaCajas.get(posCaja).getCantidadUnidades()),
+                        finalCajaAct[0],nomCajas,mm1);
+            }
+        });//btnCambiar
+        rvListaCajas.setAdapter(null);
+        adapListCaj= new AdapterListaCajas(lista2(btnBack,btnNext, pC[0],listaCajas, finalCajaAct[0],nomCajas));
+        rvListaCajas.setAdapter(adapListCaj);
+
+        mm1.show();
+    }//mostrarListaCajas
+
+    public ArrayList<CAJASSANDG> lista2 (Button back, Button next,int indCaj,
+                                         ArrayList<CAJASSANDG> listaCajas,String cajaAct,
+                                         ArrayList<String> nomCajas){
+        ArrayList<CAJASSANDG> lista2= new ArrayList<>();
+        for(int j=0;j<listaCajas.size();j++){
+            if(listaCajas.get(j).getNumCajas().equals(cajaAct)){
+                lista2.add(new CAJASSANDG("","","",
+                        listaCajas.get(j).getClavedelProdcuto(),listaCajas.get(j).getCantidadUnidades(),listaCajas.get(j).getNumCajas()));
+            }//if
+        }//for
+
+        if(nomCajas.size()==0 || nomCajas.size()==1){
+            back.setEnabled(false);
+            back.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.ColorGris)));
+            next.setEnabled(false);
+            next.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.ColorGris)));
+        } else if((indCaj+1)==nomCajas.size()){
+            back.setEnabled(true);
+            back.setBackgroundTintList(null);
+            back.setBackgroundResource(R.drawable.btn_background1);
+            next.setEnabled(false);
+            next.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.ColorGris)));
+        }else{
+            next.setEnabled(true);
+            next.setBackgroundTintList(null);
+            next.setBackgroundResource(R.drawable.btn_background1);
+            back.setEnabled(false);
+            back.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.ColorGris)));
+        }//else
+        return lista2;
+    }//cambiaCaja
+
+    public void onClickEnListaCaja(View v){
+        posCaja = rvListaCajas.getChildPosition(rvListaCajas.findContainingItemView(v));
+        prodSelectCaj=listaCajas.get(posCaja).getClavedelProdcuto();
+        cantCajaOr=Integer.parseInt(listaCajas.get(posCaja).getCantidadUnidades());
+        adapListCaj.index(posCaja);
+        adapListCaj.notifyDataSetChanged();
+    }//onclickEnListaCaja
+
+    public void cambiarCajasAlert(String prod,int cantEnCaja,String origen,ArrayList<String> nomCajas,
+                                  AlertDialog mm1){
+        AlertDialog.Builder alert = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
+        LayoutInflater inflater = ActivityEnvTraspMultSuc.this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_info_cajascambio, null);
+        alert.setView(dialogView);
+        alert.setCancelable(false);
+        alert.setNegativeButton("CANCELAR",null);
+
+        Button btncambiar =  dialogView.findViewById(R.id.btnCambiar);
+        EditText txtCajaProd = dialogView.findViewById(R.id.txtCajaProd);
+        EditText txtCajaOrigen =dialogView.findViewById(R.id.txtCajaOrigen);
+        EditText txtCajaCant = dialogView.findViewById(R.id.txtCajaCant);
+        TextInputLayout contTxt = dialogView.findViewById(R.id.contTxt);
+        AutoCompleteTextView spCajaDest =  dialogView.findViewById(R.id.spCajaDest);
+        EditText txtCantidad =  dialogView.findViewById(R.id.txtCantidad);
+        TextInputLayout cont = dialogView.findViewById(R.id.cont);
+        LinearLayout contP = dialogView.findViewById(R.id.contP);
+
+        contP.setVisibility(View.VISIBLE);
+        contTxt.setVisibility(View.GONE);//habilito el spinner y oculto el edittext de destino
+        cont.setVisibility(View.VISIBLE);
+        txtCajaOrigen.setText(origen);
+        txtCajaOrigen.setEnabled(false);
+        txtCajaProd.setText(prod);
+        txtCajaCant.setText(cantEnCaja+"");
+        AlertDialog mm = alert.create();
+
+        ArrayList<String> nomCajas2=new ArrayList<>();
+        for(int k=0;k<nomCajas.size();k++){
+            if(!nomCajas.get(k).equals(origen)){
+                nomCajas2.add(nomCajas.get(k));
+            }
+        }//for
+
+        ArrayAdapter<String> adaptador = new ArrayAdapter<>(
+                ActivityEnvTraspMultSuc.this,R.layout.drop_down_item,nomCajas2);
+        spCajaDest.setAdapter(adaptador);
+        spCajaDest.setText(nomCajas2.get(0),false);
+
+
+        btncambiar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String Caja1ori= txtCajaOrigen.getText().toString();
+                String Caja2des=spCajaDest.getText().toString();
+                String cantidapro=txtCantidad.getText().toString();
+                if (!cantidapro.equals("") && Integer.parseInt(cantidapro)<=cantEnCaja){
+                    new AsyncCambiarCajas(strbran,Folio,prod,cantidapro,Caja1ori,Caja2des,mm1,mm).execute();
+                }else{
+                    Toast.makeText(ActivityEnvTraspMultSuc.this,
+                            "No existe cantidad de cajas suficiente para agregar las piezas", Toast.LENGTH_SHORT).show();
+                }//else
+            }//onclick
+        });
+
+        mm.show();
+    }//cambiarCajas
 
 }//Activity

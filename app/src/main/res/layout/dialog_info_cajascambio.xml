@@ -1,32 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
 
-
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="CAMBIO DE CAJA"
+        android:textColor="@color/ColorWhite"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:textAlignment="center"
+        android:fontFamily="sans-serif-condensed-medium"
+        android:background="@color/AzulBack"
+        android:layout_marginBottom="10dp"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <View
+        android:orientation="vertical"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp">
+        <LinearLayout
+            android:id="@+id/contP"
             android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:layout_marginTop="5dp"
-            android:background="@color/AzulBack"/>
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/producto"
+                android:layout_marginTop="5dp"
+                android:textColorHint="@color/colorAzz"
+                app:hintTextColor="@color/colorAzz"
+                android:maxLines="1"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusTopStart="10dp"
+                app:boxBackgroundColor="@color/ColorWhite"
+                app:boxStrokeColor="@color/colorPrimary"
+                android:layout_marginRight="2.5dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txtCajaProd"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:enabled="false"
+                    android:textSize="15dp"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorBlack"/>
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:hint="@string/cantidad"
+                android:layout_marginTop="5dp"
+                android:textColorHint="@color/Amarillo"
+                app:hintTextColor="@color/Amarillo"
+                android:maxLines="1"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusTopStart="10dp"
+                app:boxBackgroundColor="@color/ColorWhite"
+                app:boxStrokeColor="@color/colorPrimary"
+                android:layout_marginLeft="2.5dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txtCajaCant"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:enabled="false"
+                    android:textSize="15dp"
+                    android:fontFamily="sans-serif-condensed-medium"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorBlack"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginTop="5dp"
             android:hint="Caja Origen"
+            android:layout_marginTop="5dp"
             android:textColorHint="@color/AzulBack"
+            app:hintTextColor="@color/AzulBack"
             android:maxLines="1"
             app:boxBackgroundMode="outline"
             app:boxCornerRadiusTopEnd="10dp"
@@ -39,22 +105,26 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="true"
-                android:imeOptions="actionDone"
-                android:inputType="number"
+                android:imeOptions="actionNext"
+                android:inputType="phone"
+                android:digits="0123456789"
+                android:maxLength="2"
                 android:maxLines="1"
-                android:textSize="12sp" />
+                android:textSize="15dp"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:textStyle="bold"
+                android:textColor="@color/colorBlack"/>
         </com.google.android.material.textfield.TextInputLayout>
 
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/contTxt"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginTop="5dp"
             android:hint="Caja Destino"
             android:textColorHint="@color/AzulBack"
+            app:hintTextColor="@color/AzulBack"
             android:maxLines="1"
             app:boxBackgroundMode="outline"
             app:boxCornerRadiusTopEnd="10dp"
@@ -67,27 +137,55 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="true"
-                android:imeOptions="actionDone"
-                android:inputType="number"
+                android:imeOptions="actionNext"
+                android:inputType="phone"
+                android:digits="0123456789"
+                android:maxLength="2"
                 android:maxLines="1"
-                android:textSize="12sp" />
+                android:textSize="15dp"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:textStyle="bold"
+                android:textColor="@color/colorBlack"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/cont"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:hint="Caja Destino"
+            android:textColorHint="@color/AzulBack"
+            app:hintTextColor="@color/AzulBack"
+            android:maxLines="1"
+            android:visibility="gone">
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/spCajaDest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:focusable="false"
+                android:maxLines="1"
+                android:textSize="15dp"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:textStyle="bold"
+                android:textColor="@color/colorBlack"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginTop="5dp"
             android:hint="Cantidad"
-            android:textColorHint="@color/AzulBack"
+            android:layout_marginTop="5dp"
+            android:textColorHint="@color/Amarillo"
+            app:hintTextColor="@color/Amarillo"
             android:maxLines="1"
             app:boxBackgroundMode="outline"
             app:boxCornerRadiusTopEnd="10dp"
             app:boxCornerRadiusTopStart="10dp"
             app:boxBackgroundColor="@color/ColorWhite"
-            app:boxStrokeColor="@color/colorPrimary">
+            app:boxStrokeColor="@color/colorPrimary"
+            android:layout_marginBottom="15dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/txtCantidad"
@@ -95,24 +193,28 @@
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:imeOptions="actionDone"
-                android:inputType="number"
+                android:inputType="phone"
+                android:digits="0123456789"
+                android:maxLength="2"
                 android:maxLines="1"
-                android:textSize="12sp" />
+                android:textSize="15dp"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:textStyle="bold"
+                android:textColor="@color/colorBlack"/>
         </com.google.android.material.textfield.TextInputLayout>
+
 
         <Button
             android:id="@+id/btnCambiar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Cambiar"></Button>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:background="@color/AzulBack"/>
+            android:text="Cambiar"
+            android:fontFamily="sans-serif-condensed-medium"
+            android:background="@drawable/btn_background3"
+            app:backgroundTint="@null"
+            app:backgroundTintMode="add"
+            android:layout_marginBottom="10dp"/>
     </LinearLayout>
 
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

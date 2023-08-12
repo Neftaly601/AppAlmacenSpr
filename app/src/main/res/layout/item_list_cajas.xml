@@ -25,7 +25,7 @@
             android:text="Articulo"
             android:textColor="#000000"
             android:textSize="12sp"
-            android:textStyle="bold"></TextView>
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/txtCantidad"
@@ -38,7 +38,7 @@
             android:text="Cantidad"
             android:textColor="#000000"
             android:textSize="12sp"
-            android:textStyle="bold"></TextView>
+            android:textStyle="bold"/>
 
 
 
@@ -54,7 +54,7 @@
             android:text="Caja"
             android:textColor="#000000"
             android:textSize="12sp"
-            android:textStyle="bold"></TextView>
+            android:textStyle="bold"/>
 
 
     </LinearLayout>

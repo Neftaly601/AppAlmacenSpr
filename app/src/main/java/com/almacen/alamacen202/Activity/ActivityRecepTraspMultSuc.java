@@ -245,7 +245,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
     }//FirtMet saber si hay conexion a internet
 
     public void cambiaProd(){
-        if(posicion==0){
+        if(posicion==0 && listaTrasp.size()>1){
             btnAdelante.setEnabled(true);
             btnAdelante.setBackgroundTintList(null);
             btnAdelante.setBackgroundResource(R.drawable.btn_background3);
@@ -253,10 +253,17 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             btnAtras.setBackgroundTintList(ColorStateList.
                     valueOf(getResources().getColor(R.color.ColorGris)));
 
-        }else if(posicion+1==listaTrasp.size()){
+        }else if(posicion+1==listaTrasp.size() && listaTrasp.size()>1){
             btnAtras.setEnabled(true);
             btnAtras.setBackgroundTintList(null);
             btnAtras.setBackgroundResource(R.drawable.btn_background3);
+            btnAdelante.setEnabled(false);
+            btnAdelante.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.ColorGris)));
+        }else if(listaTrasp.size()==1){
+            btnAtras.setEnabled(false);
+            btnAtras.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.ColorGris)));
             btnAdelante.setEnabled(false);
             btnAdelante.setBackgroundTintList(ColorStateList.
                     valueOf(getResources().getColor(R.color.ColorGris)));
