@@ -13,8 +13,7 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+        android:layout_height="match_parent">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -24,21 +23,129 @@
             android:layout_marginTop="10dp">
 
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/folio"
+                android:textColorHint="@color/AzulBack"
+                app:hintTextColor="@color/AzulBack"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusTopStart="10dp"
+                app:boxBackgroundColor="@color/ColorWhite"
+                app:boxStrokeColor="@color/colorPrimary">
+                <EditText
+                    android:id="@+id/txtFolBusq"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="phone"
+                    android:digits="0123456789"
+                    android:maxLength="7"
+                    android:textSize="15sp"
+                    android:fontFamily="sans-serif-condensed"
+                    android:textStyle="italic|bold"
+                    android:textColor="@color/colorBlack"
+                    android:imeOptions="actionDone"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnBuscar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
                 android:background="@drawable/btn_background1"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="5dp"
                 android:text="@string/buscar"
-                android:textColor="@color/ColorWhite"
-                android:textSize="14sp"
                 android:tag="Buscar existencias en almacén de tránsito"
+                android:textColor="@color/ColorWhite"
+                app:icon="@drawable/icons8_lupa"
+                app:iconTint="@null"
+                app:iconSize="20dp"
                 app:backgroundTint="@null"
                 app:backgroundTintMode="add"/>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/AzulBack"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBackC"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_background2"
+                    app:backgroundTint="@color/ColorGris"
+                    android:enabled="false"
+                    android:maxLines="1"
+                    android:text="Anterior"
+                    android:textAlignment="textStart"
+                    android:textColor="@color/cardview_light_background"
+                    android:textSize="8dp"
+                    app:icon="@drawable/ic_baseline_arrow_back_24"
+                    app:iconGravity="start"
+                    app:iconTint="@null"/>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Caja"
+                    android:textColorHint="@color/Amarillo"
+                    app:hintTextColor="@color/Amarillo"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusTopStart="10dp"
+                    app:boxBackgroundColor="@color/ColorWhite"
+                    app:boxStrokeColor="@color/colorPrimary"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="5dp">
+                    <EditText
+                        android:id="@+id/tvCaja"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="phone"
+                        android:digits="0123456789"
+                        android:maxLength="3"
+                        android:textSize="15sp"
+                        android:text="1"
+                        android:fontFamily="sans-serif-condensed"
+                        android:textStyle="italic|bold"
+                        android:textColor="@color/AzulBack"
+                        android:enabled="false"
+                        android:imeOptions="actionDone"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnNextC"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_background2"
+                    android:enabled="false"
+                    android:maxLines="1"
+                    android:text="Siguiente"
+                    android:textAlignment="textStart"
+                    android:textColor="@color/cardview_light_background"
+                    android:textSize="8dp"
+                    app:backgroundTint="@color/ColorGris"
+                    app:icon="@drawable/ic_baseline_arrow_forward_24"
+                    app:iconGravity="end"
+                    app:iconTint="@null" />
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/AzulBack"
+                android:layout_marginTop="5dp"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -66,37 +173,18 @@
                     android:inputType="text"
                     android:enabled="false"/>
             </com.google.android.material.textfield.TextInputLayout>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/AzulBack"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"/>
-            <LinearLayout
+
+            <TextView
+                android:id="@+id/tvProd"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <TextView
-                    android:id="@+id/tvProd"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textColor="@color/Amarillo"
-                    android:textSize="18dp"
-                    android:textStyle="bold"
-                    android:maxLines="2"
-                    android:gravity="center_vertical"
-                    android:layout_marginRight="5dp"/>
-                <com.google.android.material.button.MaterialButton
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:background="@drawable/btn_background3"
-                    android:text="Ver en Caja"
-                    android:textSize="12dp"
-                    android:textColor="@color/ColorWhite"
-                    app:backgroundTint="@null"/>
-            </LinearLayout>
+                android:layout_weight="1"
+                android:textColor="@color/Amarillo"
+                android:textSize="18dp"
+                android:textStyle="bold"
+                android:maxLines="2"
+                android:gravity="center_vertical"
+                android:layout_marginTop="5dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -236,7 +324,7 @@
                     android:textAlignment="textStart"
                     app:icon="@drawable/ic_baseline_arrow_forward_24"
                     app:iconTint="@null"
-                    app:iconGravity="start"
+                    app:iconGravity="end"
                     app:backgroundTint="@color/ColorGris"
                     android:enabled="false"/>
             </LinearLayout>
@@ -317,7 +405,8 @@
                     android:id="@+id/rvTraspasos"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/ColorGris"/>
+                    android:background="@color/ColorGris"
+                    android:layout_marginBottom="10dp"/>
 
             </LinearLayout>
 

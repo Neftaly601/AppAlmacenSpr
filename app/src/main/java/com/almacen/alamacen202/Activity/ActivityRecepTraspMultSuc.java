@@ -39,6 +39,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.almacen.alamacen202.Adapter.AdaptadorTraspasos;
 import com.almacen.alamacen202.Adapter.AdapterInventario;
 import com.almacen.alamacen202.R;
+import com.almacen.alamacen202.SetterandGetters.EnvTraspasos;
 import com.almacen.alamacen202.SetterandGetters.Folios;
 import com.almacen.alamacen202.SetterandGetters.Inventario;
 import com.almacen.alamacen202.SetterandGetters.Traspasos;
@@ -48,9 +49,13 @@ import com.almacen.alamacen202.XML.XMLFolios;
 import com.almacen.alamacen202.XML.XMLRecepConsul;
 import com.almacen.alamacen202.XML.XMLRecepMultSuc;
 import com.almacen.alamacen202.XML.XMLlistInv;
+import com.almacen.alamacen202.includes.HttpHandler;
 import com.almacen.alamacen202.includes.MyToolbar;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.SoapFault;
 import org.ksoap2.serialization.SoapObject;
@@ -69,13 +74,13 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private SharedPreferences preference;
     private boolean datos=false,modificados=false;
-    private int posicion=0,posicion2=0,posG=-1;
-    private String strusr,strpass,strbran,strServer,codeBar,mensaje,Producto="",serv;
+    private int posicion=0,posicion2=0,posG=-1,CONTCAJA=1,TOTCAJAS=0,TOTP=0,RECEP=0;
+    private String strusr,strpass,strbran,strServer,codeBar,mensaje,Producto="",serv,Folio="";
     private ArrayList<Traspasos> listaTrasp = new ArrayList<>();
-    private EditText txtProd,txtCantidad,txtCantSurt;
+    private EditText txtProd,txtCantidad,txtCantSurt,txtFolBusq,tvCaja;
     private ImageView ivProd;
     private TextView tvProd;
-    private Button btnBuscar,btnAtras,btnAdelante,btnCorr;
+    private Button btnBuscar,btnAtras,btnAdelante,btnCorr,btnBackC,btnNextC;
     private RecyclerView rvTraspasos;
     private AdaptadorTraspasos adapter;
     private AlertDialog mDialog;
@@ -129,6 +134,10 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         btnAdelante =findViewById(R.id.btnAdelante);
         ivProd      = findViewById(R.id.ivProd);
         btnCorr     = findViewById(R.id.btnCorr);
+        txtFolBusq = findViewById(R.id.txtFolBusq);
+        btnBackC = findViewById(R.id.btnBackC);
+        tvCaja = findViewById(R.id.tvCaja);
+        btnNextC = findViewById(R.id.btnNextC);
 
         bepp = new SoundPool(1, AudioManager.STREAM_MUSIC, 1);
         sonido_correcto = bepp.load(ActivityRecepTraspMultSuc.this, R.raw.sonido_correct, 1);
@@ -142,6 +151,20 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         txtProd.setInputType(InputType.TYPE_NULL);
         //txtProd.requestFocus();
 
+
+
+        txtFolBusq.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(!editable.toString().equals("")){
+                    Folio= editable.toString();
+                }//if es diferente a vacio
+            }//after
+        });//txtProd textchange
         txtProd.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
@@ -174,22 +197,13 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         btnBuscar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(listaTrasp.size()>0){//si tiene
-                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
-                    builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            Producto="";
-                            new AsyncRecepConsul().execute();
-                        }//onclick
-                    });//positive button
-                    builder.setNegativeButton("CANCELAR",null);
-                    builder.setCancelable(false);
-                    builder.setTitle("Aviso").setMessage("Se eliminaran los datos que esten almacenados en el teléfono \n¿Desea continuar?").create().show();
+                if(!Folio.equals("")){
+                    Folio=folio(Folio);
+                    tvCaja.setText("1");
+                    new AsyncReceCon(strbran,Folio,"1",true).execute();
                 }else{
-                    Producto="";
-                    new AsyncRecepConsul().execute();
-                }
+                    Toast.makeText(ActivityRecepTraspMultSuc.this, "Folio vacío", Toast.LENGTH_SHORT).show();
+                }//else
             }//onclick
         });//btnGuardar setonclick
 
@@ -222,6 +236,8 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                         }else{
                             listaTrasp.get(posicion).setCantSurt((cantAct-1)+"");
                             listaTrasp.get(posicion).setSincronizado(false);
+                            RECEP--;
+                            mostrarDetalleProd();
                         }//else
                     }//onclick
                 });
@@ -230,8 +246,88 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                 builder.setTitle("AVISO").setMessage("Se corregirá "+Producto+" con una pieza de más").create().show();
             }//onclick
         });//btnCorr
+        btnBackC.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CONTCAJA--;
+                tvCaja.setText(CONTCAJA+"");
+                cambiaCajas();
+                new AsyncReceCon(strbran,Folio,CONTCAJA+"",false).execute();
+            }
+        });
+        btnNextC.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CONTCAJA++;
+                tvCaja.setText(CONTCAJA+"");
+                cambiaCajas();
+                new AsyncReceCon(strbran,Folio,CONTCAJA+"",false).execute();
+            }
+        });
 
     }//onCreate
+    public void cambiaCajas(){
+        if(CONTCAJA==1 && TOTCAJAS>1){
+            btnNextC.setEnabled(true);
+            btnNextC.setBackgroundTintList(null);
+            btnNextC.setBackgroundResource(R.drawable.btn_background3);
+            btnBackC.setEnabled(false);
+            btnBackC.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.ColorGris)));
+
+        }else if(CONTCAJA==TOTCAJAS && TOTCAJAS>1){
+            btnBackC.setEnabled(true);
+            btnBackC.setBackgroundTintList(null);
+            btnBackC.setBackgroundResource(R.drawable.btn_background3);
+            btnNextC.setEnabled(false);
+            btnNextC.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.ColorGris)));
+        }else if(TOTCAJAS==1){
+            btnBackC.setEnabled(false);
+            btnBackC.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.ColorGris)));
+            btnNextC.setEnabled(false);
+            btnNextC.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.ColorGris)));
+        }else{
+            btnBackC.setEnabled(true);
+            btnBackC.setBackgroundTintList(null);
+            btnBackC.setBackgroundResource(R.drawable.btn_background3);
+            btnNextC.setEnabled(true);
+            btnNextC.setBackgroundTintList(null);
+            btnNextC.setBackgroundResource(R.drawable.btn_background3);
+        }//else
+    }//cambiaProd
+
+    public String folio(String folio){
+        if (folio.length() < 7) {
+            int fo = folio.length();
+            switch (fo) {
+                case 1:
+                    folio = "000000" + folio;
+                    break;
+                case 2:
+                    folio = "00000" + folio;
+                    break;
+                case 3:
+                    folio ="0000" + folio;
+                    break;
+                case 4:
+                    folio ="000" + folio;
+                    break;
+                case 5:
+                    folio ="00" + folio;
+                    break;
+                case 6:
+                    folio = "0" + folio;
+                    break;
+                default:
+                    folio=folio;
+                    break;
+            }//switch
+        }//if
+        return folio;
+    }
 
     public boolean firtMet() {//firtMet
         ConnectivityManager connectivityManager =
@@ -290,7 +386,8 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
 
     public void cambio(String var,boolean sumar){
         if(!listaTrasp.get(posicion2).getProducto().equals(Producto) && posG!=-1 && listaTrasp.get(posicion2).isSincronizado()==false){//identificando que prod anterior no se sincronizó
-            new AsyncAct(listaTrasp.get(posicion2).getProducto(),listaTrasp.get(posicion2).getCantSurt(),var,sumar,Producto).execute();
+            //new AsyncAct(listaTrasp.get(posicion2).getProducto(),listaTrasp.get(posicion2).getCantSurt(),var,sumar,Producto).execute();
+            new AsyncActualizar(Folio,listaTrasp.get(posicion2).getProducto(),listaTrasp.get(posicion2).getCantSurt(),var,sumar,Producto).execute();
         }else{//cuando se escanea o por botones de adelante, atras y onclick en lista
             if(sumar==true){//al escanear
                 evaluarEscaneo(Producto);
@@ -323,6 +420,13 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         txtCantidad.setText(listaTrasp.get(posicion).getCantidad());
         txtCantSurt.setText(listaTrasp.get(posicion).getCantSurt());
 
+        Picasso.with(getApplicationContext()).
+                load(urlImagenes +
+                        tvProd.getText().toString() + extImg)
+                .error(R.drawable.aboutlogo)
+                .fit()
+                .centerInside()
+                .into(ivProd);
         if(Integer.parseInt(listaTrasp.get(posicion).getCantidad())==Integer.parseInt(listaTrasp.get(posicion).getCantSurt())){
             txtCantSurt.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
         }else{
@@ -333,20 +437,12 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         if(!txtCantSurt.getText().toString().equals("") && Integer.parseInt(txtCantSurt.getText().toString())>0){
             btnCorr.setEnabled(true);
             btnCorr.setBackgroundTintList(null);
-            btnCorr.setBackgroundResource(R.drawable.btn_background2);
+            btnCorr.setBackgroundResource(R.drawable.btn_background4);
         }else{
             btnCorr.setEnabled(false);
             btnCorr.setBackgroundTintList(ColorStateList.
                     valueOf(getResources().getColor(R.color.ColorGris)));
         }
-
-        Picasso.with(getApplicationContext()).
-                load(urlImagenes +
-                        tvProd.getText().toString() + extImg)
-                .error(R.drawable.aboutlogo)
-                .fit()
-                .centerInside()
-                .into(ivProd);
         posG=posicion;
     }//mostrarDetalleProd
 
@@ -390,7 +486,25 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                     cantS++;
                     listaTrasp.get(i).setCantSurt(cantS+"");
                     listaTrasp.get(i).setSincronizado(false);
+                    RECEP++;
                     modificados=true;
+                    if(cantS==cant){
+                        posicion2=i;
+                        new AsyncActualizar(Folio,prod,cantS+"","change",false,Producto).execute();
+                        if(surtTodos()==true){
+                            if(CONTCAJA<TOTCAJAS){//PASAR DE CAJA
+                                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
+                                builder.setPositiveButton("ACEPTAR",null);
+                                builder.setCancelable(false);
+                                builder.setTitle("SIGUIENTE CAJA").create().show();
+                                CONTCAJA++;
+                                tvCaja.setText(CONTCAJA+"");
+                                cambiaCajas();
+                                posicion=0;
+                                new AsyncReceCon(strbran,Folio,CONTCAJA+"",false).execute();
+                            }
+                        }//
+                    }
                 }else{
                     Toast.makeText(this, "Excede cantidad", Toast.LENGTH_SHORT).show();
                 }
@@ -403,90 +517,36 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         mostrarDetalleProd();
     }//evaluar
 
-
-
-    private class AsyncRecepConsul extends AsyncTask<Void, Void, Void> {//WEBSERVICE PARA CONSULTAR LOS PRODUCTOS
-        private boolean conn=true;
-        @Override
-        protected void onPreExecute() {mDialog.show();}
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            datos=false;
-            if(firtMet()==true){
-                listaTrasp.clear();
-                posicion=-1;
-                modificados=false;
-                conectaRecepCon();
-                limpiar();
-            }else{conn=false;}//else
-            return null;
-        }
-
-        @RequiresApi(api = Build.VERSION_CODES.P)
-        @Override
-        protected void onPostExecute(Void result) {
-            if(conn=false){
-                mDialog.dismiss();
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
-                builder.setPositiveButton("ACEPTAR",null);
-                builder.setCancelable(false);
-                builder.setTitle("AVISO").setMessage("Sin conexión a internet").create().show();
-            }else if(mensaje.equals("PENDIENTES")){
-                mDialog.dismiss();
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
-                builder.setPositiveButton("ACEPTAR",null);
-                builder.setCancelable(false);
-                builder.setTitle("AVISO").setMessage("Existen productos pendientes por procesar en kepler, para continuar valide en kepler").create().show();
-            }else if(datos==true) {
-                verLista();
-                mDialog.dismiss();
-            }else{
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
-                builder.setPositiveButton("ACEPTAR",null);
-                builder.setCancelable(false);
-                builder.setTitle("AVISO").setMessage("Ningun Dato").create().show();
-                mDialog.dismiss();
-            }//else
-        }//onPostExecute
-    }//AsynInsertInv
-
-
-    private void conectaRecepCon() {
-        String SOAP_ACTION = "RecepcionConsulta";
-        String METHOD_NAME = "RecepcionConsulta";
-        String NAMESPACE = "http://" + strServer + "/WSk75AlmacenesApp/";
-        String URL = "http://" + strServer + "/WSk75AlmacenesApp";
-        try {
-            SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
-            XMLRecepConsul soapEnvelope = new XMLRecepConsul(SoapEnvelope.VER11);
-            soapEnvelope.XMLRecepCon(strusr, strpass,strbran);
-            soapEnvelope.dotNet = true;
-            soapEnvelope.implicitTypes = true;
-            soapEnvelope.setOutputSoapObject(Request);
-            HttpTransportSE trasport = new HttpTransportSE(URL);
-            trasport.debug = true;
-            trasport.call(SOAP_ACTION, soapEnvelope);
-            SoapObject response = (SoapObject) soapEnvelope.bodyIn;
-            int c=1;
-            for (int i = 0; i < response.getPropertyCount(); i++) {
-                SoapObject response0 = (SoapObject) soapEnvelope.bodyIn;
-                response0 = (SoapObject) response0.getProperty(i);
-                mensaje=(response0.getPropertyAsString("MENSAJE").equals("anyType{}") ? "": response0.getPropertyAsString("MENSAJE"));
-                if(mensaje.equals("PENDIENTES")){break;}
-
-                String clave=(response0.getPropertyAsString("PRODUCTO").equals("anyType{}") ? " " : response0.getPropertyAsString("PRODUCTO"));
-                String can=(response0.getPropertyAsString("CANTIDAD").equals("anyType{}") ? "" : response0.getPropertyAsString("CANTIDAD"));
-                String ub=(response0.getPropertyAsString("UBICACION").equals("anyType{}") ? "" : response0.getPropertyAsString("UBICACION"));
-                String surt=(response0.getPropertyAsString("SURTIDO").equals("anyType{}") ? "" : response0.getPropertyAsString("SURTIDO"));
-                listaTrasp.add(new Traspasos(c+"",clave,can,surt,ub,true));
-                datos=true;
+    public boolean surtTodos(){
+        boolean surt=false;
+        int c=0;
+        for(int i=0;i<listaTrasp.size();i++){
+            int cant=Integer.parseInt(listaTrasp.get(i).getCantidad());
+            int cantS=Integer.parseInt(listaTrasp.get(i).getCantSurt());
+            if(cant==cantS){
                 c++;
-            }//for
-        } catch (Exception ex) {mensaje="";}//catch
-    }//conectaListInv
+            }
+        }
+        if(c==listaTrasp.size()){
+            surt=true;
+        }
+        return surt;
+    }
 
-    private class AsyncAct extends AsyncTask<Void, Integer, Void> {//WEBSERVICE PARA ACTUALIZAR DATOS
+
+    public void verLista(){
+        txtProd.requestFocus();
+        adapter = new AdaptadorTraspasos(listaTrasp);
+        rvTraspasos.setAdapter(adapter);
+        txtProd.setEnabled(true);
+        txtProd.requestFocus();
+        posicion=0;
+        mostrarDetalleProd();
+    }//ver lista
+
+
+
+    /*private class AsyncAct extends AsyncTask<Void, Integer, Void> {//WEBSERVICE PARA ACTUALIZAR DATOS
         private String producto,cantidad,var,ProductoActual;
         private boolean conn=true,sumar;
 
@@ -513,7 +573,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         @RequiresApi(api = Build.VERSION_CODES.P)
         @Override
         protected void onPostExecute(Void result) {
-            progressDialog.dismiss();
+            mDialog.dismiss();
             if(conn==false){
                 Toast.makeText(ActivityRecepTraspMultSuc.this, "Sin conexión a internet\n"+
                         "No se podrá seguir escaneando a menos que se actualice este producto", Toast.LENGTH_SHORT).show();
@@ -568,15 +628,260 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             mensaje=ex.getMessage();
         }//catch
     }//conectaActualiza
+    */
 
-    public void verLista(){
-        adapter = new AdaptadorTraspasos(listaTrasp);
-        rvTraspasos.setAdapter(adapter);
-        txtProd.setEnabled(true);
-        txtProd.requestFocus();
-        posicion=0;
-        mostrarDetalleProd();
-    }
+    private class AsyncReceCon extends AsyncTask<Void, Void, Void> {
+
+        private String suc,folio,caja;
+        private boolean conn,var;
+
+        public AsyncReceCon(String suc, String folio,String caja,boolean var) {
+            this.suc=suc;
+            this.folio = folio;
+            this.caja=caja;
+            this.var=var;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mDialog.show();
+            rvTraspasos.setAdapter(null);
+            limpiar();
+        }//onPreExecute
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            conn=firtMet();
+            if(conn==true){
+                HttpHandler sh = new HttpHandler();
+                String parametros="sucursal="+suc+"&folio="+folio+"&cajas="+caja;
+                String url = "http://"+strServer+"/ReceCon?"+parametros;
+                String jsonStr = sh.makeServiceCall(url,strusr,strpass);
+                if (jsonStr != null) {
+                    try {
+                        JSONObject jsonObj = new JSONObject(jsonStr);
+                        JSONArray jsonArray = jsonObj.getJSONArray("Response");
+                        int num=1;
+                        listaTrasp.clear();
+                        for(int i=0;i<jsonArray.length();i++){
+                            JSONObject dato = jsonArray.getJSONObject(i);//Conjunto de datos
+                            listaTrasp.add(new Traspasos(num+"",dato.getString("PRODUCTO"),dato.getString("CANTIDAD"),
+                                    dato.getString("UBICACION"),dato.getString("RECEPCION"),true));
+                            num++;mensaje="";
+                        }//for
+                    }catch (final JSONException e) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mensaje="Sin datos disponibles";
+                            }//run
+                        });
+                    }//catch JSON EXCEPTION
+                }else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mensaje="No fue posible obtener datos del servidor";
+                        }//run
+                    });//runUniTthread
+                }//else
+                return null;
+            }else{
+                mensaje="Problemas de conexión";
+                return null;
+            }
+        }//doInBackground
+
+        @Override
+        protected void onPostExecute(Void aBoolean) {
+            super.onPostExecute(aBoolean);
+            if(conn=false){
+                mDialog.dismiss();
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
+                builder.setPositiveButton("ACEPTAR",null);
+                builder.setCancelable(false);
+                builder.setTitle("AVISO").setMessage("Sin conexión a internet").create().show();
+            }else if(mensaje.equals("")) {
+                if(var==true){
+                    new AsyncTotCajas(folio).execute();
+                }else{
+                    mDialog.dismiss();
+                    verLista();
+                }//else
+            }else{
+                mDialog.dismiss();
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
+                builder.setPositiveButton("ACEPTAR",null);
+                builder.setCancelable(false);
+                builder.setTitle("AVISO").setMessage("Ningun Dato").create().show();
+            }//else
+        }//onPost
+    }//AsyncConsulRecep
+
+    private class AsyncTotCajas extends AsyncTask<Void, Void, Void> {
+
+        private String folio;
+        private boolean conn;
+
+        public AsyncTotCajas(String folio) {
+            this.folio = folio;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if(!mDialog.isShowing()){mDialog.dismiss();}
+        }//onPreExecute
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            conn=firtMet();
+            if(conn==true){
+                HttpHandler sh = new HttpHandler();
+                String parametros="folio="+folio;
+                String url = "http://"+strServer+"/totcajas?"+parametros;
+                String jsonStr = sh.makeServiceCall(url,strusr,strpass);
+                if (jsonStr != null) {
+                    try {
+                        JSONObject jsonObj = new JSONObject(jsonStr);
+                        JSONArray jsonArray = jsonObj.getJSONArray("Response");
+                        JSONObject dato = jsonArray.getJSONObject(0);//Conjunto de datos
+                        TOTCAJAS=Integer.parseInt(dato.getString("maximo"));
+                        TOTP=Integer.parseInt(dato.getString("totalp"));
+                        RECEP=Integer.parseInt(dato.getString("recepcion"));
+                    }catch (final JSONException e) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mensaje="Sin datos disponibles";
+                            }//run
+                        });
+                    }//catch JSON EXCEPTION
+                }else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mensaje="No fue posible obtener datos del servidor";
+                        }//run
+                    });//runUniTthread
+                }//else
+                return null;
+            }else{
+                mensaje="Problemas de conexión";
+                return null;
+            }
+        }//doInBackground
+
+        @Override
+        protected void onPostExecute(Void aBoolean) {
+            super.onPostExecute(aBoolean);
+            mDialog.dismiss();
+            if(conn=false){
+                mDialog.dismiss();
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
+                builder.setPositiveButton("ACEPTAR",null);
+                builder.setCancelable(false);
+                builder.setTitle("AVISO").setMessage("Sin conexión a internet").create().show();
+            }else if(TOTCAJAS>=1) {
+                verLista();
+                cambiaCajas();
+            }else{
+                Toast.makeText(ActivityRecepTraspMultSuc.this, "Error al traer total de cajas", Toast.LENGTH_SHORT).show();
+            }//else
+        }//onPost
+    }//AsyncConsulRecep
+
+    private class AsyncActualizar extends AsyncTask<Void, Void, Void> {
+
+        private String folio,producto,cantidad,var,ProductoActual;
+        private boolean conn=true,sumar;
+        public AsyncActualizar(String folio,String producto, String cantidad,String var,boolean sumar,String ProductoActual) {
+            this.folio=folio;
+            this.producto = producto;
+            this.cantidad = cantidad;
+            this.var=var;
+            this.sumar=sumar;
+            this.ProductoActual=ProductoActual;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mDialog.show();
+            mensaje="";
+        }//onPreExecute
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            conn=firtMet();
+            if(conn==true){
+                String parametros="sucursal="+strbran+"&producto="+producto+
+                        "&cantidad="+cantidad+"&usuario="+strusr+
+                        "&folio="+folio;
+                String url = "http://"+strServer+"/recemul?"+parametros;
+                String jsonStr = new HttpHandler().makeServiceCall(url,strusr,strpass);
+                if (jsonStr != null) {
+                    try {
+                        JSONObject jsonObj = new JSONObject(jsonStr);
+                        JSONArray jsonArray = jsonObj.getJSONArray("Response");
+                        JSONObject dato = jsonArray.getJSONObject(0);
+                        mensaje=dato.getString("MENSAJE");
+                    } catch (final JSONException e) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mensaje="Sin sincronizar";
+                            }//run
+                        });
+                    }//catch JSON EXCEPTION
+                }else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mensaje="Problemas con el servidor";
+                        }//run
+                    });//runUniTthread
+                }//else
+                return null;
+            }else{
+                mensaje="Problemas de conexión";
+                return null;
+            }//else
+        }//doInBackground
+
+        @Override
+        protected void onPostExecute(Void aBoolean) {
+            super.onPostExecute(aBoolean);
+            mDialog.dismiss();
+            if(conn==false){
+                Toast.makeText(ActivityRecepTraspMultSuc.this, "Sin conexión a internet\n"+
+                        "No se podrá seguir escaneando a menos que se actualice este producto", Toast.LENGTH_SHORT).show();
+            }else if (mensaje.equals("SINCRONIZADO")) {
+                Toast.makeText(ActivityRecepTraspMultSuc.this, producto+" Sincronizado", Toast.LENGTH_SHORT).show();
+                if(TOTP==RECEP){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
+                    builder.setPositiveButton("ACEPTAR",null);
+                    builder.setCancelable(false);
+                    builder.setTitle("HAS TERMINADO").create().show();
+                }
+                bepp.play(sonido_correcto, 1, 1, 1, 0, 0);
+                listaTrasp.get(posicion2).setSincronizado(true);
+                if(sumar==true){
+                    evaluarEscaneo(ProductoActual);
+                }else{
+                    tipoCambio(var);
+                    mostrarDetalleProd();
+                }
+            }else{
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
+                builder.setPositiveButton("ACEPTAR",null);
+                builder.setCancelable(false);
+                builder.setTitle("AVISO").setMessage("Producto "+producto+" no se actualizó, no se podrá seguir escaneando a menos que se actualice").create().show();
+            }//else
+        }//onPost
+    }//AsyncActualizar
+
     @Override
     public void onBackPressed() {
         if(modificados==true){
