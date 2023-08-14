@@ -499,7 +499,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         }
 
         @Override
-        protected void onPreExecute() {progressDialog.show();}
+        protected void onPreExecute() {mDialog.show();}
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -577,40 +577,6 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         posicion=0;
         mostrarDetalleProd();
     }
-
-    public void consultaSql1(){
-        /*try{
-            int i=1;
-            escaneo=false;
-            listaTrasp.clear();
-            rvTraspasos.setAdapter(null);
-            @SuppressLint("Recycle") Cursor fila = db.rawQuery("SELECT PRODUCTO,CANTIDAD,SURTIDO,UBICACION FROM INVENTARIO WHERE EMPRESA='"+serv+"' ORDER BY UBICACION ", null);
-            if (fila != null && fila.moveToFirst()) {
-                do {
-                    listaTrasp.add(new Traspasos((i++)+"",fila.getString(0),fila.getString(1),fila.getString(2),fila.getString(3)));
-                } while (fila.moveToNext());
-                adapter = new AdaptadorTraspasos(listaTrasp);
-                rvTraspasos.setAdapter(adapter);
-                posicion=0;
-                for (int j =0 ; j<listaTrasp.size();j++){//para tomar posicion de producto y que con eso se pueda posicionar en el producto en la lista
-                    if (Producto.equals(listaTrasp.get(j).getProducto())){
-                        posicion=j;
-                        break;
-                    }//if
-                }//for
-                txtProd.setEnabled(true);
-                txtProd.requestFocus();
-                mostrarDetalleProd();
-            }//if
-            fila.close();
-        }catch(Exception e){
-            Toast.makeText(ActivityRecepTraspMultSuc.this,
-                    "Error al consultar datos de la base de datos interna", Toast.LENGTH_SHORT).show();
-        }//catch
-        */
-    }//consultaSql
-
-
     @Override
     public void onBackPressed() {
         if(modificados==true){
