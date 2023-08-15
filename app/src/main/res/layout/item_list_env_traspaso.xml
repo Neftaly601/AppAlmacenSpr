@@ -71,7 +71,7 @@
                 android:layout_weight="2"
                 android:text="0"
                 android:padding="5dp"
-                android:textColor="@color/Amarillo"
+                android:textColor="@color/colorVerdeAzul"
                 android:textStyle="bold"
                 android:maxLines="1"
                 android:textAlignment="center"/>
@@ -86,7 +86,7 @@
                 android:layout_weight="2"
                 android:text="0"
                 android:padding="5dp"
-                android:textColor="@color/colorVerdeAzul"
+                android:textColor="@color/Amarillo"
                 android:textStyle="bold"
                 android:maxLines="1"
                 android:textAlignment="center"/>

@@ -186,7 +186,7 @@
             android:layout_height="wrap_content"
             android:text="Cambiar"
             android:fontFamily="sans-serif-condensed-medium"
-            android:background="@drawable/btn_background3"
+            android:background="@drawable/btn_background4"
             app:backgroundTint="@null"
             app:backgroundTintMode="add"
             android:layout_marginBottom="10dp"/>
