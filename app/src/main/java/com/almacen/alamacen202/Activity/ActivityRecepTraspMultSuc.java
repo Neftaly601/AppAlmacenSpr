@@ -784,6 +784,8 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                 builder.setCancelable(false);
                 builder.setTitle("AVISO").setMessage("Sin conexión a internet").create().show();
             }else if(TOTCAJAS>=1) {
+                CONTCAJA=TOTCAJAS;
+                tvCaja.setText(TOTCAJAS+"");
                 verLista();
                 cambiaCajas();
             }else{

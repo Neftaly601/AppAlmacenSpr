@@ -116,8 +116,32 @@
                 android:textColor="@color/colorBlack"/>
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/cont"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:hint="Caja Destino"
+            android:textColorHint="@color/AzulBack"
+            app:hintTextColor="@color/AzulBack"
+            android:maxLines="1"
+            android:visibility="gone">
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/spCajaDest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:focusable="false"
+                android:maxLines="1"
+                android:textSize="15dp"
+                android:fontFamily="sans-serif-condensed-medium"
+                android:textStyle="bold"
+                android:textColor="@color/colorBlack"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/cont2"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
