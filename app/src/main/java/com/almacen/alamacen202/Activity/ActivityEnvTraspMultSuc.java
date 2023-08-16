@@ -1370,9 +1370,9 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         AlertDialog alert2 = alert.create();
 
         ArrayList<String> nomCajas2=new ArrayList<>();
-        for(int k=0;k<nomCajas.size();k++){
-            if(!nomCajas.get(k).equals(origen)){
-                nomCajas2.add(nomCajas.get(k));
+        for(int k=1;k<=TOTCAJAS;k++){
+            if(k!=Integer.parseInt(origen)){
+                nomCajas2.add(k+"");
             }
         }//for
 
