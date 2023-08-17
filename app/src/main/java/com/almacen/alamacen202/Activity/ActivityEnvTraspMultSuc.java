@@ -22,8 +22,6 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -79,12 +77,8 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Locale;
-import java.util.Set;
 
 import dmax.dialog.SpotsDialog;
 
@@ -98,6 +92,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
     private ArrayList<CAJASSANDG> listaCajas = new ArrayList<>();
     private ArrayList<CAJASSANDG> listaCajasXProd = new ArrayList<>();
     private ArrayList<ListaIncidenciasSandG> listaIncidencias = new ArrayList<>();
+    private ArrayList <String> listaLineas= new ArrayList<>();
     private ArrayList<String> nomCajas= new ArrayList<>();
     private EditText txtFolBusq,txtCantidad,txtCantSurt,txtProducto,tvCaja,txtEnv;
     private AutoCompleteTextView spLineas;
@@ -264,7 +259,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Linea = spLineas.getText().toString();
                 if(primeroSinc(2)==false){
-                    if(Linea.equals(" TODAS LAS LÍNEAS")){
+                    if(Linea.equals("TODAS LAS LÍNEAS")){
                         new AsyncConsulEnvTrasp(strbran,Folio,"").execute();
                     }else{
                         new AsyncConsulEnvTrasp(strbran,Folio,Linea).execute();
@@ -461,10 +456,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 int cantS=Integer.parseInt(lista.get(i).getCantSurt());
                 if((cantS+1)<=cant){
                     if(exi<cantS){
-                        AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
-                        builder.setPositiveButton("ACEPTAR",null);
-                        builder.setCancelable(false);
-                        builder.setTitle("AVISO").setMessage("Existencia menor a cantidad a surtir").create().show();
+                        Toast.makeText(this, "Existencia es menor a cantidad a surtir", Toast.LENGTH_SHORT).show();
                     }
                     cantS++;
                     lista.get(i).setCantSurt(cantS+"");
@@ -545,7 +537,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 mensajeAggCaja();
                 break;
             case 2:
-                if(Linea.equals(" TODAS LAS LÍNEAS")){
+                if(Linea.equals("TODAS LAS LÍNEAS")){
                     new AsyncConsulEnvTrasp(strbran,Folio,"").execute();
                 }else{
                     new AsyncConsulEnvTrasp(strbran,Folio,Linea).execute();
@@ -649,7 +641,6 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
     private class AsyncConsulEnvTrasp extends AsyncTask<Void, Void, Void> {
         private String suc,folio,linea;
         private boolean conn;
-        private ArrayList <String> listaLineas= new ArrayList<>();
         public AsyncConsulEnvTrasp(String suc, String folio,String linea) {
             this.suc = suc;
             this.folio = folio;
@@ -658,6 +649,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
+            super.onPreExecute();
             mDialog.show();
             limpiar();
             mensaje="";posicion=-1;lista.clear();
@@ -677,15 +669,15 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 if (jsonStr != null) {
                     try {
                         JSONObject jsonObj = new JSONObject(jsonStr);
+                        // Obtener array de datos
                         JSONArray jsonArray = jsonObj.getJSONArray("Response");
                         int num=1;
-                        listaLineas.add(" TODAS LAS LÍNEAS");
                         for(int i=0;i<jsonArray.length();i++){
                             JSONObject dato = jsonArray.getJSONObject(i);//Conjunto de datos
                             lista.add(new EnvTraspasos(num+"",dato.getString("k_prod"),dato.getString("k_ubi"),
                                     dato.getString("k_exist"),dato.getString("k_cant"),dato.getString("k_part"),
                                     dato.getString("k_cants"),dato.getString("k_env"),dato.getString("k_linea"),true));
-                            listaLineas.add(dato.getString("k_linea"));
+
                             num++;mensaje="";
                         }//for
                     } catch (final JSONException e) {
@@ -725,10 +717,17 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 dialog.show();
             }else{
                 if(linea.equals("")){
-                    Set<String> hashSet = new HashSet<>(listaLineas);
+                    Linea="";
                     listaLineas.clear();
-                    listaLineas.addAll(hashSet);
-                    Collections.sort(listaLineas);
+                    String linComp="";
+                    listaLineas.add("TODAS LAS LÍNEAS");
+                    for(int j=0;j<lista.size();j++){
+                        linComp=lista.get(j).getLinea();
+                        if(!linComp.equals(linea)){
+                            linea=linComp;
+                            listaLineas.add(linComp);
+                        }//if
+                    }//for
                     ArrayAdapter<String> adaptador = new ArrayAdapter<>(
                             ActivityEnvTraspMultSuc.this,R.layout.drop_down_item,listaLineas);
                     spLineas.setAdapter(adaptador);
@@ -946,7 +945,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                         JSONArray jsonArray = jsonObj.getJSONArray("Response");
                         mensaje=jsonArray.getString(0);
 
-                    }catch (final JSONException e) {
+                    } catch (final JSONException e) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -1023,7 +1022,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                mensaje="Sin datos";
+                                mensaje="No hay lista de cajas guardadas";
                             }//run
                         });
                     }//catch JSON EXCEPTION
@@ -1031,7 +1030,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            mensaje="Problema actualizar";
+                            mensaje="Problema al consultar lista de cajas";
                         }//run
                     });//runUniTthread
                 }//else
@@ -1132,7 +1131,6 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             verLista();
             if(conn=false){
                 mDialog.dismiss();
-                TOTCAJAS=1;
                 AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
                 builder.setPositiveButton("ACEPTAR",null);
                 builder.setCancelable(false);
@@ -1141,17 +1139,13 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 CAJAACT=TOTCAJAS;
                 tvCaja.setText(TOTCAJAS+"");
             }else{
-                TOTCAJAS=1;
-                CAJAACT=TOTCAJAS;
-                tvCaja.setText(TOTCAJAS+"");
+                Toast.makeText(ActivityEnvTraspMultSuc.this, "Error al traer total de cajas", Toast.LENGTH_SHORT).show();
             }//else
         }//onPost
     }//AsyncConsulRecep
 
     //Reporte de Incidencias
-    private class AsyncIncid extends AsyncTask<Void, Void, Void> {
-        boolean conn;
-        ArrayList<ListaIncidenciasSandG>listaIncidencias = new ArrayList<>();
+    /*private class AsyncIncid extends AsyncTask<Void, Void, Void> {
         @Override
         protected void onPreExecute() {
             mDialog.show();
@@ -1159,49 +1153,16 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            conn=firtMet();
-            if(conn==true){
-                HttpHandler sh = new HttpHandler();
-                String url = "http://"+strServer+"/MensaInci";
-                String jsonStr = sh.makeServiceCall(url,strusr,strpass);
-                if (jsonStr != null) {
-                    try {
-                        JSONObject jsonObj = new JSONObject(jsonStr);
-                        JSONArray jsonArray = jsonObj.getJSONArray("Response");
-                        for(int i=0;i<jsonArray.length();i++){
-                            JSONObject dato = jsonArray.getJSONObject(i);//Conjunto de datos
-                            listaIncidencias.add(new ListaIncidenciasSandG(dato.getString("k_Clave"),
-                                    dato.getString("k_Mensaje")));
-                        }//for
-                    }catch (final JSONException e) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mensaje="Sin datos";
-                            }//run
-                        });
-                    }//catch JSON EXCEPTION
-                }else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mensaje="No fue posible obtener datos del servidor";
-                        }//run
-                    });//runUniTthread
-                }//else
-                return null;
-            }else{
-                mensaje="Problemas de conexión";
-                return null;
-            }//else
-        }//doInbackground
+            listInci();
+            return null;
+        }
+
 
         @RequiresApi(api = Build.VERSION_CODES.P)
         @Override
         protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
             mDialog.dismiss();
-            if(listaIncidencias.size() > 0) {
+            if (listaIncidencias.size() > 0) {
                 String[] opciones = new String[listaIncidencias.size()];
                 for (int i = 0; i < listaIncidencias.size(); i++) {
                     opciones[i] = listaIncidencias.get(i).getClave() + ".-" + listaIncidencias.get(i).getMensaje();
@@ -1211,93 +1172,125 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 builder.setItems(opciones, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String Producto =lista.get(posicion).getProducto();
-                        String RazonSuper = opciones[which];
-                        new AsyncReporteInici(Producto,RazonSuper,Folio).execute();
+                        Producto1 = listaProduAduana.get(contlis).getProducto();
+                        RazonSuper = opciones[which];
+                        new ReporteInici().execute();
                     }//onclclick
                 });
                 AlertDialog dialog = builder.create();
                 dialog.show();
-            }else {
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
-                builder.setTitle("AVISO");
-                builder.setMessage(mensaje);
-                builder.setCancelable(false);
-                builder.setNegativeButton("OK",null);
-                AlertDialog dialog = builder.create();
-                dialog.show();
+            } else {
+                AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
+                alerta.setMessage("No hay productos surtidos").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+
+                AlertDialog titulo = alerta.create();
+                titulo.setTitle("LISTA DE SURTIDO VACIA");
+                titulo.show();
             }//else
         }//onPostExecute
     }//AsyncIncid
 
-    //AsyncReporteInici
-    private class AsyncReporteInici extends AsyncTask<Void, Void, Void> {
-        boolean conn;
-        private String prod,razon,fol;
+    private void listInci() {
+        String SOAP_ACTION = "MensaInci";
+        String METHOD_NAME = "MensaInci";
+        String NAMESPACE = "http://" + strServer + "/WSk75AlmacenesApp/";
+        String URL = "http://" + strServer + "/WSk75AlmacenesApp";
+        try {
+            SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
+            XMLMensajeIncidencias soapEnvelope = new XMLMensajeIncidencias(SoapEnvelope.VER11);
+            soapEnvelope.XMLMensajeInci(strusr, strpass);
 
-        public AsyncReporteInici(String prod, String razon, String fol) {
-            this.prod = prod;
-            this.razon = razon;
-            this.fol = fol;
-        }//
+            soapEnvelope.dotNet = true;
+            soapEnvelope.implicitTypes = true;
+            soapEnvelope.setOutputSoapObject(Request);
+            HttpTransportSE trasport = new HttpTransportSE(URL);
+            trasport.debug = true;
+            trasport.call(SOAP_ACTION, soapEnvelope);
+            SoapObject response = (SoapObject) soapEnvelope.bodyIn;
+            for (int i = 0; i < response.getPropertyCount(); i++) {
+                SoapObject response0 = (SoapObject) soapEnvelope.bodyIn;
+                response0 = (SoapObject) response0.getProperty(i);
+                listaIncidencias.add(new ListaIncidenciasSandG(
+                        (response0.getPropertyAsString("k_Clave").equals("anyType{}") ? "" : response0.getPropertyAsString("k_Clave")),
+                        (response0.getPropertyAsString("k_Mensaje").equals("anyType{}") ? "" : response0.getPropertyAsString("k_Mensaje"))));
+
+            }//for
+        } catch (SoapFault soapFault) {
+            soapFault.printStackTrace();
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception ex) {
+        }
+    }//listInci
+
+    //Reporte de Incidencias
+    private class ReporteInici extends AsyncTask<Void, Void, Void> {
         @Override
         protected void onPreExecute() {
             mDialog.show();
-        }//onPreejecutive
+        }
         @Override
         protected Void doInBackground(Void... params) {
-            conn=firtMet();
-            if(conn==true){
-                String parametros="k_Producto="+prod+"&k_Usuario="+strusr+
-                        "&k_Razon="+razon+"&k_Sucursal="+strbran+
-                        "&k_Folio="+fol;
-                String url = "http://"+strServer+"/ReportInci?"+parametros;
-                String jsonStr = new HttpHandler().makeServiceCall(url,strusr,strpass);
-                if (jsonStr != null) {
-                    try {
-                        JSONObject jsonObj = new JSONObject(jsonStr);
-                        JSONArray jsonArray = jsonObj.getJSONArray("Response");
-                        JSONObject dato = jsonArray.getJSONObject(0);
-                        mensaje=dato.getString("respuesta");
-                    } catch (final JSONException e) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mensaje="no se obtuvo respuesta";
-                            }//run
-                        });
-                    }//catch JSON EXCEPTION
-                }else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mensaje="Problema al traer datos";
-                        }//run
-                    });//runUniTthread
-                }//else
-                return null;
-            }else{
-                mensaje="Problemas de conexión";
-                return null;
-            }//else
-        }//doInbackground
+            ReporInci();
+            return null;
+        }
 
 
         @RequiresApi(api = Build.VERSION_CODES.P)
         @Override
         protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            mDialog.dismiss();
-            AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
-            builder.setTitle("AVISO");
-            builder.setMessage(mensaje);
-            builder.setCancelable(false);
-            builder.setNegativeButton("OK",null);
-            AlertDialog dialog = builder.create();
-            dialog.show();
-        }//onPost
-    }//AsyncReporteInici
+            AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
+            alerta.setMessage(menbitacora).setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+                    GuardarInicidencias();
+                }
+            });
 
+            AlertDialog titulo = alerta.create();
+            titulo.setTitle("AVISO");
+            titulo.show();
+        }
+    }
+
+    private void ReporInci() {
+        String SOAP_ACTION = "ReportInci";
+        String METHOD_NAME = "ReportInci";
+        String NAMESPACE = "http://" + strServer + "/WSk75AlmacenesApp/";
+        String URL = "http://" + strServer + "/WSk75AlmacenesApp";
+        try {
+            SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
+            XMLReportInici soapEnvelope = new XMLReportInici(SoapEnvelope.VER11);
+            soapEnvelope.XMLReportInicide(strusr, strpass, strusr, Producto1, RazonSuper, strcodBra, FolioLiberacion);
+
+            soapEnvelope.dotNet = true;
+            soapEnvelope.implicitTypes = true;
+            soapEnvelope.setOutputSoapObject(Request);
+            HttpTransportSE trasport = new HttpTransportSE(URL);
+            trasport.debug = true;
+            trasport.call(SOAP_ACTION, soapEnvelope);
+            SoapObject response = (SoapObject) soapEnvelope.bodyIn;
+            response = (SoapObject) response.getProperty("message");
+            menbitacora = response.getPropertyAsString("k_menssage").equals("anyType{}") ? "" : response.getPropertyAsString("k_menssage");
+
+        } catch (SoapFault soapFault) {
+            soapFault.printStackTrace();
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception ex) {
+        }
+    }
+*/
 
     public void tablaXcaja (Button back, Button next,int posActCaja){
         if(posActCaja==0 && nomCajas.size()>1){
@@ -1360,7 +1353,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         EditText txtCajaProd = dialogView.findViewById(R.id.txtCajaProd);
         EditText txtCajaOrigen =dialogView.findViewById(R.id.txtCajaOrigen);
         EditText txtCajaCant = dialogView.findViewById(R.id.txtCajaCant);
-        //EditText txtCajaDestino =  dialogView.findViewById(R.id.txtCajaDestino);
+        EditText txtCajaDestino =  dialogView.findViewById(R.id.txtCajaDestino);
         EditText txtCantidad =  dialogView.findViewById(R.id.txtCantidad);
         AutoCompleteTextView spCajaDest = dialogView.findViewById(R.id.spCajaDest);
         LinearLayout contP = dialogView.findViewById(R.id.contP);
@@ -1406,26 +1399,8 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 }//else
             }//onclick
         });
+
         alert2.show();
     }//cambiarCajas
-
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menuoverflow4, menu);
-        return true;
-    }//onCreateOptionsMenu
-
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id){
-            case R.id.itInci:
-                if(lista.size()>0){
-                    new AsyncIncid().execute();
-                }else{
-                    Toast.makeText(this, "Sin productos seleccionados", Toast.LENGTH_SHORT).show();
-                }
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }//onOptionsItemSelected
 
 }//Activity

@@ -159,6 +159,23 @@
                     app:backgroundTint="@color/ColorGris"
                     android:enabled="false"/>
             </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnImprimirTicket"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn_background3"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"
+            android:text="Imprimir"
+            android:textColor="@color/ColorWhite"
+            android:textSize="12dp"
+            app:icon="@drawable/icons8_puerta_abierta_impresora_48"
+            app:iconTint="@null"
+            app:iconSize="20dp"
+            app:backgroundTint="@null"
+            app:backgroundTintMode="add"
+            android:onClick="ImpreCajas"/>
         </LinearLayout>
 
 

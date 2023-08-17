@@ -400,6 +400,94 @@ public class BluetoothPrint extends AppCompatActivity {
 
 
 
+
+    public void printCajasE(String Empresa, String Cliente, String Folio,  ArrayList<CAJASSANDG> listaCajasFiltro, String contDialogCajas,int imagen) {
+
+        Date c = Calendar.getInstance().getTime();
+        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+        String formattedDate = df.format(c);
+        SimpleDateFormat hora = new SimpleDateFormat("HH:mm");
+        String formattedHour = hora.format(c);
+
+
+        try {
+            /*outputStream.flush();
+            printPhoto(imagen);
+            outputStream.flush();*/
+            String msg = Empresa;
+            msg += "\n";
+            outputStream.write(format);
+            outputStream.write(ESC_ALIGN_CENTER);
+            outputStream.write(msg.getBytes());
+            msg = "Fecha:" + formattedDate + "\n";
+            msg += "Hora:" + formattedHour + "\n";
+            outputStream.write(ESC_ALIGN_RIGHT);
+            outputStream.write(msg.getBytes());
+            msg = "Sucursal a Enviar:" + Cliente + "\n";
+            msg += "FOLIO:" + Folio + "\n";
+            msg += "\n";
+            outputStream.write(ESC_ALIGN_LEFT);
+            outputStream.write(msg.getBytes());
+            msg = "Ticket Caja " + contDialogCajas + "\n";
+            msg += "____________________________ \n";
+            msg += "PRODUCTO    SURTIDA   \n";
+            outputStream.write(msg.getBytes());
+
+
+            for (int i = 0; i < listaCajasFiltro.size(); i++) {
+                msg = "";
+                String Producto = listaCajasFiltro.get(i).getClavedelProdcuto();
+                String Cantidad = " " + listaCajasFiltro.get(i).getCantidadUnidades();
+                if (Producto.length() < 13) {
+                    int espacios = Producto.length();
+                    int opera = 0;
+                    opera = 13 - espacios;
+
+                    for (int k = 0; k < opera; k++) {
+                        Producto += " ";
+                    }
+                }
+
+                if (Cantidad.length() < 10) {
+
+                    int espacios = Cantidad.length();
+                    int opera = 0;
+                    opera = 10 - espacios;
+
+                    for (int k = 0; k < opera; k++) {
+
+                        Cantidad += " ";
+
+                    }
+                }
+
+
+                msg += Producto + Cantidad +"\n";
+                outputStream.write(msg.getBytes());
+                outputStream.flush();
+            }
+
+            msg = "\n";
+            int cantidatotal = 0;
+            for (int k = 0; k < listaCajasFiltro.size(); k++) {
+
+                cantidatotal = cantidatotal + Integer.parseInt(listaCajasFiltro.get(k).getCantidadUnidades());
+            }
+
+            msg += "Total:" + cantidatotal + "\n";
+            outputStream.write(ESC_ALIGN_RIGHT);
+            outputStream.write(msg.getBytes());
+            msg = "\n";
+            msg += "\n";
+            outputStream.write(msg.getBytes());
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Toast.makeText(context, "" + ex, Toast.LENGTH_LONG).show();
+        }
+    }
+
+
     // Printing Text to Bluetooth Printer //
     public void printRece(String Empresa, String Provedor, String Folio, ArrayList<ListProReceSandG> listaRecepcion , int imagen) {
 
