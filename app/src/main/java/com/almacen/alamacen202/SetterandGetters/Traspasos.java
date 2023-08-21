@@ -6,6 +6,7 @@ public class Traspasos {
     private String cantidad;
     private String ubic;
     private String cantSurt;
+    private String exist;
     private boolean sincronizado;
 
     public String getNum() {
@@ -48,6 +49,14 @@ public class Traspasos {
         this.cantSurt = cantSurt;
     }
 
+    public String getExist() {
+        return exist;
+    }
+
+    public void setExist(String exist) {
+        this.exist = exist;
+    }
+
     public boolean isSincronizado() {
         return sincronizado;
     }
@@ -56,13 +65,14 @@ public class Traspasos {
         this.sincronizado = sincronizado;
     }
 
-    public Traspasos(String num, String producto, String cantidad, String ubic, String cantSurt, boolean sincronizado) {
+    public Traspasos(String num, String producto, String cantidad, String ubic, String cantSurt,String exist, boolean sincronizado) {
 
         this.num = num;
         this.producto = producto;
         this.cantidad = cantidad;
         this.ubic = ubic;
         this.cantSurt = cantSurt;
+        this.exist=exist;
         this.sincronizado = sincronizado;
     }
 }//clase

@@ -174,8 +174,7 @@
             app:iconTint="@null"
             app:iconSize="20dp"
             app:backgroundTint="@null"
-            app:backgroundTintMode="add"
-            android:onClick="ImpreCajas"/>
+            app:backgroundTintMode="add"/>
         </LinearLayout>
 
 

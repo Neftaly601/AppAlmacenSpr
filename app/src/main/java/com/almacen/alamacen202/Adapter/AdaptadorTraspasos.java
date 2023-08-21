@@ -37,6 +37,7 @@ public class AdaptadorTraspasos extends RecyclerView.Adapter<AdaptadorTraspasos.
         holder.n.setText(datos.get(position).getNum());
         holder.CantSurt.setText(datos.get(position).getCantSurt());
         holder.ubi.setText(datos.get(position).getUbic());
+        holder.itExist.setText(datos.get(position).getExist());
 
         if(index==position){
             holder.lyaout.setBackgroundResource(R.color.ColorTenue);
@@ -51,12 +52,14 @@ public class AdaptadorTraspasos extends RecyclerView.Adapter<AdaptadorTraspasos.
             holder.n.setTextColor(Color.parseColor("#043B72"));
             holder.CantSurt.setTextColor(Color.parseColor("#043B72"));
             holder.ubi.setTextColor(Color.parseColor("#043B72"));
+            holder.itExist.setTextColor(Color.parseColor("#1E739A"));
         }else{
             holder.Producto.setTextColor(Color.parseColor("#2196F3"));
             holder.Cantidad.setTextColor(Color.parseColor("#2196F3"));
             holder.n.setTextColor(Color.parseColor("#2196F3"));
             holder.CantSurt.setTextColor(Color.parseColor("#2196F3"));
             holder.ubi.setTextColor(Color.parseColor("#2196F3"));
+            holder.itExist.setTextColor(Color.parseColor("#2196F3"));
         }
     }//onBindViewHolder
 
@@ -75,7 +78,7 @@ public class AdaptadorTraspasos extends RecyclerView.Adapter<AdaptadorTraspasos.
     }
 
     public static class ViewHolderTraspasos extends RecyclerView.ViewHolder {
-        TextView n,Producto, Cantidad,CantSurt,ubi;
+        TextView n,Producto, Cantidad,CantSurt,ubi,itExist;
         LinearLayout lyaout;
         public ViewHolderTraspasos (View itemView) {
             super(itemView);
@@ -84,6 +87,7 @@ public class AdaptadorTraspasos extends RecyclerView.Adapter<AdaptadorTraspasos.
             Cantidad =  itemView.findViewById(R.id.Cantidad);
             CantSurt = itemView.findViewById(R.id.CantSurt);
             ubi = itemView.findViewById(R.id.ubi);
+            itExist = itemView.findViewById(R.id.itExist);
             lyaout  = itemView.findViewById(R.id.lyaout);
         }//constructor
     }//AdapterTraspasosViewHolder class

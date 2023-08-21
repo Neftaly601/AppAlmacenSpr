@@ -153,18 +153,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
 
 
 
-        txtFolBusq.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if(!editable.toString().equals("")){
-                    Folio= editable.toString();
-                }//if es diferente a vacio
-            }//after
-        });//txtProd textchange
+
         txtProd.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
@@ -197,8 +186,8 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         btnBuscar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!Folio.equals("")){
-                    Folio=folio(Folio);
+                if(!txtFolBusq.getText().equals("")){
+                    Folio=folio(txtFolBusq.getText().toString());
                     tvCaja.setText("1");
                     new AsyncReceCon(strbran,Folio,"1",true).execute();
                 }else{
@@ -544,92 +533,6 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         mostrarDetalleProd();
     }//ver lista
 
-
-
-    /*private class AsyncAct extends AsyncTask<Void, Integer, Void> {//WEBSERVICE PARA ACTUALIZAR DATOS
-        private String producto,cantidad,var,ProductoActual;
-        private boolean conn=true,sumar;
-
-        public AsyncAct(String producto, String cantidad,String var,boolean sumar,String ProductoActual) {
-            this.producto = producto;
-            this.cantidad = cantidad;
-            this.var=var;
-            this.sumar=sumar;
-            this.ProductoActual=ProductoActual;
-        }
-
-        @Override
-        protected void onPreExecute() {mDialog.show();}
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            mensaje="";
-            if(firtMet()==true){//si hay conexión a internet
-                conectaRecepMultSuc(producto,cantidad);
-            }else{conn=false;}
-            return null;
-        }
-
-        @RequiresApi(api = Build.VERSION_CODES.P)
-        @Override
-        protected void onPostExecute(Void result) {
-            mDialog.dismiss();
-            if(conn==false){
-                Toast.makeText(ActivityRecepTraspMultSuc.this, "Sin conexión a internet\n"+
-                        "No se podrá seguir escaneando a menos que se actualice este producto", Toast.LENGTH_SHORT).show();
-            }else if (mensaje.equals("SINCRONIZADO")) {
-                Toast.makeText(ActivityRecepTraspMultSuc.this, producto+" Sincronizado", Toast.LENGTH_SHORT).show();
-                bepp.play(sonido_correcto, 1, 1, 1, 0, 0);
-                listaTrasp.get(posicion2).setSincronizado(true);
-
-                if(sumar==true){
-                    evaluarEscaneo(ProductoActual);
-                }else{
-                    tipoCambio(var);
-                    mostrarDetalleProd();
-                }
-            }else{
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
-                builder.setPositiveButton("ACEPTAR",null);
-                builder.setCancelable(false);
-                builder.setTitle("AVISO").setMessage("Producto "+producto+" no se actualizó, no se podrá seguir escaneando a menos que se actualice").create().show();
-            }//else
-        }//onPostExecute
-    }//AsynInsertInv
-
-
-    private void conectaRecepMultSuc (String producto, String cant) {
-        String SOAP_ACTION = "RecepcionMultisucursal";
-        String METHOD_NAME = "RecepcionMultisucursal";
-        String NAMESPACE = "http://" + strServer + "/WSk75AlmacenesApp/";
-        String URL = "http://" + strServer + "/WSk75AlmacenesApp";
-        try {
-
-            SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
-            XMLRecepMultSuc soapEnvelope = new XMLRecepMultSuc(SoapEnvelope.VER11);
-            soapEnvelope.XMLTrasp(strusr, strpass, strbran, producto,cant);
-            soapEnvelope.dotNet = true;
-            soapEnvelope.implicitTypes = true;
-            soapEnvelope.setOutputSoapObject(Request);
-            HttpTransportSE trasport = new HttpTransportSE(URL);
-            trasport.debug = true;
-            trasport.call(SOAP_ACTION, soapEnvelope);
-            SoapObject response = (SoapObject) soapEnvelope.bodyIn;
-            response = (SoapObject) response.getProperty("PRODUCTO");
-
-            mensaje=(response.getPropertyAsString("MENSAJE").equals("anyType{}") ? null : response.getPropertyAsString("MENSAJE"));
-        }catch (SoapFault soapFault) {
-            mensaje=soapFault.getMessage();
-        }catch (XmlPullParserException e) {
-            mensaje=e.getMessage();
-        }catch (IOException e) {
-            mensaje=e.getMessage();
-        }catch (Exception ex) {
-            mensaje=ex.getMessage();
-        }//catch
-    }//conectaActualiza
-    */
-
     private class AsyncReceCon extends AsyncTask<Void, Void, Void> {
 
         private String suc,folio,caja;
@@ -667,7 +570,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                         for(int i=0;i<jsonArray.length();i++){
                             JSONObject dato = jsonArray.getJSONObject(i);//Conjunto de datos
                             listaTrasp.add(new Traspasos(num+"",dato.getString("PRODUCTO"),dato.getString("CANTIDAD"),
-                                    dato.getString("UBICACION"),dato.getString("RECEPCION"),true));
+                                    dato.getString("UBICACION"),dato.getString("RECEPCION"),dato.getString("EXISTENCIA"),true));
                             num++;mensaje="";
                         }//for
                     }catch (final JSONException e) {

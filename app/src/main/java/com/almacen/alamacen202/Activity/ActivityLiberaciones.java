@@ -31,6 +31,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -6105,54 +6106,65 @@ public class ActivityLiberaciones extends AppCompatActivity {
         if(tamaño!=0){
 
 
-            builder2 = new AlertDialog.Builder(this);
-            LayoutInflater inflater = this.getLayoutInflater();
+            AlertDialog.Builder alert = new AlertDialog.Builder(ActivityLiberaciones.this);
+            LayoutInflater inflater = ActivityLiberaciones.this.getLayoutInflater();
             View dialogView = inflater.inflate(R.layout.dialog_info_cajascambio, null);
-            builder2.setView(dialogView);
-
-            Button btncambiar;
-            EditText cajaorigen;
-            EditText cajadestino;
-            EditText cantidad;
-            String producto;
-            producto=txtProducto.getText().toString();
+            alert.setView(dialogView);
+            alert.setCancelable(false);
+            alert.setNegativeButton("CANCELAR",null);
 
 
+            Button btncambiar =  dialogView.findViewById(R.id.btnCambiar);
+            EditText txtCajaProd = dialogView.findViewById(R.id.txtCajaProd);
+            EditText txtCajaOrigen =dialogView.findViewById(R.id.txtCajaOrigen);
+            EditText txtCajaCant = dialogView.findViewById(R.id.txtCajaCant);
+            EditText txtCajaDestino =  dialogView.findViewById(R.id.txtCajaDestino);
+            EditText txtCantidad =  dialogView.findViewById(R.id.txtCantidad);
+            AutoCompleteTextView spCajaDest = dialogView.findViewById(R.id.spCajaDest);
+            LinearLayout contP = dialogView.findViewById(R.id.contP);
+            TextInputLayout cont = dialogView.findViewById(R.id.cont);
+            TextInputLayout cont2 = dialogView.findViewById(R.id.cont2);
 
-            btncambiar =  dialogView.findViewById(R.id.btnCambiar);
-            cajaorigen =dialogView.findViewById(R.id.txtCajaOrigen);
-            cajadestino =  dialogView.findViewById(R.id.txtCajaDestino);
-            cantidad =  dialogView.findViewById(R.id.txtCantidad);
+            contP.setVisibility(View.VISIBLE);
+            cont2.setVisibility(View.GONE);
+            cont.setVisibility(View.VISIBLE);
+            txtCajaOrigen.setEnabled(false);
+            txtCajaProd.setText(txtProducto.getText());
 
-            dialog2 = builder2.create();
-            dialog2.show();
+            AlertDialog alert2 = alert.create();
 
+            ArrayList<String> nomCajas2=new ArrayList<>();
+            for(int k=1;k<=ContCajas;k++){
+
+                nomCajas2.add(k+"");
+
+            }//for
+
+            ArrayAdapter<String> adaptador = new ArrayAdapter<>(
+                    ActivityLiberaciones.this,R.layout.drop_down_item,nomCajas2);
+            spCajaDest.setAdapter(adaptador);
+            spCajaDest.setText(nomCajas2.get(0),false);
 
             btncambiar.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Caja1ori= cajaorigen.getText().toString();
-                    Caja2des=cajadestino.getText().toString();
-                    String cantidapro=cantidad.getText().toString();
-                    if (Integer.parseInt(Caja1ori) <= ContCajas && Integer.parseInt(Caja2des) <= ContCajas){
-                        new CambiarCajas(strcodBra,FolioLiberacion,producto,cantidapro,Caja1ori,Caja2des);
-
+                    String Caja1ori= txtCajaOrigen.getText().toString();
+                    String Caja2des=spCajaDest.getText().toString();
+                    String cantidapro=txtCantidad.getText().toString();
+                    if(Caja1ori.equals(Caja2des)){
+                        Toast.makeText(ActivityLiberaciones.this, "Caja de origen igual a caja destino", Toast.LENGTH_SHORT).show();
+                    }else if (cantidapro.equals("") || Integer.parseInt(cantidapro)==0 || Caja2des.equals("")){
+                        Toast.makeText(ActivityLiberaciones.this,
+                                "Campos vacios o en 0", Toast.LENGTH_SHORT).show();
+                    }else if(Integer.parseInt(cantidapro)>ContCajas){
+                        Toast.makeText(ActivityLiberaciones.this, "Excede cantidad de caja origen", Toast.LENGTH_SHORT).show();
                     }else{
-                        AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
-                        alerta.setMessage("No existe cantidad de cajas suficiente para agregar las piezas").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.cancel();
-                            }
-                        });
-
-                        AlertDialog titulo = alerta.create();
-                        titulo.setTitle("¡Hubo un Problema!");
-                        titulo.show();
-                    }
-
-                }
+                        new ActivityLiberaciones.CambiarCajas(strbran,Folio,txtProducto.getText().toString(),cantidapro,Caja1ori,Caja2des).execute();
+                    }//else
+                }//onclick
             });
+
+            alert2.show();
         }else{
             AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityLiberaciones.this);
             alerta.setMessage("No tienes ningun folio seleccionado ").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {

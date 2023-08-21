@@ -80,6 +80,21 @@
                 android:layout_height="match_parent"
                 android:background="@color/AzulBack"/>
             <TextView
+                android:id="@+id/itExist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="0"
+                android:padding="5dp"
+                android:textColor="@color/colorVerdeAzul"
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:textAlignment="center"/>
+            <View
+                android:layout_width="2dp"
+                android:layout_height="match_parent"
+                android:background="@color/AzulBack"/>
+            <TextView
                 android:id="@+id/CantSurt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
