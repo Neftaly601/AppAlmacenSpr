@@ -343,7 +343,7 @@ public class ActivityMenu extends AppCompatActivity {
         Intent intent = new Intent(ActivityMenu.this, ActivityRecepConten.class);
         startActivity(intent);
     }//reporte de etiquetas
-    public void repEtiq(View v){
+    public void reportInci(View v){
         Intent intent = new Intent(ActivityMenu.this, ActivityRepEtiquetas.class);
         startActivity(intent);
     }//reporte de etiquetas

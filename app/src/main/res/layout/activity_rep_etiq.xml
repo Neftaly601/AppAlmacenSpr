@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".Activity.ActivityInventarioXProd">
+    tools:context=".Activity.ActivityInventarioXProd"
+    android:orientation="vertical">
 
     <include layout="@layout/action_bar_toolbar"/>
 
@@ -23,20 +24,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_margin="5dp">
+                android:layout_margin="10dp">
 
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginRight="5dp"
-                    android:hint="Clave Producto"
+                    android:hint="Insertar clave producto"
                     android:maxLines="1"
                     app:boxBackgroundMode="outline"
                     app:boxCornerRadiusTopEnd="10dp"
                     app:boxCornerRadiusTopStart="10dp"
-                    app:startIconTint="@null">
+                    app:startIconTint="@null"
+                    android:layout_marginRight="5dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/txtProdE"
@@ -49,17 +50,19 @@
                         android:textSize="15dp"
                         android:imeOptions="actionDone"/>
                 </com.google.android.material.textfield.TextInputLayout>
-                <ImageView
-                    android:id="@+id/ivCloseSearch"
-                    android:layout_width="35dp"
-                    android:layout_height="35dp"
-                    android:layout_gravity="center_vertical"
-                    android:src="@android:drawable/ic_menu_close_clear_cancel"
-                    android:background="@color/Amarillo"
-                    android:visibility="gone"/>
 
-
-
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBuscP"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="2"
+                    android:background="@drawable/btn_background1"
+                    android:onClick="FirtMet"
+                    android:text="@string/buscar"
+                    android:textColor="@color/ColorWhite"
+                    android:textSize="14sp"
+                    app:backgroundTint="@null"/>
 
             </LinearLayout>
             <!--<com.google.android.material.button.MaterialButton
@@ -80,7 +83,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
                 android:layout_marginTop="5dp"
-                android:background="@color/AzulBack"/>
+                android:background="@color/AzulBack"
+                android:visibility="gone"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -90,12 +94,14 @@
                 android:text="LISTA DE PRODUCTOS"
                 android:textAlignment="center"
                 android:maxLines="1"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone"/>
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvProd"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:layout_margin="5dp"/>
+                android:layout_margin="5dp"
+                android:visibility="gone"/>
 
             <View
                 android:layout_width="match_parent"
@@ -105,7 +111,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_margin="10dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -115,10 +122,9 @@
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginEnd="10dp"
                         android:hint="Producto"
-                        app:hintTextColor="@color/colorPrimary"
+                        app:hintTextColor="@color/AzulBack"
+                        android:textColorHint="@color/AzulBack"
                         android:maxLines="1"
                         app:boxBackgroundMode="outline"
                         app:boxCornerRadiusTopEnd="10dp"
@@ -132,7 +138,6 @@
                             android:clickable="true"
                             android:enabled="false"
                             android:focusable="false"
-                            android:imeOptions="actionDone"
                             android:inputType="text"
                             android:maxLines="1"
                             android:textColor="@color/AzulBack"
@@ -142,10 +147,9 @@
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginEnd="10dp"
                         android:hint="Descripción"
-                        app:hintTextColor="@color/colorPrimary"
+                        app:hintTextColor="@color/AzulBack"
+                        android:textColorHint="@color/AzulBack"
                         android:maxLines="1"
                         app:boxBackgroundMode="outline"
                         app:boxCornerRadiusTopEnd="10dp"
@@ -159,35 +163,34 @@
                             android:clickable="true"
                             android:enabled="false"
                             android:focusable="false"
-                            android:imeOptions="actionDone"
                             android:inputType="text"
-                            android:maxLines="1"
+                            android:lines="2"
+                            android:maxLines="2"
                             android:textColor="@color/AzulBack"
                             android:textSize="15dp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginEnd="10dp"
-                        android:hint="Cantidad Etiquetas"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                        android:hint="Incidencias"
+                        android:textColorHint="@color/AzulBack"
+                        app:hintTextColor="@color/AzulBack"
+                        app:boxBackgroundColor="@color/ColorWhite"
                         app:boxBackgroundMode="outline"
                         app:boxCornerRadiusTopEnd="10dp"
                         app:boxCornerRadiusTopStart="10dp"
-                        app:startIconTint="@null">
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/txtCantEtiq"
+                        app:boxStrokeColor="@color/colorPrimary">
+                        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                            android:id="@+id/spInci"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="phone"
-                            android:digits="0123456789"
-                            android:clickable="true"
-                            android:maxLength="5"
-                            android:maxLines="1"
-                            android:imeOptions="actionDone"
-                            android:textSize="15dp"/>
+                            android:background="@color/ColorWhite"
+                            android:textSize="13dp"
+                            android:textColor="@color/colorBlack"
+                            android:inputType="none"
+                            android:focusable="false"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -201,6 +204,31 @@
                     android:src="@drawable/logokepler"/>
             </LinearLayout>
 
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Comentario"
+                app:hintTextColor="@color/AzulBack"
+                android:textColorHint="@color/AzulBack"
+                android:maxLines="1"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusTopStart="10dp"
+                app:startIconTint="@null"
+                android:layout_margin="10dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txtComentario"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:maxLength="50"
+                    android:imeOptions="actionDone"
+                    android:lines="3"
+                    android:textColor="@color/AzulBack"
+                    android:textSize="15dp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnEnviar"
@@ -209,14 +237,14 @@
                 android:layout_gravity="start"
                 android:maxLines="1"
                 android:layout_margin="10dp"
-                android:background="@drawable/roundbutton"
+                android:background="@drawable/btn_background2"
                 android:textSize="14sp"
                 android:text="Enviar Incidencia"
                 android:textColor="@color/cardview_light_background"
                 app:icon="@drawable/icons8_paquete"
                 app:iconTint="@null"
                 android:onClick="guarda"
-                app:backgroundTint="@color/Amarillo"/>
+                app:backgroundTint="@null"/>
 
 
 
@@ -227,4 +255,4 @@
     </ScrollView>
 
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

@@ -107,8 +107,7 @@
                         android:onClick="ConsultaProductoMenu"
                         android:orientation="vertical"
                         android:padding="2dp"
-                        app:backgroundTint="@null"
-                        app:backgroundTintMode="add">
+                        app:backgroundTint="@null">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -144,8 +143,7 @@
                         android:onClick="LiberacionesMenu"
                         android:orientation="vertical"
                         android:padding="2dp"
-                        app:backgroundTint="@null"
-                        app:backgroundTintMode="add">
+                        app:backgroundTint="@null">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -186,8 +184,7 @@
                         android:layout_margin="5dp"
                         android:onClick="trasladoUbiMenu"
                         android:orientation="vertical"
-                        app:backgroundTint="@null"
-                        app:backgroundTintMode="add">
+                        app:backgroundTint="@null">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -222,8 +219,7 @@
                         android:layout_margin="5dp"
                         android:onClick="RepcionCompras"
                         android:orientation="vertical"
-                        app:backgroundTint="@null"
-                        app:backgroundTintMode="add">
+                        app:backgroundTint="@null">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -270,8 +266,7 @@
                             android:layout_margin="5dp"
                             android:onClick="invXFolComp"
                             android:orientation="vertical"
-                            app:backgroundTint="@null"
-                            app:backgroundTintMode="add">
+                            app:backgroundTint="@null">
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -306,8 +301,7 @@
                             android:layout_margin="5dp"
                             android:onClick="invXProd"
                             android:orientation="vertical"
-                            app:backgroundTint="@null"
-                            app:backgroundTintMode="add">
+                            app:backgroundTint="@null">
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -348,8 +342,7 @@
                             android:layout_margin="5dp"
                             android:orientation="vertical"
                             android:onClick="resurtPick"
-                            app:backgroundTint="@null"
-                            app:backgroundTintMode="add">
+                            app:backgroundTint="@null">
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -384,8 +377,7 @@
                             android:layout_margin="5dp"
                             android:orientation="vertical"
                             android:onClick="inventario"
-                            app:backgroundTint="@null"
-                            app:backgroundTintMode="add">
+                            app:backgroundTint="@null">
 
 
                             <TextView
@@ -427,8 +419,7 @@
                             android:layout_margin="5dp"
                             android:orientation="vertical"
                             android:onClick="difUbiExis"
-                            app:backgroundTint="@null"
-                            app:backgroundTintMode="add">
+                            app:backgroundTint="@null">
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -461,8 +452,7 @@
                             android:layout_margin="5dp"
                             android:orientation="vertical"
                             android:onClick="traspasos"
-                            app:backgroundTint="@null"
-                            app:backgroundTintMode="add">
+                            app:backgroundTint="@null">
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -507,8 +497,7 @@
                             android:layout_margin="5dp"
                             android:orientation="vertical"
                             android:onClick="envRecepTrasp"
-                            app:backgroundTint="@null"
-                            app:backgroundTintMode="add">
+                            app:backgroundTint="@null">
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -534,12 +523,12 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:background="@drawable/roundbutton"
-                            android:backgroundTint="@color/AzulBack"
+                            android:background="@drawable/btn_background1"
                             android:gravity="center"
                             android:layout_margin="5dp"
                             android:orientation="vertical"
-                            android:visibility="invisible">
+                            app:backgroundTint="@null"
+                            android:onClick="reportInci">
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -551,15 +540,14 @@
                                 android:textAlignment="center"
                                 android:textColor="@color/ColorWhite"
                                 android:textSize="12sp"
-                                android:textStyle="bold" />
-
-
+                                android:textStyle="bold"
+                                android:text="Reportar Incidencias"/>
                             <ImageView
                                 android:layout_width="wrap_content"
                                 android:layout_height="35dp"
                                 android:layout_margin="5dp"
                                 android:contentDescription="Manos"
-                                android:src="@drawable/icon_montacarga"/>
+                                android:src="@drawable/icons8_error_52"/>
                         </LinearLayout>
 
                     </LinearLayout>
@@ -575,12 +563,12 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:background="@drawable/roundbutton"
-                            android:backgroundTint="@color/AzulBack"
+                            android:background="@drawable/btn_background1"
                             android:gravity="center"
                             android:layout_margin="5dp"
                             android:orientation="vertical"
-                            android:onClick="recepCont">
+                            android:onClick="recepCont"
+                            app:backgroundTint="@null">
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -606,12 +594,12 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:background="@drawable/roundbutton"
-                            android:backgroundTint="@color/AzulBack"
+                            android:background="@drawable/btn_background1"
                             android:gravity="center"
                             android:layout_margin="5dp"
                             android:orientation="vertical"
-                            android:onClick="recolectMontCarg">
+                            android:onClick="recolectMontCarg"
+                            app:backgroundTint="@null">
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -657,12 +645,12 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:background="@drawable/roundbutton"
-                            android:backgroundTint="@color/AzulBack"
+                            android:background="@drawable/btn_background1"
                             android:gravity="center"
                             android:layout_margin="5dp"
                             android:orientation="vertical"
-                            android:onClick="inventario">
+                            android:onClick="inventario"
+                            app:backgroundTint="@null">
 
 
                             <TextView
@@ -692,12 +680,12 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:background="@drawable/roundbutton"
-                            android:backgroundTint="@color/AzulBack"
+                            android:background="@drawable/btn_background1"
                             android:gravity="center"
                             android:layout_margin="5dp"
                             android:orientation="vertical"
-                            android:onClick="difUbiExis">
+                            android:onClick="difUbiExis"
+                            app:backgroundTint="@null">
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -732,12 +720,12 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:background="@drawable/roundbutton"
-                            android:backgroundTint="@color/AzulBack"
+                            android:background="@drawable/btn_background1"
                             android:gravity="center"
                             android:layout_margin="5dp"
                             android:orientation="vertical"
-                            android:onClick="traspasos">
+                            android:onClick="traspasos"
+                            app:backgroundTint="@null">
 
                             <TextView
                                 android:layout_width="wrap_content"
