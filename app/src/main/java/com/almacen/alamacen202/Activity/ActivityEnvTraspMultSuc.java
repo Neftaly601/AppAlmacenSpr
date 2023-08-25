@@ -1273,7 +1273,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             if(conn==true){
                 String parametros="k_Producto="+prod+"&k_Usuario="+strusr+
                         "&k_Razon="+razon+"&k_Sucursal="+strbran+
-                        "&k_Folio="+fol;
+                        "&k_Folio="+fol+"&k_com=TRASPASO-"+fol;
                 String url = "http://"+strServer+"/ReportInci?"+parametros;
                 String jsonStr = new HttpHandler().makeServiceCall(url,strusr,strpass);
                 if (jsonStr != null) {
