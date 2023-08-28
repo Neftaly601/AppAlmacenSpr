@@ -305,9 +305,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                CAJAACT=Integer.parseInt(tvCaja.getText().toString())+1;
-                tvCaja.setText(CAJAACT+"");
-                mostrarDetalleProd();
+                new AsyncConsultSigCaja(Folio).execute();
             }
         });
         builder.setNegativeButton("CANCELAR",null);
@@ -637,7 +635,6 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         btnCambiar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new AsyncTotCajas(Folio).execute();
                 cambiarCajasAlert(prodSelectCaj,cantCajaOr, cajaActAl,nomCajas,mm1);
             }
         });//btnCambiar
@@ -693,7 +690,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             conn=firtMet();
             if(conn==true){
                 HttpHandler sh = new HttpHandler();
-                String parametros="k_suc="+suc+"&k_fol="+folio+"&k_lin="+linea;
+                String parametros="k_suc="+suc+"&k_fol="+folio+"&k_lin="+linea+"&k_usu="+strusr;
                 String url = "http://"+strServer+"/"+getString(R.string.resConsEnvTrasp)+"?"+parametros;
                 String jsonStr = sh.makeServiceCall(url,strusr,strpass);
                 //Log.e(TAG, "Respuesta de la url: " + jsonStr);
@@ -708,7 +705,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                             lista.add(new EnvTraspasos(num+"",dato.getString("k_prod"),dato.getString("k_ubi"),
                                     dato.getString("k_exist"),dato.getString("k_cant"),dato.getString("k_part"),
                                     dato.getString("k_cants"),dato.getString("k_env"),dato.getString("k_linea"),true));
-                            listaLineas.add(dato.getString("k_linea"));
+                            TOTCAJAS=dato.getInt("k_ulcaj");
                             num++;mensaje="";
                         }//for
                     } catch (final JSONException e) {
@@ -747,6 +744,11 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 AlertDialog dialog = builder.create();
                 dialog.show();
             }else{
+                mDialog.dismiss();
+                inFinBt(false);
+                txtFolBusq.setText(Folio);
+                keyboard.hideSoftInputFromWindow(txtFolBusq.getWindowToken(), 0);
+                verLista();
                 if(linea.equals("")){
                     Set<String> hashSet = new HashSet<>(listaLineas);
                     listaLineas.clear();
@@ -756,8 +758,11 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                             ActivityEnvTraspMultSuc.this,R.layout.drop_down_item,listaLineas);
                     spLineas.setAdapter(adaptador);
                     spLineas.setText(listaLineas.get(0),false);
-                }//
-                new AsyncTotCajas(Folio).execute();
+
+                }
+                CAJAACT=TOTCAJAS;
+                tvCaja.setText(TOTCAJAS+"");
+                //new AsyncTotCajas(Folio).execute();
             }//else
         }//onPost
     }//AsyncConsulEnvTrasp
@@ -886,6 +891,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                             listaCajas.add(new CAJASSANDG("","","",
                                     dato.getString("k_Producto"),dato.getString("k_Cantidad"),
                                     dato.getString("k_NumeroCajas")));
+                            TOTCAJAS=dato.getInt("k_max");
                         }//for
                     } catch (final JSONException e) {
                         runOnUiThread(new Runnable() {
@@ -1093,19 +1099,19 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         }//onPost
     }//AsyncInsertCajasE
 
-    private class AsyncTotCajas extends AsyncTask<Void, Void, Void> {
+    private class AsyncConsultSigCaja extends AsyncTask<Void, Void, Void> {
 
         private String folio;
         private boolean conn;
 
-        public AsyncTotCajas(String folio) {
+        public AsyncConsultSigCaja(String folio) {
             this.folio = folio;
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            if(!mDialog.isShowing()){mDialog.dismiss();}
+            if(!mDialog.isShowing()){mDialog.dismiss();TOTCAJAS=0;}
         }//onPreExecute
 
         @Override
@@ -1113,20 +1119,20 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             conn=firtMet();
             if(conn==true){
                 HttpHandler sh = new HttpHandler();
-                String parametros="folio="+folio;
-                String url = "http://"+strServer+"/totcajas?"+parametros;
+                String parametros="folio="+folio+"&suc="+strbran;
+                String url = "http://"+strServer+"/ConsultSigCaja?"+parametros;
                 String jsonStr = sh.makeServiceCall(url,strusr,strpass);
                 if (jsonStr != null) {
                     try {
                         JSONObject jsonObj = new JSONObject(jsonStr);
                         JSONArray jsonArray = jsonObj.getJSONArray("Response");
                         JSONObject dato = jsonArray.getJSONObject(0);//Conjunto de datos
-                        TOTCAJAS=Integer.parseInt(dato.getString("maximo"));
+                        CAJAACT=dato.getInt("k_sig");
                     }catch (final JSONException e) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                mensaje="Sin datos disponibles";
+                                mensaje="Sin respuesta";
                             }//run
                         });
                     }//catch JSON EXCEPTION
@@ -1149,24 +1155,13 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         protected void onPostExecute(Void aBoolean) {
             super.onPostExecute(aBoolean);
             mDialog.dismiss();
-            inFinBt(false);
-            txtFolBusq.setText(Folio);
-            keyboard.hideSoftInputFromWindow(txtFolBusq.getWindowToken(), 0);
-            verLista();
-            if(conn=false){
-                mDialog.dismiss();
-                TOTCAJAS=1;
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
-                builder.setPositiveButton("ACEPTAR",null);
-                builder.setCancelable(false);
-                builder.setTitle("AVISO").setMessage("Sin conexión a internet").create().show();
-            }else if(TOTCAJAS>=1) {
-                CAJAACT=TOTCAJAS;
-                tvCaja.setText(TOTCAJAS+"");
+            if(CAJAACT>=1) {
+                tvCaja.setText(CAJAACT+"");
             }else{
-                TOTCAJAS=1;
-                CAJAACT=TOTCAJAS;
-                tvCaja.setText(TOTCAJAS+"");
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
+                builder.setPositiveButton("ACEPTAR", null);
+                builder.setCancelable(false);
+                builder.setTitle("AVISO").setMessage(mensaje).create().show();
             }//else
         }//onPost
     }//AsyncConsulRecep
