@@ -22,6 +22,9 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -77,7 +80,8 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
     private int posicion=0,posicion2=0,posG=-1,CONTCAJA=1,TOTCAJAS=0,TOTP=0,RECEP=0;
     private String strusr,strpass,strbran,strServer,codeBar,mensaje,Producto="",serv,Folio="";
     private ArrayList<Traspasos> listaTrasp = new ArrayList<>();
-    private EditText txtProd,txtCantidad,txtCantSurt,txtFolBusq,tvCaja;
+    private EditText txtProd,txtCantidad,txtCantSurt,txtFolBusq;
+    private AutoCompleteTextView spCaja;
     private ImageView ivProd;
     private TextView tvProd;
     private Button btnBuscar,btnAtras,btnAdelante,btnCorr,btnBackC,btnNextC;
@@ -136,7 +140,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         btnCorr     = findViewById(R.id.btnCorr);
         txtFolBusq = findViewById(R.id.txtFolBusq);
         btnBackC = findViewById(R.id.btnBackC);
-        tvCaja = findViewById(R.id.tvCaja);
+        spCaja = findViewById(R.id.spCaja);
         btnNextC = findViewById(R.id.btnNextC);
 
         bepp = new SoundPool(1, AudioManager.STREAM_MUSIC, 1);
@@ -150,7 +154,6 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
 
         txtProd.setInputType(InputType.TYPE_NULL);
         //txtProd.requestFocus();
-
 
 
 
@@ -189,7 +192,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                 if(!txtFolBusq.getText().equals("")){
                     Folio=folio(txtFolBusq.getText().toString());
                     txtFolBusq.setText(Folio);
-                    tvCaja.setText("1");
+                    txtFolBusq.setText(Folio);
                     new AsyncReceCon(strbran,Folio,"1",true).execute();
                 }else{
                     Toast.makeText(ActivityRecepTraspMultSuc.this, "Folio vacío", Toast.LENGTH_SHORT).show();
@@ -244,11 +247,21 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                 }
             }//onclick
         });//btnCorr
+
+        spCaja.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                //CONTCAJA=Integer.parseInt(spCaja.getText().toString());
+                spCaja.setText(CONTCAJA+"",false);
+                cambiaCajas();
+                new AsyncReceCon(strbran,Folio,CONTCAJA+"",false).execute();
+            }
+        });
         btnBackC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 CONTCAJA--;
-                tvCaja.setText(CONTCAJA+"");
+                spCaja.setText(CONTCAJA+"",false);
                 cambiaCajas();
                 new AsyncReceCon(strbran,Folio,CONTCAJA+"",false).execute();
             }
@@ -257,7 +270,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 CONTCAJA++;
-                tvCaja.setText(CONTCAJA+"");
+                spCaja.setText(CONTCAJA+"",false);
                 cambiaCajas();
                 new AsyncReceCon(strbran,Folio,CONTCAJA+"",false).execute();
             }
@@ -496,7 +509,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                                 builder.setCancelable(false);
                                 builder.setTitle("SIGUIENTE CAJA").create().show();
                                 CONTCAJA++;
-                                tvCaja.setText(CONTCAJA+"");
+                                spCaja.setText(CONTCAJA+"",false);
                                 cambiaCajas();
                                 posicion=0;
                                 new AsyncReceCon(strbran,Folio,CONTCAJA+"",false).execute();
@@ -644,6 +657,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             if(!mDialog.isShowing()){mDialog.dismiss();}
+            spCaja.setText("");
         }//onPreExecute
 
         @Override
@@ -697,7 +711,16 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                 builder.setTitle("AVISO").setMessage("Sin conexión a internet").create().show();
             }else if(TOTCAJAS>=1) {
                 CONTCAJA=TOTCAJAS;
-                tvCaja.setText(TOTCAJAS+"");
+                ArrayList<String> nomCajas=new ArrayList<>();
+                for(int k=1;k<=TOTCAJAS;k++){
+                    nomCajas.add(k+"");
+                }//for
+                if(nomCajas.size()>0){
+                    ArrayAdapter<String> adaptador = new ArrayAdapter<>(
+                            ActivityRecepTraspMultSuc.this,R.layout.drop_down_item,nomCajas);
+                    spCaja.setAdapter(adaptador);
+                    spCaja.setText(nomCajas.get(nomCajas.size()-1),false);
+                }
                 verLista();
                 cambiaCajas();
             }else{
