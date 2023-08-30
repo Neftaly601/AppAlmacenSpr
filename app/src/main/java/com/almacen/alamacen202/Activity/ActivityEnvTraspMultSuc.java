@@ -99,7 +99,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private SharedPreferences preference;
     private SharedPreferences.Editor editor;
-    private int posicion=0,posicion2=0,posG=0,CAJAACT=1,posCaja=0,cantCajaOr,pC=0,TOTCAJAS=0;
+    private int posicion=0,posicion2=0,posG=0,CAJAACT=1,posCaja=0,cantCajaOr,pC=0,TOTCAJAS=0,TOTPZA=0;
     private String strusr,strpass,strbran,strServer,codeBar,mensaje;
     private String Producto="",serv,Folio="",prodSelectCaj="",cajaActAl="",Linea="";
     private ArrayList<EnvTraspasos> lista = new ArrayList<>();
@@ -107,7 +107,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
     private ArrayList<CAJASSANDG> listaCajasXProd = new ArrayList<>();
     private ArrayList<ListaIncidenciasSandG> listaIncidencias = new ArrayList<>();
     private ArrayList<String> nomCajas= new ArrayList<>();
-    private EditText txtFolBusq,txtCantidad,txtCantSurt,txtProducto,txtEnv,txtUbi;
+    private EditText txtFolBusq,txtCantidad,txtCantSurt,txtProducto,txtEnv,txtUbi,txtTotPza;
     private AutoCompleteTextView spCaja,spLineas;
     private ImageView ivProd;
     private TextView tvProd;
@@ -170,6 +170,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         txtEnv = findViewById(R.id.txtEnv);
         spLineas = findViewById(R.id.spLineas);
         txtUbi = findViewById(R.id.txtUbi);
+        txtTotPza = findViewById(R.id.txtTotPza);
 
         rvEnvTrasp    = findViewById(R.id.rvEnvTrasp);
         rvEnvTrasp.setLayoutManager(new LinearLayoutManager(ActivityEnvTraspMultSuc.this));
@@ -191,7 +192,6 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 CAJAACT=Integer.parseInt(spCaja.getText().toString());
             }
         });
-
 
         txtProducto.addTextChangedListener(new TextWatcher() {
             @Override
@@ -234,7 +234,6 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 }else{
                     Toast.makeText(ActivityEnvTraspMultSuc.this, "Folio vacío", Toast.LENGTH_SHORT).show();
                 }
-
             }//onclick
         });//btnGuardar setonclick
 
@@ -315,18 +314,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                TOTCAJAS=TOTCAJAS+1;
-                ArrayList<String> nomCajas2=new ArrayList<>();
-                for(int k=1;k<=TOTCAJAS;k++){
-                    nomCajas2.add(k+"");
-                }//for
-                if(nomCajas2.size()>0){
-                    ArrayAdapter<String> adaptador = new ArrayAdapter<>(
-                            ActivityEnvTraspMultSuc.this,R.layout.drop_down_item,nomCajas2);
-                    spCaja.setAdapter(adaptador);
-                    spCaja.setText(nomCajas2.get(nomCajas2.size()-1),false);
-                }
-                mostrarDetalleProd();
+                new AsyncConsultSigCaja(Folio).execute();
             }
         });
         builder.setNegativeButton("CANCELAR",null);
@@ -383,6 +371,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         txtEnv.setText(lista.get(posicion).getAlmEnv());
         txtUbi.setText(lista.get(posicion).getUbic());
         txtUbi.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.AzulBack)));
+        txtTotPza.setText(TOTPZA+"");
 
         if(Integer.parseInt(lista.get(posicion).getCantidad())==Integer.parseInt(lista.get(posicion).getCantSurt())){
             txtCantSurt.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
@@ -698,7 +687,6 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         btnCambiar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new AsyncTotCajas(Folio).execute();
                 cambiarCajasAlert(prodSelectCaj,cantCajaOr, cajaActAl,nomCajas,mm1);
             }
         });//btnCambiar
@@ -744,6 +732,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         protected void onPreExecute() {
             mDialog.show();
             limpiar();
+            TOTPZA=0;
             mensaje="";posicion=-1;lista.clear();
             rvEnvTrasp.setAdapter(null);inFinBt(true);
             spCaja.setText("");
@@ -770,7 +759,9 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                             lista.add(new EnvTraspasos(num+"",dato.getString("k_prod"),dato.getString("k_ubi"),
                                     dato.getString("k_exist"),dato.getString("k_cant"),dato.getString("k_part"),
                                     dato.getString("k_cants"),dato.getString("k_env"),dato.getString("k_linea"),true));
+                            TOTPZA=TOTPZA+dato.getInt("k_cants");
                             listaLineas.add(dato.getString("k_linea"));
+                            TOTCAJAS=dato.getInt("k_ulcaj");
                             num++;mensaje="";
                         }//for
                     } catch (final JSONException e) {
@@ -799,8 +790,8 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aBoolean) {
             super.onPostExecute(aBoolean);
+            mDialog.dismiss();
             if (lista.size()==0) {
-                mDialog.dismiss();
                 AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
                 builder.setTitle("AVISO");
                 builder.setMessage(mensaje);
@@ -809,6 +800,11 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 AlertDialog dialog = builder.create();
                 dialog.show();
             }else{
+                inFinBt(false);
+                txtFolBusq.setText(Folio);
+                keyboard.hideSoftInputFromWindow(txtFolBusq.getWindowToken(), 0);
+                verLista();
+                //SPINNER LINEAS
                 if(linea.equals("")){
                     Set<String> hashSet = new HashSet<>(listaLineas);
                     listaLineas.clear();
@@ -818,9 +814,19 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                             ActivityEnvTraspMultSuc.this,R.layout.drop_down_item,listaLineas);
                     spLineas.setAdapter(adaptador);
                     spLineas.setText(listaLineas.get(0),false);
-                }//
+                }//SPINNER
                 txtProducto.requestFocus();
-                new AsyncTotCajas(Folio).execute();
+                //SPINNER DE CAJAS
+                ArrayList<String> nomCajas=new ArrayList<>();
+                for(int k=1;k<=TOTCAJAS;k++){
+                    nomCajas.add(k+"");
+                }//for
+                if(nomCajas.size()>0){
+                    ArrayAdapter<String> adaptador = new ArrayAdapter<>(
+                            ActivityEnvTraspMultSuc.this,R.layout.drop_down_item,nomCajas);
+                    spCaja.setAdapter(adaptador);
+                    spCaja.setText(nomCajas.get(nomCajas.size()-1),false);
+                }//
             }//else
         }//onPost
     }//AsyncConsulEnvTrasp
@@ -949,6 +955,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                             listaCajas.add(new CAJASSANDG("","","",
                                     dato.getString("k_Producto"),dato.getString("k_Cantidad"),
                                     dato.getString("k_NumeroCajas")));
+                            TOTCAJAS=dato.getInt("k_ulcaj");
                         }//for
                     } catch (final JSONException e) {
                         runOnUiThread(new Runnable() {
@@ -1136,7 +1143,6 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 Toast.makeText(ActivityEnvTraspMultSuc.this, "Sincronizado", Toast.LENGTH_SHORT).show();
                 bepp.play(sonido_correcto, 1, 1, 1, 0, 0);
                 lista.get(posicion2).setSincronizado(true);
-
                 if(sumar==true){
                     evaluarEscaneo(ProductoActual);
                 }else{
@@ -1160,12 +1166,12 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         }//onPost
     }//AsyncInsertCajasE
 
-    private class AsyncTotCajas extends AsyncTask<Void, Void, Void> {
+    private class AsyncConsultSigCaja extends AsyncTask<Void, Void, Void> {
 
         private String folio;
         private boolean conn;
 
-        public AsyncTotCajas(String folio) {
+        public AsyncConsultSigCaja(String folio) {
             this.folio = folio;
         }
 
@@ -1180,15 +1186,15 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             conn=firtMet();
             if(conn==true){
                 HttpHandler sh = new HttpHandler();
-                String parametros="folio="+folio;
-                String url = "http://"+strServer+"/totcajas?"+parametros;
+                String parametros="folio="+folio+"&suc="+strbran;
+                String url = "http://"+strServer+"/ConsultSigCaja?"+parametros;
                 String jsonStr = sh.makeServiceCall(url,strusr,strpass);
                 if (jsonStr != null) {
                     try {
                         JSONObject jsonObj = new JSONObject(jsonStr);
                         JSONArray jsonArray = jsonObj.getJSONArray("Response");
-                        JSONObject dato = jsonArray.getJSONObject(0);//Conjunto de datos
-                        TOTCAJAS=Integer.parseInt(dato.getString("maximo"));
+                        JSONObject dato = jsonArray.getJSONObject(0);
+                        TOTCAJAS=Integer.parseInt(dato.getString("k_sig"));
                     }catch (final JSONException e) {
                         runOnUiThread(new Runnable() {
                             @Override
@@ -1216,18 +1222,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         protected void onPostExecute(Void aBoolean) {
             super.onPostExecute(aBoolean);
             mDialog.dismiss();
-            inFinBt(false);
-            txtFolBusq.setText(Folio);
-            keyboard.hideSoftInputFromWindow(txtFolBusq.getWindowToken(), 0);
-            verLista();
-            if(conn=false){
-                mDialog.dismiss();
-                TOTCAJAS=1;
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
-                builder.setPositiveButton("ACEPTAR",null);
-                builder.setCancelable(false);
-                builder.setTitle("AVISO").setMessage("Sin conexión a internet").create().show();
-            }else if(TOTCAJAS>=1) {
+            if(TOTCAJAS>=1) {
                 CAJAACT=TOTCAJAS;
                 ArrayList<String> nomCajas2=new ArrayList<>();
                 for(int k=1;k<=TOTCAJAS;k++){
@@ -1243,6 +1238,10 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 TOTCAJAS=1;
                 CAJAACT=TOTCAJAS;
                 spCaja.setText(TOTCAJAS+"");
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
+                builder.setPositiveButton("ACEPTAR",null);
+                builder.setCancelable(false);
+                builder.setTitle("AVISO").setMessage(mensaje).create().show();
             }//else
         }//onPost
     }//AsyncConsulRecep
@@ -1477,7 +1476,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         AlertDialog alert2 = alert.create();
 
         ArrayList<String> nomCajas2=new ArrayList<>();
-        for(int k=1;k<=(nomCajas.size()+1);k++){
+        for(int k=1;k<=(TOTCAJAS+1);k++){
             if(k!=Integer.parseInt(origen)){
                 nomCajas2.add(k+"");
             }
