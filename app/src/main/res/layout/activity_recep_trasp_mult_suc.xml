@@ -7,7 +7,6 @@
     android:fitsSystemWindows="true"
     tools:context=".Activity.ActivityRecepTraspMultSuc"
     android:orientation="vertical"
-    android:theme="@style/Theme.MaterialComponents"
     app:layout_behavior= "@string/appbar_scrolling_view_behavior">
     <include layout="@layout/action_bar_toolbar"/>
 
@@ -99,6 +98,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="Caja"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:textColorHint="@color/Amarillo"
                     app:hintTextColor="@color/Amarillo"
                     app:boxBackgroundMode="outline"
@@ -108,20 +108,18 @@
                     app:boxStrokeColor="@color/colorPrimary"
                     android:layout_marginRight="5dp"
                     android:layout_marginLeft="5dp">
-                    <EditText
-                        android:id="@+id/tvCaja"
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                        android:id="@+id/spCaja"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="phone"
-                        android:digits="0123456789"
-                        android:maxLength="3"
+                        android:paddingLeft="5dp"
                         android:textSize="15sp"
+                        android:focusable="false"
                         android:text="1"
                         android:fontFamily="sans-serif-condensed"
                         android:textStyle="italic|bold"
-                        android:textColor="@color/AzulBack"
-                        android:enabled="false"
-                        android:imeOptions="actionDone"/>
+                        android:textColor="@color/colorBlack"
+                        android:inputType="none"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.button.MaterialButton
