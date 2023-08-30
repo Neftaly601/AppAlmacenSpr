@@ -452,7 +452,8 @@
                             android:layout_margin="5dp"
                             android:orientation="vertical"
                             android:onClick="traspasos"
-                            app:backgroundTint="@null">
+                            app:backgroundTint="@null"
+                            android:visibility="invisible">
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -486,7 +487,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:visibility="gone">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -715,7 +717,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:orientation="horizontal"
-                        android:visibility="visible">
+                        android:visibility="gone">
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -725,7 +727,8 @@
                             android:layout_margin="5dp"
                             android:orientation="vertical"
                             android:onClick="traspasos"
-                            app:backgroundTint="@null">
+                            app:backgroundTint="@null"
+                            android:visibility="gone">
 
                             <TextView
                                 android:layout_width="wrap_content"
