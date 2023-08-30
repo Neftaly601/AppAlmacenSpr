@@ -70,8 +70,11 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="textCapCharacters"
+                            android:textColor="@color/colorBlack"
                             android:maxLines="1"
-                            android:textSize="10sp" />
+                            android:textSize="15dp"
+                            style="@style/Theme.Design.Light"
+                            android:textStyle="bold|italic"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -152,6 +155,7 @@
                             android:inputType="text"
                             android:clickable="true"
                             android:maxLines="1"
+                            android:textColor="@color/colorBlack"
                             android:imeOptions="actionDone"
                             android:focusable="false"
                             android:textSize="10sp"
@@ -181,6 +185,7 @@
                             android:inputType="text"
                             android:clickable="true"
                             android:maxLines="1"
+                            android:textColor="@color/colorBlack"
                             android:imeOptions="actionDone"
                             android:focusable="false"
                             android:textSize="10sp"
@@ -209,6 +214,7 @@
                             android:inputType="text"
                             android:clickable="true"
                             android:maxLines="1"
+                            android:textColor="@color/colorBlack"
                             android:imeOptions="actionDone"
                             android:focusable="false"
                             android:textSize="10sp"

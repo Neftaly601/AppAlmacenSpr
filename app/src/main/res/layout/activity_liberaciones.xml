@@ -371,7 +371,6 @@
                                     android:textSize="12sp" />
                             </com.google.android.material.textfield.TextInputLayout>
                             <com.google.android.material.button.MaterialButton
-
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
@@ -382,7 +381,8 @@
                                 android:textColor="@color/ColorWhite"
                                 android:onClick="cambiarcajas"
                                 app:backgroundTint="@null"
-                                app:backgroundTintMode="add"/>
+                                app:backgroundTintMode="add"
+                                android:visibility="gone"/>
 
                             <com.google.android.material.textfield.TextInputLayout
                                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
