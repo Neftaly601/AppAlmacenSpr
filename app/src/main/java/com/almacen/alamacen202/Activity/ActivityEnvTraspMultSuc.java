@@ -107,8 +107,8 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
     private ArrayList<CAJASSANDG> listaCajasXProd = new ArrayList<>();
     private ArrayList<ListaIncidenciasSandG> listaIncidencias = new ArrayList<>();
     private ArrayList<String> nomCajas= new ArrayList<>();
-    private EditText txtFolBusq,txtCantidad,txtCantSurt,txtProducto,tvCaja,txtEnv;
-    private AutoCompleteTextView spLineas;
+    private EditText txtFolBusq,txtCantidad,txtCantSurt,txtProducto,txtEnv,txtUbi;
+    private AutoCompleteTextView spCaja,spLineas;
     private ImageView ivProd;
     private TextView tvProd;
     private Button btnBuscarFol,btnAtras,btnAdelante,btnAggCaja,btnListaCajas,btnVerCajas;
@@ -163,12 +163,13 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         btnAdelante =findViewById(R.id.btnAdelante);
         ivProd      = findViewById(R.id.ivProd);
         txtProducto = findViewById(R.id.txtProducto);
-        tvCaja = findViewById(R.id.tvCaja);
+        spCaja = findViewById(R.id.spCaja);
         btnAggCaja = findViewById(R.id.btnAggCaja);
         btnListaCajas = findViewById(R.id.btnListaCajas);
         btnVerCajas = findViewById(R.id.btnVerCajas);
         txtEnv = findViewById(R.id.txtEnv);
         spLineas = findViewById(R.id.spLineas);
+        txtUbi = findViewById(R.id.txtUbi);
 
         rvEnvTrasp    = findViewById(R.id.rvEnvTrasp);
         rvEnvTrasp.setLayoutManager(new LinearLayoutManager(ActivityEnvTraspMultSuc.this));
@@ -182,7 +183,14 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         txtFolBusq.requestFocus();
         txtProducto.setInputType(InputType.TYPE_NULL);
 
-        CAJAACT=Integer.parseInt(tvCaja.getText().toString());
+        CAJAACT=1;
+
+        spCaja.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                CAJAACT=Integer.parseInt(spCaja.getText().toString());
+            }
+        });
 
 
         txtProducto.addTextChangedListener(new TextWatcher() {
@@ -198,6 +206,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                         posicion2=posG;
                         cambio(Producto,true,0);
                         txtProducto.setText("");
+                        txtProducto.requestFocus();
                     }else{
                         for (int i = 0; i < editable.length(); i++) {
                             char ban;
@@ -206,6 +215,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                                 posicion2=posG;
                                 cambio(Producto,true,0);
                                 txtProducto.setText("");
+                                txtProducto.requestFocus();
                                 break;
                             }//if
                         }//for
@@ -305,7 +315,18 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                new AsyncConsultSigCaja(Folio).execute();
+                TOTCAJAS=TOTCAJAS+1;
+                ArrayList<String> nomCajas2=new ArrayList<>();
+                for(int k=1;k<=TOTCAJAS;k++){
+                    nomCajas2.add(k+"");
+                }//for
+                if(nomCajas2.size()>0){
+                    ArrayAdapter<String> adaptador = new ArrayAdapter<>(
+                            ActivityEnvTraspMultSuc.this,R.layout.drop_down_item,nomCajas2);
+                    spCaja.setAdapter(adaptador);
+                    spCaja.setText(nomCajas2.get(nomCajas2.size()-1),false);
+                }
+                mostrarDetalleProd();
             }
         });
         builder.setNegativeButton("CANCELAR",null);
@@ -360,6 +381,8 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         txtCantidad.setText(lista.get(posicion).getCantidad());
         txtCantSurt.setText(lista.get(posicion).getCantSurt());
         txtEnv.setText(lista.get(posicion).getAlmEnv());
+        txtUbi.setText(lista.get(posicion).getUbic());
+        txtUbi.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.AzulBack)));
 
         if(Integer.parseInt(lista.get(posicion).getCantidad())==Integer.parseInt(lista.get(posicion).getCantSurt())){
             txtCantSurt.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
@@ -376,6 +399,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 .centerInside()
                 .into(ivProd);
         posG=posicion;
+        txtProducto.requestFocus();
     }//mostrarDetalleProd
 
     public void cambiaProd(){
@@ -424,7 +448,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
     public void cambio(String var,boolean sumar,int alTerminar){
         if(!lista.get(posicion2).getProducto().equals(Producto) && posG!=-1 && lista.get(posicion2).isSincronizado()==false){//identificando que prod anterior no se sincronizó
             new AsyncInsertCajasE(strbran, Folio, lista.get(posicion2).getProducto(),
-                    lista.get(posicion2).getCantSurt(), CAJAACT + "",
+                    lista.get(posicion2).getCantSurt(), spCaja.getText().toString() + "",
                     lista.get(posicion2).getPartida(), strusr, var, sumar, Producto,alTerminar).execute();
         }else{//cuando se escanea o por botones de adelante, atras y onclick en lista
             if(sumar==true){//al escanear
@@ -472,6 +496,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 int cantS=Integer.parseInt(lista.get(i).getCantSurt());
                 if((cantS+1)<=cant){
                     if(exi<cantS){
+                        bepp.play(sonido_error, 1, 1, 1, 0, 0);
                         AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
                         builder.setPositiveButton("ACEPTAR",null);
                         builder.setCancelable(false);
@@ -483,17 +508,31 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                     if(cantS==cant){
                         posicion2=i;
                         new AsyncInsertCajasE(strbran,Folio,prod,
-                                cantS+"",CAJAACT+"",
+                                cantS+"",spCaja.getText().toString(),
                                 lista.get(posicion2).getPartida(),strusr,"change",false,Producto,0).execute();
                     }
                 }else{
-                    Toast.makeText(this, "Excede cantidad", Toast.LENGTH_SHORT).show();
+                    bepp.play(sonido_error, 1, 1, 1, 0, 0);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
+                    builder.setTitle("AVISO");
+                    builder.setMessage("Excede cantidad");
+                    builder.setCancelable(false);
+                    builder.setNegativeButton("OK",null);
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
                 }
                 break;
             }//if
         }
         if(existe==false){
-            Toast.makeText(this, "No existe "+prod+" en la lista", Toast.LENGTH_SHORT).show();
+            bepp.play(sonido_error, 1, 1, 1, 0, 0);
+            AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
+            builder.setTitle("AVISO");
+            builder.setMessage("No existe "+prod+" en la lista");
+            builder.setCancelable(false);
+            builder.setNegativeButton("OK",null);
+            AlertDialog dialog = builder.create();
+            dialog.show();
         }
         mostrarDetalleProd();
     }//evaluar
@@ -502,6 +541,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         txtCantidad.setText("");
         txtCantSurt.setText("");
         txtEnv.setText("");
+        txtUbi.setText("");
         ivProd.setImageResource(R.drawable.logokepler);
         btnAtras.setEnabled(false);
         btnAtras.setBackgroundTintList(ColorStateList.
@@ -580,7 +620,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         alert.setCancelable(false);
         alert.setNegativeButton("CANCELAR",null);
 
-        TextView tvCajaNom = dialogView.findViewById(R.id.tvCajaNom);
+        AutoCompleteTextView spCajaNom = dialogView.findViewById(R.id.spCajaNom);
         rvListaCajas =  dialogView.findViewById(R.id.rvListaCajas);
         Button btnBack = dialogView.findViewById(R.id.btnBack);
         Button btnNext = dialogView.findViewById(R.id.btnNext);
@@ -610,13 +650,36 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         prodSelectCaj=listaCajasXProd.get(0).getClavedelProdcuto();//se situa en el primer producto asi que le asigno valores
         cantCajaOr=Integer.parseInt(listaCajasXProd.get(0).getCantidadUnidades());
 
+        //SPINER DE CAJA
+        ArrayList<String> nomCajas2=new ArrayList<>();
+        for(int k=1;k<=nomCajas.size();k++){
+            nomCajas2.add(k+"");
+        }//for
+
+        if(nomCajas2.size()>0){
+            ArrayAdapter<String> adaptador = new ArrayAdapter<>(
+                    ActivityEnvTraspMultSuc.this,R.layout.drop_down_item,nomCajas2);
+            spCajaNom.setAdapter(adaptador);
+            spCajaNom.setText(nomCajas2.get(0),false);
+        }
+        spCajaNom.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                listaCajasXProd.clear();
+                pC=i;
+                cajaActAl =nomCajas.get(pC);
+                //spCajaNom.setText(cajaActAl,false);
+                tablaXcaja(btnBack,btnNext,pC);
+            }
+        });
+
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 listaCajasXProd.clear();
                 pC--;
                 cajaActAl =nomCajas.get(pC);
-                tvCajaNom.setText(cajaActAl);
+                spCajaNom.setText(cajaActAl,false);
                 tablaXcaja(btnBack,btnNext,pC);
             }
         });
@@ -626,15 +689,16 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 listaCajasXProd.clear();
                 pC++;
                 cajaActAl =nomCajas.get(pC);
-                tvCajaNom.setText(cajaActAl);
+                spCajaNom.setText(cajaActAl,false);
                 cajaActAl =nomCajas.get(pC);
-                tvCajaNom.setText(cajaActAl);
+                spCajaNom.setText(cajaActAl,false);
                 tablaXcaja(btnBack,btnNext,pC);
             }
         });
         btnCambiar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                new AsyncTotCajas(Folio).execute();
                 cambiarCajasAlert(prodSelectCaj,cantCajaOr, cajaActAl,nomCajas,mm1);
             }
         });//btnCambiar
@@ -642,12 +706,12 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         btnImprimirTicket.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ImprimirTicketCajas(Integer.parseInt(tvCajaNom.getText().toString()));
+                ImprimirTicketCajas(Integer.parseInt(spCajaNom.getText().toString()));
             }
         });//btnCambiar
 
         cajaActAl =nomCajas.get(pC);
-        tvCajaNom.setText(cajaActAl);
+        spCajaNom.setText(cajaActAl,false);
         tablaXcaja(btnBack,btnNext,posCaja);
         mm1.show();
     }//mostrarListaCajas
@@ -682,6 +746,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             limpiar();
             mensaje="";posicion=-1;lista.clear();
             rvEnvTrasp.setAdapter(null);inFinBt(true);
+            spCaja.setText("");
             //cajaGuard=false;
         }//onPreExecute
 
@@ -690,7 +755,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             conn=firtMet();
             if(conn==true){
                 HttpHandler sh = new HttpHandler();
-                String parametros="k_suc="+suc+"&k_fol="+folio+"&k_lin="+linea+"&k_usu="+strusr;
+                String parametros="k_suc="+suc+"&k_fol="+folio+"&k_lin="+linea;
                 String url = "http://"+strServer+"/"+getString(R.string.resConsEnvTrasp)+"?"+parametros;
                 String jsonStr = sh.makeServiceCall(url,strusr,strpass);
                 //Log.e(TAG, "Respuesta de la url: " + jsonStr);
@@ -705,7 +770,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                             lista.add(new EnvTraspasos(num+"",dato.getString("k_prod"),dato.getString("k_ubi"),
                                     dato.getString("k_exist"),dato.getString("k_cant"),dato.getString("k_part"),
                                     dato.getString("k_cants"),dato.getString("k_env"),dato.getString("k_linea"),true));
-                            TOTCAJAS=dato.getInt("k_ulcaj");
+                            listaLineas.add(dato.getString("k_linea"));
                             num++;mensaje="";
                         }//for
                     } catch (final JSONException e) {
@@ -744,11 +809,6 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 AlertDialog dialog = builder.create();
                 dialog.show();
             }else{
-                mDialog.dismiss();
-                inFinBt(false);
-                txtFolBusq.setText(Folio);
-                keyboard.hideSoftInputFromWindow(txtFolBusq.getWindowToken(), 0);
-                verLista();
                 if(linea.equals("")){
                     Set<String> hashSet = new HashSet<>(listaLineas);
                     listaLineas.clear();
@@ -758,11 +818,9 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                             ActivityEnvTraspMultSuc.this,R.layout.drop_down_item,listaLineas);
                     spLineas.setAdapter(adaptador);
                     spLineas.setText(listaLineas.get(0),false);
-
-                }
-                CAJAACT=TOTCAJAS;
-                tvCaja.setText(TOTCAJAS+"");
-                //new AsyncTotCajas(Folio).execute();
+                }//
+                txtProducto.requestFocus();
+                new AsyncTotCajas(Folio).execute();
             }//else
         }//onPost
     }//AsyncConsulEnvTrasp
@@ -891,7 +949,6 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                             listaCajas.add(new CAJASSANDG("","","",
                                     dato.getString("k_Producto"),dato.getString("k_Cantidad"),
                                     dato.getString("k_NumeroCajas")));
-                            TOTCAJAS=dato.getInt("k_max");
                         }//for
                     } catch (final JSONException e) {
                         runOnUiThread(new Runnable() {
@@ -1079,9 +1136,13 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 Toast.makeText(ActivityEnvTraspMultSuc.this, "Sincronizado", Toast.LENGTH_SHORT).show();
                 bepp.play(sonido_correcto, 1, 1, 1, 0, 0);
                 lista.get(posicion2).setSincronizado(true);
+
                 if(sumar==true){
                     evaluarEscaneo(ProductoActual);
                 }else{
+                    if((posicion+1)<lista.size()){
+                        var="next";
+                    }
                     tipoCambio(var);
                     mostrarDetalleProd();
                 }
@@ -1099,19 +1160,19 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         }//onPost
     }//AsyncInsertCajasE
 
-    private class AsyncConsultSigCaja extends AsyncTask<Void, Void, Void> {
+    private class AsyncTotCajas extends AsyncTask<Void, Void, Void> {
 
         private String folio;
         private boolean conn;
 
-        public AsyncConsultSigCaja(String folio) {
+        public AsyncTotCajas(String folio) {
             this.folio = folio;
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            if(!mDialog.isShowing()){mDialog.dismiss();TOTCAJAS=0;}
+            if(!mDialog.isShowing()){mDialog.dismiss();}
         }//onPreExecute
 
         @Override
@@ -1119,20 +1180,20 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             conn=firtMet();
             if(conn==true){
                 HttpHandler sh = new HttpHandler();
-                String parametros="folio="+folio+"&suc="+strbran;
-                String url = "http://"+strServer+"/ConsultSigCaja?"+parametros;
+                String parametros="folio="+folio;
+                String url = "http://"+strServer+"/totcajas?"+parametros;
                 String jsonStr = sh.makeServiceCall(url,strusr,strpass);
                 if (jsonStr != null) {
                     try {
                         JSONObject jsonObj = new JSONObject(jsonStr);
                         JSONArray jsonArray = jsonObj.getJSONArray("Response");
                         JSONObject dato = jsonArray.getJSONObject(0);//Conjunto de datos
-                        CAJAACT=dato.getInt("k_sig");
+                        TOTCAJAS=Integer.parseInt(dato.getString("maximo"));
                     }catch (final JSONException e) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                mensaje="Sin respuesta";
+                                mensaje="Sin datos disponibles";
                             }//run
                         });
                     }//catch JSON EXCEPTION
@@ -1155,13 +1216,33 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         protected void onPostExecute(Void aBoolean) {
             super.onPostExecute(aBoolean);
             mDialog.dismiss();
-            if(CAJAACT>=1) {
-                tvCaja.setText(CAJAACT+"");
-            }else{
+            inFinBt(false);
+            txtFolBusq.setText(Folio);
+            keyboard.hideSoftInputFromWindow(txtFolBusq.getWindowToken(), 0);
+            verLista();
+            if(conn=false){
+                mDialog.dismiss();
+                TOTCAJAS=1;
                 AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
-                builder.setPositiveButton("ACEPTAR", null);
+                builder.setPositiveButton("ACEPTAR",null);
                 builder.setCancelable(false);
-                builder.setTitle("AVISO").setMessage(mensaje).create().show();
+                builder.setTitle("AVISO").setMessage("Sin conexión a internet").create().show();
+            }else if(TOTCAJAS>=1) {
+                CAJAACT=TOTCAJAS;
+                ArrayList<String> nomCajas2=new ArrayList<>();
+                for(int k=1;k<=TOTCAJAS;k++){
+                    nomCajas2.add(k+"");
+                }//for
+                if(nomCajas2.size()>0){
+                    ArrayAdapter<String> adaptador = new ArrayAdapter<>(
+                            ActivityEnvTraspMultSuc.this,R.layout.drop_down_item,nomCajas2);
+                    spCaja.setAdapter(adaptador);
+                    spCaja.setText(nomCajas2.get(nomCajas2.size()-1),false);
+                }
+            }else{
+                TOTCAJAS=1;
+                CAJAACT=TOTCAJAS;
+                spCaja.setText(TOTCAJAS+"");
             }//else
         }//onPost
     }//AsyncConsulRecep
@@ -1231,7 +1312,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         String Producto =lista.get(posicion).getProducto();
                         String RazonSuper = opciones[which];
-                        new AsyncReporteInici(Producto,RazonSuper,Folio).execute();
+                        new AsyncReporteInici(Producto,RazonSuper,Folio,lista.get(posicion).getCantSurt()).execute();
                     }//onclclick
                 });
                 AlertDialog dialog = builder.create();
@@ -1251,12 +1332,13 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
     //AsyncReporteInici
     private class AsyncReporteInici extends AsyncTask<Void, Void, Void> {
         boolean conn;
-        private String prod,razon,fol;
+        private String prod,razon,fol,cant;
 
-        public AsyncReporteInici(String prod, String razon, String fol) {
+        public AsyncReporteInici(String prod, String razon, String fol,String cant) {
             this.prod = prod;
             this.razon = razon;
             this.fol = fol;
+            this.cant=cant;
         }//
         @Override
         protected void onPreExecute() {
@@ -1268,7 +1350,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             if(conn==true){
                 String parametros="k_Producto="+prod+"&k_Usuario="+strusr+
                         "&k_Razon="+razon+"&k_Sucursal="+strbran+
-                        "&k_Folio="+fol+"&k_com=TRASPASO-"+fol;
+                        "&k_Folio="+fol+"&k_com=TRASPASO-"+fol+"-"+cant;
                 String url = "http://"+strServer+"/ReportInci?"+parametros;
                 String jsonStr = new HttpHandler().makeServiceCall(url,strusr,strpass);
                 if (jsonStr != null) {
@@ -1395,16 +1477,18 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         AlertDialog alert2 = alert.create();
 
         ArrayList<String> nomCajas2=new ArrayList<>();
-        for(int k=1;k<=TOTCAJAS;k++){
+        for(int k=1;k<=(nomCajas.size()+1);k++){
             if(k!=Integer.parseInt(origen)){
                 nomCajas2.add(k+"");
             }
         }//for
 
-        ArrayAdapter<String> adaptador = new ArrayAdapter<>(
-                ActivityEnvTraspMultSuc.this,R.layout.drop_down_item,nomCajas2);
-        spCajaDest.setAdapter(adaptador);
-        spCajaDest.setText(nomCajas2.get(0),false);
+        if(nomCajas2.size()>0){
+            ArrayAdapter<String> adaptador = new ArrayAdapter<>(
+                    ActivityEnvTraspMultSuc.this,R.layout.drop_down_item,nomCajas2);
+            spCajaDest.setAdapter(adaptador);
+            spCajaDest.setText(nomCajas2.get(0),false);
+        }
 
         btncambiar.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -116,7 +116,6 @@ public class BluetoothPrint extends AppCompatActivity {
 
     public void openBluetoothPrinter() {
         try {
-
             //Standard uuid from string //
             UUID uuidSting = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
             bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(uuidSting);
@@ -424,6 +423,7 @@ public class BluetoothPrint extends AppCompatActivity {
             outputStream.write(ESC_ALIGN_RIGHT);
             outputStream.write(msg.getBytes());
             msg = "Sucursal a Enviar:" + Cliente + "\n";
+
             msg += "FOLIO:" + Folio + "\n";
             msg += "\n";
             outputStream.write(ESC_ALIGN_LEFT);

@@ -188,6 +188,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             public void onClick(View view) {
                 if(!txtFolBusq.getText().equals("")){
                     Folio=folio(txtFolBusq.getText().toString());
+                    txtFolBusq.setText(Folio);
                     tvCaja.setText("1");
                     new AsyncReceCon(strbran,Folio,"1",true).execute();
                 }else{
@@ -215,7 +216,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         btnCorr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
+                /*AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
                 builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -227,12 +228,20 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                             listaTrasp.get(posicion).setSincronizado(false);
                             RECEP--;
                             mostrarDetalleProd();
+
                         }//else
                     }//onclick
                 });
                 builder.setNegativeButton("",null);
                 builder.setCancelable(false);
-                builder.setTitle("AVISO").setMessage("Se corregirá "+Producto+" con una pieza de más").create().show();
+                builder.setTitle("AVISO").setMessage("Se corregirá "+Producto+" con una pieza de más").create().show();*/
+                if(listaTrasp.get(posicion).isSincronizado()==false){
+                    posicion2=posicion;
+                    new AsyncActualizar(Folio,listaTrasp.get(posicion).getProducto(),
+                            listaTrasp.get(posicion).getCantSurt()+"","change",false,Producto).execute();
+                }else {
+                    Toast.makeText(ActivityRecepTraspMultSuc.this, "Sin cambios", Toast.LENGTH_SHORT).show();
+                }
             }//onclick
         });//btnCorr
         btnBackC.setOnClickListener(new View.OnClickListener() {
@@ -259,7 +268,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         if(CONTCAJA==1 && TOTCAJAS>1){
             btnNextC.setEnabled(true);
             btnNextC.setBackgroundTintList(null);
-            btnNextC.setBackgroundResource(R.drawable.btn_background3);
+            btnNextC.setBackgroundResource(R.drawable.btn_background1);
             btnBackC.setEnabled(false);
             btnBackC.setBackgroundTintList(ColorStateList.
                     valueOf(getResources().getColor(R.color.ColorGris)));
@@ -267,7 +276,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         }else if(CONTCAJA==TOTCAJAS && TOTCAJAS>1){
             btnBackC.setEnabled(true);
             btnBackC.setBackgroundTintList(null);
-            btnBackC.setBackgroundResource(R.drawable.btn_background3);
+            btnBackC.setBackgroundResource(R.drawable.btn_background1);
             btnNextC.setEnabled(false);
             btnNextC.setBackgroundTintList(ColorStateList.
                     valueOf(getResources().getColor(R.color.ColorGris)));
@@ -281,10 +290,10 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         }else{
             btnBackC.setEnabled(true);
             btnBackC.setBackgroundTintList(null);
-            btnBackC.setBackgroundResource(R.drawable.btn_background3);
+            btnBackC.setBackgroundResource(R.drawable.btn_background1);
             btnNextC.setEnabled(true);
             btnNextC.setBackgroundTintList(null);
-            btnNextC.setBackgroundResource(R.drawable.btn_background3);
+            btnNextC.setBackgroundResource(R.drawable.btn_background1);
         }//else
     }//cambiaProd
 
