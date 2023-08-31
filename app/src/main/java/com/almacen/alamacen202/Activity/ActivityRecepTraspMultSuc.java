@@ -80,7 +80,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
     private int posicion=0,posicion2=0,posG=-1,CONTCAJA=1,TOTCAJAS=0,TOTP=0,RECEP=0;
     private String strusr,strpass,strbran,strServer,codeBar,mensaje,Producto="",serv,Folio="";
     private ArrayList<Traspasos> listaTrasp = new ArrayList<>();
-    private EditText txtProd,txtCantidad,txtCantSurt,txtFolBusq;
+    private EditText txtProd,txtCantidad,txtCantSurt,txtFolBusq,txtTotPza,txtUbicT;
     private AutoCompleteTextView spCaja;
     private ImageView ivProd;
     private TextView tvProd;
@@ -142,6 +142,8 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         btnBackC = findViewById(R.id.btnBackC);
         spCaja = findViewById(R.id.spCaja);
         btnNextC = findViewById(R.id.btnNextC);
+        txtTotPza = findViewById(R.id.txtTotPza);
+        txtUbicT = findViewById(R.id.txtUbicT);
 
         bepp = new SoundPool(1, AudioManager.STREAM_MUSIC, 1);
         sonido_correcto = bepp.load(ActivityRecepTraspMultSuc.this, R.raw.sonido_correct, 1);
@@ -192,8 +194,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                 if(!txtFolBusq.getText().equals("")){
                     Folio=folio(txtFolBusq.getText().toString());
                     txtFolBusq.setText(Folio);
-                    txtFolBusq.setText(Folio);
-                    new AsyncReceCon(strbran,Folio,"1",true).execute();
+                    new AsyncTotCajas(Folio).execute();
                 }else{
                     Toast.makeText(ActivityRecepTraspMultSuc.this, "Folio vacío", Toast.LENGTH_SHORT).show();
                 }//else
@@ -248,22 +249,12 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             }//onclick
         });//btnCorr
 
-        spCaja.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                //CONTCAJA=Integer.parseInt(spCaja.getText().toString());
-                spCaja.setText(CONTCAJA+"",false);
-                cambiaCajas();
-                new AsyncReceCon(strbran,Folio,CONTCAJA+"",false).execute();
-            }
-        });
         btnBackC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 CONTCAJA--;
                 spCaja.setText(CONTCAJA+"",false);
-                cambiaCajas();
-                new AsyncReceCon(strbran,Folio,CONTCAJA+"",false).execute();
+                new AsyncReceCon(strbran,Folio,CONTCAJA+"",true).execute();
             }
         });
         btnNextC.setOnClickListener(new View.OnClickListener() {
@@ -271,8 +262,15 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             public void onClick(View view) {
                 CONTCAJA++;
                 spCaja.setText(CONTCAJA+"",false);
-                cambiaCajas();
-                new AsyncReceCon(strbran,Folio,CONTCAJA+"",false).execute();
+                new AsyncReceCon(strbran,Folio,CONTCAJA+"",true).execute();
+            }
+        });
+
+        spCaja.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                CONTCAJA=Integer.parseInt(spCaja.getText().toString());
+                new AsyncReceCon(strbran,Folio,CONTCAJA+"",true).execute();
             }
         });
 
@@ -281,7 +279,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         if(CONTCAJA==1 && TOTCAJAS>1){
             btnNextC.setEnabled(true);
             btnNextC.setBackgroundTintList(null);
-            btnNextC.setBackgroundResource(R.drawable.btn_background1);
+            btnNextC.setBackgroundResource(R.drawable.btn_background2);
             btnBackC.setEnabled(false);
             btnBackC.setBackgroundTintList(ColorStateList.
                     valueOf(getResources().getColor(R.color.ColorGris)));
@@ -289,7 +287,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         }else if(CONTCAJA==TOTCAJAS && TOTCAJAS>1){
             btnBackC.setEnabled(true);
             btnBackC.setBackgroundTintList(null);
-            btnBackC.setBackgroundResource(R.drawable.btn_background1);
+            btnBackC.setBackgroundResource(R.drawable.btn_background2);
             btnNextC.setEnabled(false);
             btnNextC.setBackgroundTintList(ColorStateList.
                     valueOf(getResources().getColor(R.color.ColorGris)));
@@ -303,10 +301,10 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         }else{
             btnBackC.setEnabled(true);
             btnBackC.setBackgroundTintList(null);
-            btnBackC.setBackgroundResource(R.drawable.btn_background1);
+            btnBackC.setBackgroundResource(R.drawable.btn_background2);
             btnNextC.setEnabled(true);
             btnNextC.setBackgroundTintList(null);
-            btnNextC.setBackgroundResource(R.drawable.btn_background1);
+            btnNextC.setBackgroundResource(R.drawable.btn_background2);
         }//else
     }//cambiaProd
 
@@ -421,6 +419,15 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             default:posicion=encontrarPosEnLista(var);break;
         }
     }
+    public int totPazas(){
+        int tot=0;
+        for (int i=0;i<listaTrasp.size();i++){
+            if(listaTrasp.get(i).isSincronizado()==true){
+                tot=tot+Integer.parseInt(listaTrasp.get(i).getCantSurt());
+            }
+        }
+        return tot;
+    }
 
     public void mostrarDetalleProd(){//detalle por producto seleccionado
         adapter.index(posicion);
@@ -430,6 +437,8 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         tvProd.setText(listaTrasp.get(posicion).getProducto());
         txtCantidad.setText(listaTrasp.get(posicion).getCantidad());
         txtCantSurt.setText(listaTrasp.get(posicion).getCantSurt());
+        txtTotPza.setText(totPazas()+"");
+        txtUbicT.setText(listaTrasp.get(posicion).getUbic());
 
         Picasso.with(getApplicationContext()).
                 load(urlImagenes +
@@ -441,7 +450,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         if(Integer.parseInt(listaTrasp.get(posicion).getCantidad())==Integer.parseInt(listaTrasp.get(posicion).getCantSurt())){
             txtCantSurt.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
         }else{
-            txtCantSurt.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.ColorGris)));
+            txtCantSurt.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.colorBlack)));
         }
         cambiaProd();
 
@@ -458,9 +467,12 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
     }//mostrarDetalleProd
 
     public void limpiar(){
+        tvProd.setText("");
         txtCantidad.setText("");
         txtCantSurt.setText("");
         ivProd.setImageResource(R.drawable.logokepler);
+        txtTotPza.setText("");
+        txtUbicT.setText("");
         btnAtras.setEnabled(false);
         btnAtras.setBackgroundTintList(ColorStateList.
                 valueOf(getResources().getColor(R.color.ColorGris)));
@@ -503,27 +515,35 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                         posicion2=i;
                         new AsyncActualizar(Folio,prod,cantS+"","change",false,Producto).execute();
                         if(surtTodos()==true){
-                            if(CONTCAJA<TOTCAJAS){//PASAR DE CAJA
+                            if(CONTCAJA<TOTCAJAS){//PASAR DE CAJA SI TODAS LAS CAJAS YA ESTAN LLENAS
                                 AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
                                 builder.setPositiveButton("ACEPTAR",null);
                                 builder.setCancelable(false);
                                 builder.setTitle("SIGUIENTE CAJA").create().show();
                                 CONTCAJA++;
                                 spCaja.setText(CONTCAJA+"",false);
-                                cambiaCajas();
+                                //cambiaCajas();
                                 posicion=0;
-                                new AsyncReceCon(strbran,Folio,CONTCAJA+"",false).execute();
+                                new AsyncReceCon(strbran,Folio,CONTCAJA+"",true).execute();
                             }
                         }//
                     }
                 }else{
-                    Toast.makeText(this, "Excede cantidad", Toast.LENGTH_SHORT).show();
+                    bepp.play(sonido_error, 1, 1, 1, 0, 0);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
+                    builder.setPositiveButton("ACEPTAR",null);
+                    builder.setCancelable(false);
+                    builder.setTitle("Excede cantidad").create().show();
                 }
                 break;
             }//if
         }
         if(existe==false){
-            Toast.makeText(this, "No existe "+prod+" en la lista", Toast.LENGTH_SHORT).show();
+            bepp.play(sonido_error, 1, 1, 1, 0, 0);
+            AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
+            builder.setPositiveButton("ACEPTAR",null);
+            builder.setCancelable(false);
+            builder.setTitle("No existe "+prod+" en la lista").create().show();
         }
         mostrarDetalleProd();
     }//evaluar
@@ -570,7 +590,9 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mDialog.show();
+            if(!mDialog.isShowing()){
+                mDialog.show();
+            }
             rvTraspasos.setAdapter(null);
             limpiar();
         }//onPreExecute
@@ -599,7 +621,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                mensaje="Sin datos disponibles";
+                                mensaje="Los datos de la caja "+caja+" no han sido procesados";
                             }//run
                         });
                     }//catch JSON EXCEPTION
@@ -621,15 +643,11 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aBoolean) {
             super.onPostExecute(aBoolean);
-            if(conn=false){
+            if(mensaje.equals("")) {
                 mDialog.dismiss();
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
-                builder.setPositiveButton("ACEPTAR",null);
-                builder.setCancelable(false);
-                builder.setTitle("AVISO").setMessage("Sin conexión a internet").create().show();
-            }else if(mensaje.equals("")) {
                 if(var==true){
-                    new AsyncTotCajas(folio).execute();
+                    verLista();
+                    cambiaCajas();
                 }else{
                     mDialog.dismiss();
                     verLista();
@@ -639,7 +657,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
                 builder.setPositiveButton("ACEPTAR",null);
                 builder.setCancelable(false);
-                builder.setTitle("AVISO").setMessage("Ningun Dato").create().show();
+                builder.setTitle("AVISO").setMessage(mensaje).create().show();
             }//else
         }//onPost
     }//AsyncConsulRecep
@@ -656,7 +674,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            if(!mDialog.isShowing()){mDialog.dismiss();}
+            mDialog.show();
             spCaja.setText("");
         }//onPreExecute
 
@@ -676,6 +694,9 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                         TOTCAJAS=Integer.parseInt(dato.getString("maximo"));
                         TOTP=Integer.parseInt(dato.getString("totalp"));
                         RECEP=Integer.parseInt(dato.getString("recepcion"));
+                        if(TOTCAJAS==0){
+                            mensaje="No hay productos registrados en cajas";
+                        }
                     }catch (final JSONException e) {
                         runOnUiThread(new Runnable() {
                             @Override
@@ -702,14 +723,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aBoolean) {
             super.onPostExecute(aBoolean);
-            mDialog.dismiss();
-            if(conn=false){
-                mDialog.dismiss();
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
-                builder.setPositiveButton("ACEPTAR",null);
-                builder.setCancelable(false);
-                builder.setTitle("AVISO").setMessage("Sin conexión a internet").create().show();
-            }else if(TOTCAJAS>=1) {
+            if(TOTCAJAS>=1) {
                 CONTCAJA=TOTCAJAS;
                 ArrayList<String> nomCajas=new ArrayList<>();
                 for(int k=1;k<=TOTCAJAS;k++){
@@ -721,10 +735,14 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                     spCaja.setAdapter(adaptador);
                     spCaja.setText(nomCajas.get(nomCajas.size()-1),false);
                 }
-                verLista();
                 cambiaCajas();
+                new AsyncReceCon(strbran,Folio,spCaja.getText().toString(),true).execute();
             }else{
-                Toast.makeText(ActivityRecepTraspMultSuc.this, "Error al traer total de cajas", Toast.LENGTH_SHORT).show();
+                mDialog.dismiss();
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
+                builder.setPositiveButton("ACEPTAR",null);
+                builder.setCancelable(false);
+                builder.setTitle("AVISO").setMessage(mensaje).create().show();
             }//else
         }//onPost
     }//AsyncConsulRecep
@@ -807,6 +825,9 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                 if(sumar==true){
                     evaluarEscaneo(ProductoActual);
                 }else{
+                    if((posicion+1)<listaTrasp.size()){
+                        var="next";
+                    }
                     tipoCambio(var);
                     mostrarDetalleProd();
                 }

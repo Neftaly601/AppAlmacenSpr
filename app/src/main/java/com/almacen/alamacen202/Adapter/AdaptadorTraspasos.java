@@ -59,7 +59,7 @@ public class AdaptadorTraspasos extends RecyclerView.Adapter<AdaptadorTraspasos.
                 holder.itExist.setTextColor(Color.parseColor("#223CCA"));
             }else{
                 holder.Producto.setTextColor(Color.parseColor("#000000"));
-                holder.Cantidad.setTextColor(Color.parseColor("#ECBF15"));
+                holder.Cantidad.setTextColor(Color.parseColor("#B61B1B"));
                 holder.n.setTextColor(Color.parseColor("#043B72"));
                 holder.CantSurt.setTextColor(Color.parseColor("#043B72"));
                 holder.ubi.setTextColor(Color.parseColor("#043B72"));
@@ -75,7 +75,7 @@ public class AdaptadorTraspasos extends RecyclerView.Adapter<AdaptadorTraspasos.
             }
             if(datos.get(position).isSincronizado()){
                 holder.Producto.setTextColor(Color.parseColor("#000000"));
-                holder.Cantidad.setTextColor(Color.parseColor("#ECBF15"));
+                holder.Cantidad.setTextColor(Color.parseColor("#B61B1B"));
                 holder.n.setTextColor(Color.parseColor("#043B72"));
                 holder.CantSurt.setTextColor(Color.parseColor("#043B72"));
                 holder.ubi.setTextColor(Color.parseColor("#043B72"));

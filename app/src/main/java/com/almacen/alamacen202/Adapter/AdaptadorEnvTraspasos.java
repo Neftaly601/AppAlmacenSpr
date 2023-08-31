@@ -61,7 +61,7 @@ public class AdaptadorEnvTraspasos extends RecyclerView.Adapter<AdaptadorEnvTras
                 holder.n.setTextColor(Color.parseColor("#043B72"));
                 holder.tvItemP.setTextColor(Color.parseColor("#000000"));
                 holder.tvItemU.setTextColor(Color.parseColor("#043B72"));
-                holder.tvItemC.setTextColor(Color.parseColor("#ECBF15"));
+                holder.tvItemC.setTextColor(Color.parseColor("#B61B1B"));
                 holder.tvItemE.setTextColor(Color.parseColor("#1E739A"));
                 holder.tvItemS.setTextColor(Color.parseColor("#32997C"));
             }//else si ya se termino de escanear
@@ -77,7 +77,7 @@ public class AdaptadorEnvTraspasos extends RecyclerView.Adapter<AdaptadorEnvTras
                 holder.n.setTextColor(Color.parseColor("#043B72"));
                 holder.tvItemP.setTextColor(Color.parseColor("#000000"));
                 holder.tvItemU.setTextColor(Color.parseColor("#043B72"));
-                holder.tvItemC.setTextColor(Color.parseColor("#ECBF15"));
+                holder.tvItemC.setTextColor(Color.parseColor("#B61B1B"));
                 holder.tvItemE.setTextColor(Color.parseColor("#1E739A"));
                 holder.tvItemS.setTextColor(Color.parseColor("#32997C"));
             }else{

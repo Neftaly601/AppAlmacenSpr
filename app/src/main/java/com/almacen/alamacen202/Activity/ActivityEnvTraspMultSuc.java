@@ -360,6 +360,17 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         posicion=0;
         mostrarDetalleProd();
     }
+
+    public int totPazas(){
+        int tot=0;
+        for (int i=0;i<lista.size();i++){
+            if(lista.get(i).isSincronizado()==true){
+                tot=tot+Integer.parseInt(lista.get(i).getCantSurt());
+            }
+        }
+        return tot;
+    }
+
     public void mostrarDetalleProd(){//detalle por producto seleccionado
         adapter.index(posicion);
         adapter.notifyDataSetChanged();
@@ -370,15 +381,15 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         txtCantSurt.setText(lista.get(posicion).getCantSurt());
         txtEnv.setText(lista.get(posicion).getAlmEnv());
         txtUbi.setText(lista.get(posicion).getUbic());
-        txtUbi.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.AzulBack)));
         txtTotPza.setText(TOTPZA+"");
 
         if(Integer.parseInt(lista.get(posicion).getCantidad())==Integer.parseInt(lista.get(posicion).getCantSurt())){
             txtCantSurt.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
         }else{
-            txtCantSurt.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.ColorGris)));
+            txtCantSurt.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.colorBlack)));
         }
         cambiaProd();
+        txtTotPza.setText(totPazas()+"");
 
         Picasso.with(getApplicationContext()).
                 load(urlImagenes +
@@ -527,10 +538,12 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
     }//evaluar
 
     public void limpiar(){
+        tvProd.setText("");
         txtCantidad.setText("");
         txtCantSurt.setText("");
         txtEnv.setText("");
         txtUbi.setText("");
+        txtTotPza.setText("0");
         ivProd.setImageResource(R.drawable.logokepler);
         btnAtras.setEnabled(false);
         btnAtras.setBackgroundTintList(ColorStateList.
@@ -635,13 +648,14 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             }//if
         }//for
         listaCajasXProd=listaXCaja(cajaActAl);
-        pC=0;//para contador de listaCajasXProd
-        prodSelectCaj=listaCajasXProd.get(0).getClavedelProdcuto();//se situa en el primer producto asi que le asigno valores
-        cantCajaOr=Integer.parseInt(listaCajasXProd.get(0).getCantidadUnidades());
-
+        if(listaCajasXProd.size()>0){
+            pC=0;//para contador de listaCajasXProd
+            prodSelectCaj=listaCajasXProd.get(0).getClavedelProdcuto();//se situa en el primer producto asi que le asigno valores
+            cantCajaOr=Integer.parseInt(listaCajasXProd.get(0).getCantidadUnidades());
+        }
         //SPINER DE CAJA
         ArrayList<String> nomCajas2=new ArrayList<>();
-        for(int k=1;k<=nomCajas.size();k++){
+        for(int k=1;k<=TOTCAJAS;k++){
             nomCajas2.add(k+"");
         }//for
 
@@ -655,6 +669,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 listaCajasXProd.clear();
+                rvListaCajas.setAdapter(null);
                 pC=i;
                 cajaActAl =nomCajas.get(pC);
                 //spCajaNom.setText(cajaActAl,false);
@@ -666,6 +681,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 listaCajasXProd.clear();
+                rvListaCajas.setAdapter(null);
                 pC--;
                 cajaActAl =nomCajas.get(pC);
                 spCajaNom.setText(cajaActAl,false);
@@ -676,6 +692,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 listaCajasXProd.clear();
+                rvListaCajas.setAdapter(null);
                 pC++;
                 cajaActAl =nomCajas.get(pC);
                 spCajaNom.setText(cajaActAl,false);
@@ -687,7 +704,11 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         btnCambiar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                cambiarCajasAlert(prodSelectCaj,cantCajaOr, cajaActAl,nomCajas,mm1);
+                if(listaCajasXProd.size()>0){
+                    cambiarCajasAlert(prodSelectCaj,cantCajaOr, cajaActAl,nomCajas,mm1);
+                }else{
+                    Toast.makeText(ActivityEnvTraspMultSuc.this, "Caja sin datos", Toast.LENGTH_SHORT).show();
+                }
             }
         });//btnCambiar
 
@@ -1142,6 +1163,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 //cajaGuard=true;
                 Toast.makeText(ActivityEnvTraspMultSuc.this, "Sincronizado", Toast.LENGTH_SHORT).show();
                 bepp.play(sonido_correcto, 1, 1, 1, 0, 0);
+                TOTPZA=TOTPZA+Integer.parseInt(cant);
                 lista.get(posicion2).setSincronizado(true);
                 if(sumar==true){
                     evaluarEscaneo(ProductoActual);
@@ -1431,11 +1453,13 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         rvListaCajas.setAdapter(null);
         listaCajasXProd.clear();
         listaCajasXProd =listaXCaja(cajaActAl);
-        adapListCaj= new AdapterListaCajas(listaCajasXProd);
-        rvListaCajas.setAdapter(adapListCaj);
-        posCaja=0;
-        prodSelectCaj=listaCajasXProd.get(posCaja).getClavedelProdcuto();
-        cantCajaOr=Integer.parseInt(listaCajasXProd.get(posCaja).getCantidadUnidades());
+        if(listaCajasXProd.size()>0){
+            adapListCaj= new AdapterListaCajas(listaCajasXProd);
+            rvListaCajas.setAdapter(adapListCaj);
+            posCaja=0;
+            prodSelectCaj=listaCajasXProd.get(posCaja).getClavedelProdcuto();
+            cantCajaOr=Integer.parseInt(listaCajasXProd.get(posCaja).getCantidadUnidades());
+        }
     }//cambiaCaja
 
     public void onClickEnListaCaja(View v){
