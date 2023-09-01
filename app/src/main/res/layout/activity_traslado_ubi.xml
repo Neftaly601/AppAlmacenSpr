@@ -63,12 +63,14 @@
                     android:layout_margin="10dp"
                     app:startIconTint="@null"
                     app:boxBackgroundColor="@color/ColorWhite"
-                    app:boxStrokeColor="@color/colorPrimary">
+                    app:boxStrokeColor="@color/colorPrimary"
+                    >
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/EDProducto"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/colorBlack"
                         android:inputType="textCapCharacters"
                         android:maxLines="1"
                         android:textSize="10sp" />
@@ -241,6 +243,7 @@
                     android:layout_height="wrap_content"
                     android:autoSizeTextType="uniform"
                     android:focusable="false"
+                    android:textColor="@color/colorBlack"
                     android:editable="false"
                     android:inputType="text"
                     android:textSize="12sp" />
@@ -266,6 +269,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:autoSizeTextType="uniform"
+                    android:textColor="@color/colorBlack"
                     android:focusable="false"
                     android:editable="false"
                     android:inputType="text"
@@ -292,6 +296,7 @@
                     android:layout_height="wrap_content"
                     android:focusable="false"
                     android:editable="false"
+                    android:textColor="@color/colorBlack"
                     android:inputType="number"
                     android:textSize="12sp" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -317,6 +322,7 @@
                     android:layout_height="wrap_content"
                     android:focusable="false"
                     android:editable="false"
+                    android:textColor="@color/colorBlack"
                     android:inputType="text"
                     android:textSize="12sp" />
             </com.google.android.material.textfield.TextInputLayout>
