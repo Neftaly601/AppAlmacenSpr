@@ -671,9 +671,10 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 listaCajasXProd.clear();
                 rvListaCajas.setAdapter(null);
                 pC=i;
-                cajaActAl =nomCajas.get(pC);
-                //spCajaNom.setText(cajaActAl,false);
-                tablaXcaja(btnBack,btnNext,pC);
+                cajaActAl=(pC+1)+"";
+                if(datosEnCaja(cajaActAl)==true){
+                    tablaXcaja(btnBack,btnNext,pC);
+                }
             }
         });
 
@@ -683,9 +684,11 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 listaCajasXProd.clear();
                 rvListaCajas.setAdapter(null);
                 pC--;
-                cajaActAl =nomCajas.get(pC);
+                cajaActAl=(pC+1)+"";
                 spCajaNom.setText(cajaActAl,false);
-                tablaXcaja(btnBack,btnNext,pC);
+                if(datosEnCaja(cajaActAl)==true){
+                    tablaXcaja(btnBack,btnNext,pC);
+                }
             }
         });
         btnNext.setOnClickListener(new View.OnClickListener() {
@@ -694,11 +697,11 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 listaCajasXProd.clear();
                 rvListaCajas.setAdapter(null);
                 pC++;
-                cajaActAl =nomCajas.get(pC);
+                cajaActAl=(pC+1)+"";
                 spCajaNom.setText(cajaActAl,false);
-                cajaActAl =nomCajas.get(pC);
-                spCajaNom.setText(cajaActAl,false);
-                tablaXcaja(btnBack,btnNext,pC);
+                if(datosEnCaja(cajaActAl)==true){
+                    tablaXcaja(btnBack,btnNext,pC);
+                }
             }
         });
         btnCambiar.setOnClickListener(new View.OnClickListener() {
@@ -724,6 +727,17 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         tablaXcaja(btnBack,btnNext,posCaja);
         mm1.show();
     }//mostrarListaCajas
+
+    public boolean datosEnCaja(String caja){
+        boolean var=false;
+        for(int i=0;i<nomCajas.size();i++){
+            if(nomCajas.get(i).equals(caja)){
+                var=true;
+                break;
+            }
+        }//for
+        return var;
+    }
 
     public ArrayList<CAJASSANDG> listaXCaja(String cajaSelect){
         ArrayList<CAJASSANDG> lista= new ArrayList<>();
@@ -1420,22 +1434,23 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
     }//AsyncReporteInici
 
 
+
     public void tablaXcaja (Button back, Button next,int posActCaja){
-        if(posActCaja==0 && nomCajas.size()>1){
+        if(posActCaja==0 && TOTCAJAS>1){
             next.setEnabled(true);
             next.setBackgroundTintList(null);
             next.setBackgroundResource(R.drawable.btn_background1);
             back.setEnabled(false);
             back.setBackgroundTintList(ColorStateList.
                     valueOf(getResources().getColor(R.color.ColorGris)));
-        }else if(nomCajas.size()==1){
+        }else if(TOTCAJAS==1){
             back.setEnabled(false);
             back.setBackgroundTintList(ColorStateList.
                     valueOf(getResources().getColor(R.color.ColorGris)));
             next.setEnabled(false);
             next.setBackgroundTintList(ColorStateList.
                     valueOf(getResources().getColor(R.color.ColorGris)));
-        } else if((posActCaja+1)==nomCajas.size()){
+        } else if((posActCaja+1)==TOTCAJAS){
             back.setEnabled(true);
             back.setBackgroundTintList(null);
             back.setBackgroundResource(R.drawable.btn_background1);
