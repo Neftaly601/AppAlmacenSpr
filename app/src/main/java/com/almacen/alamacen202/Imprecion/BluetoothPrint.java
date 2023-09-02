@@ -23,6 +23,7 @@ import com.almacen.alamacen202.R;
 import com.almacen.alamacen202.SetterandGetters.CAJASSANDG;
 import com.almacen.alamacen202.SetterandGetters.ListProAduSandG;
 import com.almacen.alamacen202.SetterandGetters.ListProReceSandG;
+import com.almacen.alamacen202.SetterandGetters.Traspasos;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -472,6 +473,111 @@ public class BluetoothPrint extends AppCompatActivity {
             for (int k = 0; k < listaCajasFiltro.size(); k++) {
 
                 cantidatotal = cantidatotal + Integer.parseInt(listaCajasFiltro.get(k).getCantidadUnidades());
+            }
+
+            msg += "Total:" + cantidatotal + "\n";
+            outputStream.write(ESC_ALIGN_RIGHT);
+            outputStream.write(msg.getBytes());
+            msg = "\n";
+            msg += "\n";
+            outputStream.write(msg.getBytes());
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Toast.makeText(context, "" + ex, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void printListRecepT(String Empresa, String Usuario, String Folio, ArrayList<Traspasos> listaTraspFiltro, String contDialogCajas, int imagen,String caja) {
+
+        Date c = Calendar.getInstance().getTime();
+        SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+        String formattedDate = df.format(c);
+        SimpleDateFormat hora = new SimpleDateFormat("HH:mm");
+        String formattedHour = hora.format(c);
+
+
+        try {
+            /*outputStream.flush();
+            printPhoto(imagen);
+            outputStream.flush();*/
+            String msg = Empresa;
+            msg += "\n";
+            outputStream.write(format);
+            outputStream.write(ESC_ALIGN_CENTER);
+            outputStream.write(msg.getBytes());
+            msg = "Fecha:" + formattedDate + "\n";
+            msg += "Hora:" + formattedHour + "\n";
+            outputStream.write(ESC_ALIGN_RIGHT);
+            outputStream.write(msg.getBytes());
+            msg = "Usuario:" + Usuario + "\n";
+
+            msg += "FOLIO:" + Folio + "\n";
+            msg += "\n";
+            outputStream.write(ESC_ALIGN_LEFT);
+            outputStream.write(msg.getBytes());
+
+            msg= "CAJA:" + caja + "\n";
+            msg += "\n";
+            outputStream.write(ESC_ALIGN_LEFT);
+            outputStream.write(msg.getBytes());
+
+            msg = "Ticket Recep Trasp " + contDialogCajas + "\n";
+            msg += "____________________________ \n";
+            msg += "PRODUCTO SURT  UBIC\n";
+            outputStream.write(msg.getBytes());
+
+
+            for (int i = 0; i < listaTraspFiltro.size(); i++) {
+                msg = "";
+                String Producto = listaTraspFiltro.get(i).getProducto();
+                String Cantidad = listaTraspFiltro.get(i).getCantSurt();
+                String ubi=listaTraspFiltro.get(i).getUbic();
+                if (Producto.length() < 11) {
+                    int espacios = Producto.length();
+                    int opera = 0;
+                    opera = 11 - espacios;
+
+                    for (int k = 0; k < opera; k++) {
+                        Producto += " ";
+                    }
+                }
+
+                if (Cantidad.length() < 3) {
+
+                    int espacios = Cantidad.length();
+                    int opera = 0;
+                    opera = 3 - espacios;
+
+                    for (int k = 0; k < opera; k++) {
+
+                        Cantidad += " ";
+
+                    }
+                }
+                if (ubi.length() < 13) {
+
+                    int espacios = ubi.length();
+                    int opera = 0;
+                    opera = 13 - espacios;
+
+                    for (int k = 0; k < opera; k++) {
+                        ubi += " ";
+                    }//for
+                }//if
+
+
+
+                msg += Producto + Cantidad +ubi+"\n";
+                outputStream.write(msg.getBytes());
+                outputStream.flush();
+            }
+
+            msg = "\n";
+            int cantidatotal = 0;
+            for (int k = 0; k < listaTraspFiltro.size(); k++) {
+
+                cantidatotal = cantidatotal + Integer.parseInt(listaTraspFiltro.get(k).getCantSurt());
             }
 
             msg += "Total:" + cantidatotal + "\n";

@@ -202,7 +202,27 @@
                         android:enabled="false"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnImpr"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginRight="2dp"
+                    android:background="@drawable/btn_background1"
+                    android:maxLines="1"
+                    android:text="Imprimir"
+                    android:textAlignment="textStart"
+                    android:textColor="@color/ColorWhite"
+                    android:textSize="12dp"
+                    app:icon="@drawable/icons8_puerta_abierta_impresora_48"
+                    app:iconSize="18dp"
+                    app:iconTint="@null"
+                    app:iconGravity="start"
+                    app:backgroundTint="@null"/>
             </LinearLayout>
+
+
 
             <TextView
                 android:id="@+id/tvProd"

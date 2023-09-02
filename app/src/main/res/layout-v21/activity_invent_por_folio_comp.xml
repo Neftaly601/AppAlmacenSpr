@@ -345,6 +345,7 @@
                                 android:clickable="true"
                                 android:maxLength="5"
                                 android:maxLines="1"
+                                android:textColor="@color/colorBlack"
                                 android:imeOptions="actionDone"
                                 android:textSize="15dp"
                                 android:enabled="false"/>
@@ -405,6 +406,7 @@
                         android:layout_height="wrap_content"
                         android:maxLength="5"
                         android:maxLines="1"
+                        android:textColor="@color/colorBlack"
                         android:imeOptions="actionDone"
                         android:textSize="15dp"
                         android:enabled="false"/>
