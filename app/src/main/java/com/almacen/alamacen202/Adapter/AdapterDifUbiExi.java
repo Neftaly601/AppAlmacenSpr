@@ -1,5 +1,6 @@
 package com.almacen.alamacen202.Adapter;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,12 +41,27 @@ public class AdapterDifUbiExi extends RecyclerView.Adapter<AdapterDifUbiExi.View
         holder.tvD.setText(datos.get(position).getDiferencia());
         holder.tvU.setText(datos.get(position).getUbicacion());*/
         holder.tvCC.setText(datos.get(position).getConteo());
-
         if(index==position){
-            holder.lyDif.setBackgroundResource(R.color.ColorGris);
+            holder.lyDif.setBackgroundResource(R.color.colorSelec);//seleccion
+            if(Integer.parseInt(datos.get(position).getConteo())>0){
+                holder.n.setTextColor(Color.parseColor("#32997C"));
+                holder.tvP.setTextColor(Color.parseColor("#32997C"));
+                holder.tvCC.setTextColor(Color.parseColor("#32997C"));
+            }else{
+                holder.n.setTextColor(Color.parseColor("#043B72"));
+                holder.tvP.setTextColor(Color.parseColor("#000000"));
+                holder.tvCC.setTextColor(Color.parseColor("#043B72"));
+            }//else
         }else{
-            holder.lyDif.setBackgroundColor(0);
-        }
+            if(Integer.parseInt(datos.get(position).getConteo())>0){
+                holder.lyDif.setBackgroundResource(R.color.ColorSinc);
+            }else{
+                holder.lyDif.setBackgroundColor(0);
+            }
+            holder.n.setTextColor(Color.parseColor("#043B72"));
+            holder.tvP.setTextColor(Color.parseColor("#000000"));
+            holder.tvCC.setTextColor(Color.parseColor("#043B72"));
+        }//else no esta seleccionado
     }//onBindViewHolder
 
     public int index(int index){

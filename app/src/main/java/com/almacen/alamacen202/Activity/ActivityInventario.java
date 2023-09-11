@@ -793,7 +793,8 @@ public class ActivityInventario extends AppCompatActivity {
         String nuevo=prod.substring(0,3)+"";
         if(nuevo.equals("P01") || nuevo.equals("P02") || nuevo.equals("P03") || nuevo.equals("P04") || nuevo.equals("P05")
                 || nuevo.equals("P06") || nuevo.equals("P07") || nuevo.equals("8") || nuevo.equals("P09") || nuevo.equals("P10")
-                || nuevo.equals("P11") || nuevo.equals("P12") || prod.substring(0,4).equals("http") || prod.substring(0,4).equals("HTTP")){
+                || nuevo.equals("P11") || nuevo.equals("P12") || prod.substring(0,4).equals("http") || prod.substring(0,4).equals("HTTP")
+                || nuevo.equals("www") || nuevo.equals("WWW")){
             bepp.play(sonido_de_reproduccion1, 1, 1, 1, 0, 0);
             AlertDialog.Builder alerta = new AlertDialog.Builder(ActivityInventario.this);
             alerta.setMessage("Producto no válido").setCancelable(false).setNegativeButton("Ok", new DialogInterface.OnClickListener() {

@@ -214,6 +214,7 @@
                         android:autoSizeTextType="uniform"
                         android:enabled="false"
                         android:inputType="text"
+                        android:textColor="@color/AzulBack"
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -255,6 +256,7 @@
                             android:digits="0123456789"
                             android:maxLength="10"
                             android:textSize="15sp"
+                            android:textColor="@color/colorBlack"
                             android:text="1"
                             android:enabled="false"/>
                     </com.google.android.material.textfield.TextInputLayout>

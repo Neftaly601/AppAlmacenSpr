@@ -36,7 +36,7 @@ public class AdapterInventario extends RecyclerView.Adapter<AdapterInventario.Vi
         holder.n.setText(datos.get(position).getNum());
 
         if(index==position){
-            holder.lyInv.setBackgroundResource(R.color.ColorGris);
+            holder.lyInv.setBackgroundResource(R.color.colorSelec);
         }else{
             holder.lyInv.setBackgroundColor(0);
         }

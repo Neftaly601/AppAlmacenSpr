@@ -547,6 +547,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                         new AsyncActualizar(Folio,prod,cantS+"","change",false,Producto).execute();
                         if(surtTodos()==true){
                             if(CONTCAJA<TOTCAJAS){//PASAR DE CAJA SI TODAS LAS CAJAS YA ESTAN LLENAS
+                                ImprimirTicket(listaTrasp.size());
                                 AlertDialog.Builder builder = new AlertDialog.Builder(ActivityRecepTraspMultSuc.this);
                                 builder.setPositiveButton("ACEPTAR",null);
                                 builder.setCancelable(false);
@@ -805,7 +806,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
             if(conn==true){
                 String parametros="sucursal="+strbran+"&producto="+producto+
                         "&cantidad="+cantidad+"&usuario="+strusr+
-                        "&folio="+folio;
+                        "&folio="+folio+"&caja="+spCaja.getText().toString();
                 String url = "http://"+strServer+"/recemul?"+parametros;
                 String jsonStr = new HttpHandler().makeServiceCall(url,strusr,strpass);
                 if (jsonStr != null) {

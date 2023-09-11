@@ -70,7 +70,6 @@
                         android:id="@+id/EDProducto"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/colorBlack"
                         android:inputType="textCapCharacters"
                         android:maxLines="1"
                         android:textColor="@color/colorBlack"
@@ -101,8 +100,8 @@
     android:id="@+id/ubicacionedestino"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:visibility="gone"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:visibility="gone">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/TXTUBICAORIVISI"
@@ -127,6 +126,7 @@
             android:ems="10"
             android:editable="false"
             android:inputType="textMultiLine"
+            android:textColor="@color/colorBlack"
             android:textSize="12sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -140,29 +140,28 @@
         android:layout_marginTop="2dp"
         android:layout_marginRight="10dp"
         android:layout_weight="1"
-        android:background="@drawable/roundbutton"
-        android:backgroundTint="@color/AzulBack"
+        android:background="@drawable/btn_background1"
+        app:backgroundTint="@null"
         android:onClick="ubicaciones"
         android:text="Ubicaciones"
         android:textColor="@color/ColorWhite"
         android:textSize="14sp" />
 
 </LinearLayout>
-
-
-
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/TXTCANTIDADVISI"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:hint="Cantidad de traslado"
+                android:textColorHint="@color/AzulBack"
+                app:hintTextColor="@color/AzulBack"
                 android:layout_marginLeft="5dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="5dp"
-                android:visibility="gone"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 app:boxBackgroundMode="outline"
                 app:boxCornerRadiusTopEnd="10dp"
-                app:boxCornerRadiusTopStart="10dp">
+                app:boxCornerRadiusTopStart="10dp"
+                android:visibility="gone">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/EDCANTIDAD"
@@ -172,7 +171,8 @@
                     android:filterTouchesWhenObscured="false"
                     android:fitsSystemWindows="false"
                     android:editable="false"
-                    android:hint="Cantidad de traslado"
+                    android:maxLength="6"
+                    android:textColor="@color/colorBlack"
                     android:inputType="numberDecimal"
                     android:textSize="12sp" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -185,21 +185,24 @@
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
                 android:layout_marginTop="5dp"
-                android:visibility="gone"
+                android:hint="Ubicacion Destino"
+                app:hintTextColor="@color/AzulBack"
+                android:textColorHint="@color/AzulBack"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 app:boxBackgroundMode="outline"
                 app:boxCornerRadiusTopEnd="10dp"
                 app:boxCornerRadiusTopStart="10dp"
-                >
+                android:visibility="gone">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/EDUbicacionDest"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:autoSizeTextType="uniform"
-                    android:hint="Ubicacion Destino"
+
                     android:ems="10"
                     android:editable="false"
+                    android:textColor="@color/colorBlack"
                     android:inputType="textMultiLine"
                     android:textSize="12sp" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -244,7 +247,6 @@
                     android:layout_height="wrap_content"
                     android:autoSizeTextType="uniform"
                     android:focusable="false"
-                    android:textColor="@color/colorBlack"
                     android:editable="false"
                     android:inputType="text"
                     android:textColor="@color/AzulBack"
@@ -271,7 +273,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:autoSizeTextType="uniform"
-                    android:textColor="@color/colorBlack"
                     android:focusable="false"
                     android:editable="false"
                     android:inputType="text"
@@ -299,7 +300,6 @@
                     android:layout_height="wrap_content"
                     android:focusable="false"
                     android:editable="false"
-                    android:textColor="@color/colorBlack"
                     android:inputType="number"
                     android:textColor="@color/AzulBack"
                     android:textSize="12sp" />
@@ -326,7 +326,6 @@
                     android:layout_height="wrap_content"
                     android:focusable="false"
                     android:editable="false"
-                    android:textColor="@color/colorBlack"
                     android:inputType="text"
                     android:textColor="@color/AzulBack"
                     android:textSize="12sp" />

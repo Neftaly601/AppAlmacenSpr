@@ -244,6 +244,7 @@
                         android:autoSizeTextType="uniform"
                         android:enabled="false"
                         android:inputType="text"
+                        android:textColor="@color/colorBlack"
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -285,6 +286,7 @@
                             android:autoSizeTextType="uniform"
                             android:enabled="false"
                             android:inputType="text"
+                            android:textColor="@color/colorBlack"
                             android:maxLines="1" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -309,6 +311,8 @@
                             android:autoSizeTextType="uniform"
                             android:enabled="false"
                             android:inputType="text"
+                            android:textSize="13dp"
+                            android:textColor="@color/colorBlack"
                             android:maxLines="1" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -343,6 +347,7 @@
                             android:maxLength="10"
                             android:textSize="15sp"
                             android:text="1"
+                            android:textColor="@color/colorBlack"
                             android:imeOptions="actionDone"
                             android:enabled="false"/>
                     </com.google.android.material.textfield.TextInputLayout>
@@ -368,6 +373,7 @@
                             android:autoSizeTextType="uniform"
                             android:enabled="false"
                             android:inputType="text"
+                            android:textColor="@color/colorBlack"
                             android:maxLines="1" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -394,6 +400,7 @@
                             android:textStyle="bold"
                             android:enabled="false"
                             android:inputType="text"
+                            android:textColor="@color/colorBlack"
                             android:maxLines="1" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -424,8 +431,7 @@
                     app:backgroundTint="@color/ColorGris"
                     android:textColor="@color/ColorWhite"
                     android:textSize="14sp"
-                    android:enabled="false"
-                    app:backgroundTintMode="add"/>
+                    android:enabled="false"/>
             </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
@@ -460,8 +466,7 @@
                     android:background="@drawable/btn_background1"
                     android:layout_marginRight="2.5dp"
                     android:textColor="@color/ColorWhite"
-                    app:backgroundTint="@null"
-                    app:backgroundTintMode="add"/>
+                    app:backgroundTint="@null"/>
                 <Button
                     android:id="@+id/btnNoCont"
                     android:layout_width="match_parent"
@@ -471,8 +476,7 @@
                     android:background="@drawable/btn_background1"
                     android:layout_marginLeft="2.5dp"
                     android:textColor="@color/ColorWhite"
-                    app:backgroundTint="@null"
-                    app:backgroundTintMode="add"/>
+                    app:backgroundTint="@null"/>
             </LinearLayout>
 
             <LinearLayout

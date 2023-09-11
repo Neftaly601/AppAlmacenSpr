@@ -948,7 +948,7 @@ public class ActivityDifUbiExi extends AppCompatActivity {
                 posicion=-1;
             }
             @SuppressLint("Recycle") Cursor fila = db.rawQuery("SELECT PRODUCTO,CANTIDAD,EXISTENCIA,DIFERENCIA,"+
-                    "UBICACION,CONTEO,ESTATUS FROM DIFUBIEXIST WHERE EMPRESA='"+serv+"' "+where+" ORDER BY UBICACION,PRODUCTO ", null);
+                    "UBICACION,CONTEO,ESTATUS FROM DIFUBIEXIST WHERE EMPRESA='"+serv+"' "+where+" AND DIFERENCIA>0 ORDER BY UBICACION,PRODUCTO ", null);
             if (fila != null && fila.moveToFirst()) {
                 do {
                     j++;
