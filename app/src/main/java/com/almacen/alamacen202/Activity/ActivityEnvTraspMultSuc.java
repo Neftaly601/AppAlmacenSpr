@@ -671,7 +671,21 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         View dialogView = inflater.inflate(R.layout.dialog_lista_cajas, null);
         alert.setView(dialogView);
         alert.setCancelable(false);
-        alert.setNegativeButton("CANCELAR",null);
+        alert.setNegativeButton("CERRAR", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                ArrayList<String> nomCajas=new ArrayList<>();
+                for(int k=1;k<=TOTCAJAS;k++){
+                    nomCajas.add(k+"");
+                }//for
+                if(nomCajas.size()>0){
+                    ArrayAdapter<String> adaptador = new ArrayAdapter<>(
+                            ActivityEnvTraspMultSuc.this,R.layout.drop_down_item,nomCajas);
+                    spCaja.setAdapter(adaptador);
+                    spCaja.setText(CAJAACT+"",false);
+                }//
+            }
+        });//cerrar
 
         AutoCompleteTextView spCajaNom = dialogView.findViewById(R.id.spCajaNom);
         rvListaCajas =  dialogView.findViewById(R.id.rvListaCajas);
@@ -891,7 +905,8 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                     ArrayAdapter<String> adaptador = new ArrayAdapter<>(
                             ActivityEnvTraspMultSuc.this,R.layout.drop_down_item,nomCajas);
                     spCaja.setAdapter(adaptador);
-                    spCaja.setText(nomCajas.get(nomCajas.size()-1),false);
+                    CAJAACT=Integer.parseInt(nomCajas.get(nomCajas.size()-1));
+                    spCaja.setText(CAJAACT+"",false);
                 }//
             }//else
         }//onPost
@@ -1147,6 +1162,9 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             if(mensaje.equals("Registro Exitoso") || mensaje.equals("Actualizacion Exitosa")){
                 alert1.dismiss();
                 alert2.dismiss();
+                if(Integer.parseInt(caja2)>TOTCAJAS){
+                    TOTCAJAS=Integer.parseInt(caja2);
+                }
                 //new AsyncConsultCA(strbran,Folio).execute();
                 mostrarEnAlertListaCajas();
             }else{
@@ -1157,7 +1175,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
 
     private class AsyncInsertCajasE extends AsyncTask<Void, Void, String> {
 
-        private String suc,folio,producto,cant,numCajas,part,usu,var,ProductoActual;
+        private String suc,folio,producto,cant,numCajas,part,usu,var,ProductoActual,newCant;
         private boolean conn,sumar;
         int alTerminar;
 
@@ -1180,6 +1198,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         @Override
         protected String doInBackground(Void... voids) {
             conn=firtMet();
+            newCant=cant;
             if(conn==true){
                 String parametros="k_Sucursal="+suc+"&k_Folio="+folio+
                         "&k_Producto="+producto+"&k_Cantidad="+cant+
@@ -1191,6 +1210,9 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                         JSONObject jsonObj = new JSONObject(jsonStr);
                         JSONArray jsonArray = jsonObj.getJSONArray("Response");
                         mensaje=jsonArray.getString(0);
+                        if(mensaje.equals("Insertado Exitosa") || mensaje.equals("Actualizacion Exitosa")){
+                            newCant=jsonArray.getString(1);
+                        }
                     } catch (final JSONException e) {
                         runOnUiThread(new Runnable() {
                             @Override
@@ -1223,6 +1245,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 bepp.play(sonido_correcto, 1, 1, 1, 0, 0);
                 TOTPZA=TOTPZA+Integer.parseInt(cant);
                 lista.get(posicion2).setSincronizado(true);
+                lista.get(posicion2).setCantSurt(newCant);
                 mover=true;
                 if(sumar==true){
                     buscar(ProductoActual);
