@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class AdaptadorEnvTraspasos extends RecyclerView.Adapter<AdaptadorEnvTraspasos.ViewHolderEnvTraspasos> {
 
     private ArrayList<EnvTraspasos> datos;
-    private int index;
+    private int index =-1;
     public AdaptadorEnvTraspasos(ArrayList<EnvTraspasos> datos) {
         this.datos = datos;
     }//constructor
@@ -105,8 +105,8 @@ public class AdaptadorEnvTraspasos extends RecyclerView.Adapter<AdaptadorEnvTras
         return datos.size();
     }
 
-    public static class ViewHolderEnvTraspasos extends RecyclerView.ViewHolder {
-        TextView n,tvItemP, tvItemU,tvItemC,tvItemE,tvItemS;
+    public class ViewHolderEnvTraspasos extends RecyclerView.ViewHolder {
+        private TextView n,tvItemP, tvItemU,tvItemC,tvItemE,tvItemS;
         LinearLayout lyaoutEnv;
         public ViewHolderEnvTraspasos (View itemView) {
             super(itemView);
@@ -119,4 +119,11 @@ public class AdaptadorEnvTraspasos extends RecyclerView.Adapter<AdaptadorEnvTras
             lyaoutEnv  = itemView.findViewById(R.id.lyaoutEnv);
         }//constructor
     }//AdapterTraspasosViewHolder class
+
+    public void setSingleSelection(int adapterPosition){
+        if(adapterPosition ==RecyclerView.NO_POSITION) return;
+        notifyItemChanged(index);
+        index=adapterPosition;
+        notifyItemChanged(index);
+    }
 }//principal

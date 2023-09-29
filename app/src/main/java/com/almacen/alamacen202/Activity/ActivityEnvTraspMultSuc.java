@@ -30,6 +30,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -38,11 +39,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -111,19 +115,21 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
     private AutoCompleteTextView spCaja,spLineas;
     private ImageView ivProd;
     private TextView tvProd;
-    private Button btnBuscarFol,btnAtras,btnAdelante,btnAggCaja,btnListaCajas,btnVerCajas;
+    private Button btnBuscarFol,btnAtras,btnAdelante,btnAggCaja,btnListaCajas,btnVerCajas,btnBusc;
     private RecyclerView rvEnvTrasp;
     private AdaptadorEnvTraspasos adapter;
     private AdapterListaCajas adapListCaj = new AdapterListaCajas(listaCajas);
     private AlertDialog mDialog;
     private InputMethodManager keyboard;
     private String urlImagenes,extImg,impresora;
-    private boolean mover=true;
-    private int sonido_correcto,sonido_error;
+    private int sonido_correcto,sonido_error,posX,posY,x=0,y=0;
     private SoundPool bepp;
-    AlertDialog.Builder builder6;
-    Context context = this;
-    AlertDialog dialog6 = null;
+    private AlertDialog.Builder builder6;
+    private Context context = this;
+    private AlertDialog dialog6 = null;
+    AlertDialog dialogi = null;
+    private boolean escan=false,mover=false;
+    private ScrollView scrollView;
 
     //VARIABLES PARA AALERT DE LISTA DE PROD
     private RecyclerView rvListaCajas;
@@ -171,10 +177,14 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         spLineas = findViewById(R.id.spLineas);
         txtUbi = findViewById(R.id.txtUbi);
         txtTotPza = findViewById(R.id.txtTotPza);
+        btnBusc=findViewById(R.id.btnBusc);
+        scrollView = findViewById(R.id.scrollView);
 
-        rvEnvTrasp    = findViewById(R.id.rvEnvTrasp);
-        rvEnvTrasp.setLayoutManager(new LinearLayoutManager(ActivityEnvTraspMultSuc.this));
+        rvEnvTrasp = findViewById(R.id.rvEnvTrasp);
+
         adapter = new AdaptadorEnvTraspasos(lista);
+        rvEnvTrasp.setLayoutManager(new LinearLayoutManager(this));
+
         keyboard = (InputMethodManager) getSystemService(ActivityEnvTraspMultSuc.INPUT_METHOD_SERVICE);
 
         bepp = new SoundPool(1, AudioManager.STREAM_MUSIC, 1);
@@ -195,7 +205,12 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
 
         txtProducto.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                posX=scrollView.getScrollX();
+                posY=scrollView.getScrollY();
+                x=rvEnvTrasp.getScrollX();
+                y=rvEnvTrasp.getScrollY();
+            }
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override
@@ -203,28 +218,36 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 Producto=editable.toString();
                 if(!editable.toString().equals("")){
                     if (codeBar.equals("Zebra")) {
-                        buscar(Producto);
-
-                        /*posicion2=posG;
-                        cambio(Producto,true,0);*/
+                        buscar(Producto,true);
                         txtProducto.setText("");
-                        txtProducto.requestFocus();
+                        mover=true;
                     }else{
                         for (int i = 0; i < editable.length(); i++) {
                             char ban;
                             ban = editable.charAt(i);
                             if (ban == '\n') {
-                                posicion2=posG;
-                                cambio(Producto,true,0);
+                                buscar(Producto,true);
                                 txtProducto.setText("");
-                                txtProducto.requestFocus();
+                                mover=true;
                                 break;
                             }//if
                         }//for
                     }//else
                 }//if es diferente a vacio
+
             }//after
         });//txtProd textchange
+        
+        txtProducto.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    Toast.makeText(ActivityEnvTraspMultSuc.this, "aqui", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+                return false;
+            }
+        });
+
 
         btnBuscarFol.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -297,7 +320,77 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 }
             }//onItemClick
         });//setonitemclick
+
+        btnBusc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(primeroSinc(5)==false){
+                    alertBusca();
+                }//if
+            }
+        });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+                @Override
+                public void onScrollChange(View view, int i, int i1, int i2, int i3) {
+                    if(mover==true){
+                        mover=false;
+                        scrollView.smoothScrollTo(posX,posY);
+                    }
+                }
+            });
+        }
+        posX=scrollView.getScrollX();
+        posY=scrollView.getScrollY();
     }//onCreate
+
+
+    public void alertBusca(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
+        final EditText edittext = new EditText(ActivityEnvTraspMultSuc.this);
+        edittext.setFocusable(true);
+        edittext.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        alert.setTitle("Buscar producto");
+        alert.setView(edittext);
+        alert.setCancelable(false);
+        alert.setPositiveButton("Buscar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                escan=false;
+                boolean existe=false;
+                for(int i=0;i<lista.size();i++){
+                    if(lista.get(i).getProducto().equals(edittext.getText().toString())){
+                        //limpiar();
+                        existe=true;
+                        dialogi.dismiss();
+                        posicion=i;
+                        mostrarDetalleProd();
+                        break;
+                    }//if
+                }
+                if(existe==false){
+                    bepp.play(sonido_error, 1, 1, 1, 0, 0);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
+                    builder.setTitle("AVISO");
+                    builder.setMessage("No existe "+Producto+" en la lista");
+                    builder.setCancelable(false);
+                    builder.setNegativeButton("OK",null);
+                    AlertDialog dialogg = builder.create();
+                    dialogg.show();
+                    escan=false;
+                }
+            }
+        });
+        alert.setNeutralButton("Cancelar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                escan=false;
+            }
+        });
+        dialogi = alert.create();
+        dialogi.setTitle("Buscar producto");
+        dialogi.setCancelable(false);
+        dialogi.show();
+    }//alertBusca
 
     public boolean primeroSinc(int alTerminar){
         boolean t=false;
@@ -359,7 +452,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         adapter = new AdaptadorEnvTraspasos(lista);
         rvEnvTrasp.setAdapter(adapter);
         txtProducto.setEnabled(true);
-        txtProducto.requestFocus();
+        //txtProducto.requestFocus();
         posicion=0;
         mostrarDetalleProd();
     }
@@ -374,10 +467,14 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         return tot;
     }
 
+
     public void mostrarDetalleProd(){//detalle por producto seleccionado
+        posX=scrollView.getScrollX();
+        posY=scrollView.getScrollY();
         adapter.index(posicion);
         adapter.notifyDataSetChanged();
         rvEnvTrasp.scrollToPosition(posicion);
+
         tvProd.setText(lista.get(posicion).getProducto());
         txtCantidad.setText(lista.get(posicion).getCantidad());
         txtCantSurt.setText(lista.get(posicion).getCantSurt());
@@ -402,11 +499,11 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 .centerInside()
                 .into(ivProd);
         posG=posicion;
-        txtProducto.requestFocus();
+        //scrollView.smoothScrollTo(posX,posY);
     }//mostrarDetalleProd
 
     public void cambiaProd(){
-        if(mover==false || lista.size()==1){
+        if(lista.size()==1){
             btnAtras.setEnabled(false);
             btnAtras.setBackgroundTintList(ColorStateList.
                     valueOf(getResources().getColor(R.color.ColorGris)));
@@ -439,28 +536,27 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
     }//cambiaProd
 
     public void onClickListaE(View v){//cada vez que se seleccione un producto en la lista
-        if(mover==true){
-            if(posicion>=0 && lista.get(posicion).isSincronizado()==false){
-                posicion2=posG;
-                Producto=lista.get(rvEnvTrasp.getChildPosition(rvEnvTrasp.findContainingItemView(v))).getProducto();
-            }else{
-                posicion2 = rvEnvTrasp.getChildPosition(rvEnvTrasp.findContainingItemView(v));
-            }
-            cambio("change",false,0);
+        posX=scrollView.getScrollX();
+        posY=scrollView.getScrollY();
+        if(posicion>=0 && lista.get(posicion).isSincronizado()==false){
+            posicion2=posG;
+            Producto=lista.get(rvEnvTrasp.getChildPosition(rvEnvTrasp.findContainingItemView(v))).getProducto();
         }else{
-            mensjProdCha();
-        }//else
-
+            posicion2 = rvEnvTrasp.getChildPosition(rvEnvTrasp.findContainingItemView(v));
+        }
+        cambio("change",false,0);
     }//onClickLista
 
     public void cambio(String var,boolean sumar,int alTerminar){
+        posX=scrollView.getScrollX();
+        posY=scrollView.getScrollY();
         if(!lista.get(posicion2).getProducto().equals(Producto) && posG!=-1 && lista.get(posicion2).isSincronizado()==false){//identificando que prod anterior no se sincronizó
             new AsyncInsertCajasE(strbran, Folio, lista.get(posicion2).getProducto(),
                     lista.get(posicion2).getCantSurt(), spCaja.getText().toString() + "",
                     lista.get(posicion2).getPartida(), strusr, var, sumar, Producto,alTerminar).execute();
         }else{//cuando se escanea o por botones de adelante, atras y onclick en lista
             if(sumar==true){//al escanear
-                buscar(Producto);
+                buscar(Producto,true);
             }else{
                 tipoCambio(var);
                 mostrarDetalleProd();
@@ -494,7 +590,8 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
     }
 
     public void actualizaDat(int pos,String prod){
-        mover=false;
+        posX=scrollView.getScrollX();
+        posY=scrollView.getScrollY();
         posicion=pos;
         int exi=Integer.parseInt(lista.get(pos).getExistencia());
         int cant=Integer.parseInt(lista.get(pos).getCantidad());
@@ -523,14 +620,25 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 cantS[0]++;
                 lista.get(pos).setCantSurt(cantS[0] +"");
                 lista.get(pos).setSincronizado(false);
+                escan=true;
+                adapter.setSingleSelection(pos);
                 if(cantS[0] ==cant){
                     posicion2=pos;
                     new AsyncInsertCajasE(strbran,Folio,prod,
                             cantS[0] +"",spCaja.getText().toString(),
                             lista.get(posicion2).getPartida(),strusr,"change",false,Producto,0).execute();
                 }else{
-                    mostrarDetalleProd();
-                }
+                    txtCantSurt.setText(lista.get(posicion).getCantSurt());
+                    if(Integer.parseInt(lista.get(posicion).getCantidad())==Integer.parseInt(lista.get(posicion).getCantSurt())){
+                        txtCantSurt.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+                    }else{
+                        txtCantSurt.setTextColor(ColorStateList.valueOf(getResources().getColor(R.color.colorBlack)));
+                    }
+                    txtTotPza.setText(totPazas()+"");
+                    rvEnvTrasp.smoothScrollBy(x,y);
+                    scrollView.smoothScrollTo(posX,posY);
+                }//else
+
             }//else
         }else{
             bepp.play(sonido_error, 1, 1, 1, 0, 0);
@@ -541,7 +649,6 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             builder.setNegativeButton("OK",null);
             AlertDialog dialog = builder.create();
             dialog.show();
-            mover=true;
             mostrarDetalleProd();
         }//else
     }
@@ -549,28 +656,27 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         bepp.play(sonido_error, 1, 1, 1, 0, 0);
         AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
         builder.setTitle("AVISO");
-        builder.setMessage("Escaneo de un producto diferente, termine de escanear este producto");
+        builder.setMessage("Escaneo de un producto diferente al actual");
         builder.setCancelable(false);
         builder.setNegativeButton("OK",null);
         AlertDialog dialog = builder.create();
         dialog.show();
-        mostrarDetalleProd();
     }//mensjProdCha
 
-    public void buscar(String prod){
-        if(mover==false){
-            if(prod.equals(tvProd.getText().toString())){//para que siga escaneando
-                actualizaDat(posicion,prod);
-            }else{
-                mensjProdCha();
-            }//else
-        }else{//buscar producto
+    public void buscar(String prod,boolean sumar){
+        if(escan==false){
             boolean existe=false;
             for(int i=0;i<lista.size();i++){
                 if(lista.get(i).getProducto().equals(prod)){
-                    limpiar();
+                    //limpiar();
                     existe=true;
-                    actualizaDat(i,prod);
+                    posicion=i;
+                    if(sumar==true){
+                        mostrarDetalleProd();
+                        actualizaDat(i,prod);
+                    }else{
+                        mostrarDetalleProd();
+                    }
                     break;
                 }//if
             }
@@ -583,7 +689,14 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 builder.setNegativeButton("OK",null);
                 AlertDialog dialog = builder.create();
                 dialog.show();
+                escan=false;
             }
+        }else{//seguir escaneando el  mismo
+            if(prod.equals(tvProd.getText().toString())){//para que siga escaneando
+                actualizaDat(posicion,prod);
+            }else{
+                mensjProdCha();
+            }//else
         }//else
     }//evaluar
 
@@ -615,22 +728,27 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             return false;
         }//else
     }//FirtMet saber si hay conexion a internet
+
     public void inFinBt(boolean var){
         if(var==true){
 
             btnAggCaja.setEnabled(false);
             btnListaCajas.setEnabled(false);
             btnVerCajas.setEnabled(false);
+            btnBusc.setEnabled(false);
             btnAggCaja.setBackgroundTintList(ColorStateList.
                     valueOf(getResources().getColor(R.color.ColorGris)));
             btnListaCajas.setBackgroundTintList(ColorStateList.
                     valueOf(getResources().getColor(R.color.ColorGris)));
             btnVerCajas.setBackgroundTintList(ColorStateList.
                     valueOf(getResources().getColor(R.color.ColorGris)));
+            btnBusc.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.ColorGris)));
         }else{
             btnAggCaja.setEnabled(true);
             btnListaCajas.setEnabled(true);
             btnVerCajas.setEnabled(true);
+            btnBusc.setEnabled(true);
             btnAggCaja.setBackgroundTintList(null);
             btnAggCaja.setBackgroundResource(R.drawable.btn_background4);
 
@@ -639,6 +757,9 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
 
             btnVerCajas.setBackgroundTintList(null);
             btnVerCajas.setBackgroundResource(R.drawable.btn_background1);
+
+            btnBusc.setBackgroundTintList(null);
+            btnBusc.setBackgroundResource(R.drawable.btn_background2);
         }//else
     }//inFinBt
 
@@ -660,6 +781,9 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             case 4:
                 //new AsyncConsultCA(strbran,Folio,"1").execute();
                 mostrarEnAlertListaCajas();
+                break;
+            case 5:
+                alertBusca();
                 break;
             default:break;
         }//swich
@@ -816,6 +940,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             mensaje="";posicion=-1;lista.clear();
             rvEnvTrasp.setAdapter(null);inFinBt(true);
             spCaja.setText("");
+            escan=false;
             //cajaGuard=false;
         }//onPreExecute
 
@@ -1246,9 +1371,9 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 TOTPZA=TOTPZA+Integer.parseInt(cant);
                 lista.get(posicion2).setSincronizado(true);
                 lista.get(posicion2).setCantSurt(newCant);
-                mover=true;
+                escan=false;
                 if(sumar==true){
-                    buscar(ProductoActual);
+                    buscar(ProductoActual,true);
                 }else{
                     if((posicion+1)<lista.size()){
                         var="next";

@@ -11,8 +11,10 @@
     <include layout="@layout/action_bar_toolbar"/>
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:scrollbars="vertical">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -216,7 +218,8 @@
                     android:textSize="15dp"
                     android:textColor="#000000"
                     android:inputType="text"
-                    android:enabled="false"/>
+                    android:enabled="false"
+                    android:imeOptions="actionNone"/>
             </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -400,31 +403,55 @@
                 android:background="@color/AzulBack"
                 android:layout_marginTop="2dp"/>
 
-            <com.google.android.material.textfield.TextInputLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
                 android:layout_marginTop="10dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-                android:hint="Lineas"
-                android:textColorHint="@color/AzulBack"
-                app:hintTextColor="@color/AzulBack"
-                app:boxBackgroundColor="@color/ColorWhite"
-                app:boxBackgroundMode="outline"
-                app:boxCornerRadiusTopEnd="10dp"
-                app:boxCornerRadiusTopStart="10dp"
-                app:boxStrokeColor="@color/colorPrimary">
-                <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                    android:id="@+id/spLineas"
+                android:gravity="center_vertical">
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/ColorWhite"
-                    android:textSize="15sp"
-                    android:fontFamily="sans-serif-condensed"
-                    android:textStyle="italic"
-                    android:textColor="@color/colorBlack"
-                    android:inputType="none"
-                    android:focusable="false"/>
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_weight="1"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                    android:hint="Lineas"
+                    android:textColorHint="@color/AzulBack"
+                    app:hintTextColor="@color/AzulBack"
+                    app:boxBackgroundColor="@color/ColorWhite"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusTopEnd="10dp"
+                    app:boxCornerRadiusTopStart="10dp"
+                    app:boxStrokeColor="@color/colorPrimary">
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                        android:id="@+id/spLineas"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/ColorWhite"
+                        android:textSize="15sp"
+                        android:fontFamily="sans-serif-condensed"
+                        android:textStyle="italic"
+                        android:textColor="@color/colorBlack"
+                        android:inputType="none"
+                        android:focusable="false"/>
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnBusc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.5"
+                    android:background="@drawable/btn_background3"
+                    android:text="@string/buscar"
+                    android:textSize="10dp"
+                    android:maxLines="2"
+                    android:textColor="@color/ColorWhite"
+                    app:icon="@drawable/icons8_lupa"
+                    app:iconGravity="end"
+                    app:iconTint="@null"
+                    app:iconSize="20dp"
+                    app:backgroundTint="@color/ColorGris"
+                    android:layout_marginLeft="2dp"
+                    android:enabled="false"/>
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -477,7 +504,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
+                        android:layout_weight="1.8"
                         android:gravity="center"
                         android:textStyle="bold"
                         android:textSize="10dp"
@@ -489,7 +516,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
+                        android:layout_weight="1.8"
                         android:gravity="center"
                         android:textStyle="bold"
                         android:textSize="10dp"
@@ -502,7 +529,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
+                        android:layout_weight="1.8"
                         android:gravity="center"
                         android:textStyle="bold"
                         android:textSize="10dp"
@@ -513,8 +540,10 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvEnvTrasp"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/ColorGris"/>
+                    android:layout_height="250dp"
+                    android:background="@color/ColorGris"
+                    android:scrollbars="vertical"
+                    android:focusable="false"/>
 
             </LinearLayout>
 

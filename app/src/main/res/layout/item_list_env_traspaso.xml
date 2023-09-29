@@ -68,12 +68,13 @@
                 android:id="@+id/tvItemC"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_weight="1.8"
                 android:text="0"
                 android:padding="5dp"
                 android:textColor="@color/colorRed"
                 android:textStyle="bold"
-                android:maxLines="1"
+                android:maxLines="2"
+                android:lines="2"
                 android:textAlignment="center"/>
             <View
                 android:layout_width="2dp"
@@ -83,12 +84,13 @@
                 android:id="@+id/tvItemE"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_weight="1.8"
                 android:text="0"
                 android:padding="5dp"
                 android:textColor="@color/colorVerdeAzul"
                 android:textStyle="bold"
-                android:maxLines="1"
+                android:maxLines="2"
+                android:lines="2"
                 android:textAlignment="center"/>
             <View
                 android:layout_width="2dp"
@@ -98,12 +100,13 @@
                 android:id="@+id/tvItemS"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_weight="1.8"
                 android:text="0"
                 android:textColor="@color/ColorFinalizado"
                 android:textStyle="bold"
                 android:padding="5dp"
-                android:maxLines="1"
+                android:maxLines="2"
+                android:lines="2"
                 android:textAlignment="center"/>
         </LinearLayout>
         <View
