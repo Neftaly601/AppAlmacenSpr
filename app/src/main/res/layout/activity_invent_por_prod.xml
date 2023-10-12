@@ -247,18 +247,20 @@
                         app:startIconTint="@null"
                         app:boxBackgroundColor="@color/ColorWhite"
                         app:boxStrokeColor="@color/colorPrimary">
+
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/txtCantXprod"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="phone"
-                            android:digits="0123456789"
                             android:clickable="true"
+                            android:digits="0123456789"
+                            android:enabled="false"
+                            android:textColor="@color/colorBlack"
+                            android:imeOptions="actionDone"
+                            android:inputType="phone"
                             android:maxLength="5"
                             android:maxLines="1"
-                            android:imeOptions="actionDone"
-                            android:textSize="15dp"
-                            android:enabled="false"/>
+                            android:textSize="15dp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -276,6 +278,7 @@
                     app:iconPadding="2dp"
                     app:iconSize="18dp"
                     app:iconGravity="textStart"
+                    app:iconTint="@color/ColorWhite"
                     android:tooltipText="Traslado entre ubicaciones"
                     android:enabled="false"/>
 
@@ -314,6 +317,7 @@
                         android:maxLength="5"
                         android:maxLines="1"
                         android:imeOptions="actionDone"
+                        android:textColor="@color/AzulBack"
                         android:textSize="15dp"
                         android:enabled="false"/>
                 </com.google.android.material.textfield.TextInputLayout>

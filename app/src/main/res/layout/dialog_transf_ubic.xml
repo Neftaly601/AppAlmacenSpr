@@ -96,8 +96,7 @@
                         app:iconSize="20dp"
                         android:tooltipText="Actualización de cantidades"
                         app:iconGravity="textStart"
-                        app:backgroundTint="@null"
-                        app:backgroundTintMode="add"/>
+                        app:backgroundTint="@null"/>
                 </LinearLayout>
 
 

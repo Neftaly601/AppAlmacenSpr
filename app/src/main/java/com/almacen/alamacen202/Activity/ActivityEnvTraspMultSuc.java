@@ -1,5 +1,7 @@
 package com.almacen.alamacen202.Activity;
 
+import static android.text.InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -36,6 +38,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -115,7 +119,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
     private AutoCompleteTextView spCaja,spLineas;
     private ImageView ivProd;
     private TextView tvProd;
-    private Button btnBuscarFol,btnAtras,btnAdelante,btnAggCaja,btnListaCajas,btnVerCajas,btnBusc;
+    private Button btnBuscarFol,btnAtras,btnAdelante,btnAggCaja,btnListaCajas,btnVerCajas,btnBusc,btnGuarMan;
     private RecyclerView rvEnvTrasp;
     private AdaptadorEnvTraspasos adapter;
     private AdapterListaCajas adapListCaj = new AdapterListaCajas(listaCajas);
@@ -127,9 +131,10 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
     private AlertDialog.Builder builder6;
     private Context context = this;
     private AlertDialog dialog6 = null;
-    AlertDialog dialogi = null;
+    AlertDialog alertDialog=null;
     private boolean escan=false,mover=false;
     private ScrollView scrollView;
+    private CheckBox chbConten;
 
     //VARIABLES PARA AALERT DE LISTA DE PROD
     private RecyclerView rvListaCajas;
@@ -181,6 +186,8 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         scrollView = findViewById(R.id.scrollView);
 
         rvEnvTrasp = findViewById(R.id.rvEnvTrasp);
+        chbConten = findViewById(R.id.chbConten);
+        btnGuarMan= findViewById(R.id.btnGuarMan);
 
         adapter = new AdaptadorEnvTraspasos(lista);
         rvEnvTrasp.setLayoutManager(new LinearLayoutManager(this));
@@ -195,6 +202,61 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         txtProducto.setInputType(InputType.TYPE_NULL);
 
         CAJAACT=1;
+
+        chbConten.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                limpiar();
+                TOTPZA=0;
+                mensaje="";posicion=-1;lista.clear();
+                rvEnvTrasp.setAdapter(null);inFinBt(true);
+                spCaja.setAdapter(null);
+                spCaja.setText("");
+                nomCajas.clear();
+                spLineas.setAdapter(null);
+                spLineas.setText("");
+                txtProducto.setText("");
+                txtProducto.setEnabled(false);
+                escan=false;
+            }//onchecked
+        });//onchecked
+
+        btnGuarMan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                posicion2=posG;
+                keyboard.hideSoftInputFromWindow(txtCantSurt.getWindowToken(), 0);
+                int cant=0;
+                cant=Integer.parseInt(txtCantidad.getText().toString());
+                if(!txtCantSurt.getText().toString().equals("") && Integer.parseInt(txtCantSurt.getText().toString())>0
+                        && Integer.parseInt(txtCantSurt.getText().toString())<=cant){
+                    int surt=Integer.parseInt(txtCantSurt.getText().toString());
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
+                    builder.setTitle("CONFIRMACION");
+                    builder.setMessage("¿Desea guardar "+surt+" pzas de "+tvProd.getText().toString());
+                    builder.setCancelable(false);
+                    builder.setPositiveButton("GUARDAR", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            new AsyncInsertCajasE(strbran, Folio, tvProd.getText().toString(),
+                                    surt +"", spCaja.getText().toString() + "",
+                                    lista.get(posicion2).getPartida(), strusr, "change", false, Producto,6).execute();
+                        }//onclick
+                    });//positive
+                    builder.setNegativeButton("CANCELAR", null);//
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }else{
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
+                    builder.setTitle("AVISO");
+                    builder.setMessage("Surtido en 0 o excede cantidad");
+                    builder.setCancelable(false);
+                    builder.setNegativeButton("ACEPTAR", null);//
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }//else surt ==0
+            }//onclick
+        });//btnGuarMan
 
         spCaja.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -215,41 +277,49 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override
             public void afterTextChanged(Editable editable) {
-                Producto=editable.toString();
-                if(!editable.toString().equals("")){
-                    if (codeBar.equals("Zebra")) {
-                        buscar(Producto,true);
-                        txtProducto.setText("");
-                        mover=true;
-                    }else{
-                        for (int i = 0; i < editable.length(); i++) {
-                            char ban;
-                            ban = editable.charAt(i);
-                            if (ban == '\n') {
-                                buscar(Producto,true);
-                                txtProducto.setText("");
-                                mover=true;
-                                break;
-                            }//if
-                        }//for
-                    }//else
-                }//if es diferente a vacio
-
+                if(chbConten.isChecked()==false){
+                    Producto=editable.toString();
+                    if(!editable.toString().equals("")){
+                        if (codeBar.equals("Zebra")) {
+                            buscar(Producto,true);
+                            txtProducto.setText("");
+                            txtProducto.requestFocus();
+                            mover=true;
+                        }else{
+                            for (int i = 0; i < editable.length(); i++) {
+                                char ban;
+                                ban = editable.charAt(i);
+                                if (ban == '\n') {
+                                    buscar(Producto,true);
+                                    txtProducto.setText("");
+                                    txtProducto.requestFocus();
+                                    mover=true;
+                                    break;
+                                }//if
+                            }//for
+                        }//else
+                    }//if es diferente a vacio
+                }//if chconten is false
             }//after
         });//txtProd textchange
         
         txtProducto.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    Toast.makeText(ActivityEnvTraspMultSuc.this, "aqui", Toast.LENGTH_SHORT).show();
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    Producto=txtProducto.getText().toString();
+                    if(!Producto.equals("")){
+                        buscar(Producto,false);
+                    }else{
+                        Toast.makeText(ActivityEnvTraspMultSuc.this, "Sin datos para buscar", Toast.LENGTH_SHORT).show();
+                    }//else
                     return true;
-                }
+                }//if action done
                 return false;
-            }
+            }//oneditoraction
         });
 
-
         btnBuscarFol.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("ResourceAsColor")
             @Override
             public void onClick(View view) {
                 if(!txtFolBusq.getText().toString().equals("")){
@@ -330,7 +400,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             }
         });
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
                 @Override
                 public void onScrollChange(View view, int i, int i1, int i2, int i3) {
@@ -340,56 +410,69 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                     }
                 }
             });
-        }
+        }*/
         posX=scrollView.getScrollX();
         posY=scrollView.getScrollY();
     }//onCreate
 
 
     public void alertBusca(){
+        btnBusc.setEnabled(false);
         AlertDialog.Builder alert = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
-        final EditText edittext = new EditText(ActivityEnvTraspMultSuc.this);
-        edittext.setFocusable(true);
-        edittext.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-        alert.setTitle("Buscar producto");
-        alert.setView(edittext);
-        alert.setCancelable(false);
-        alert.setPositiveButton("Buscar", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                escan=false;
-                boolean existe=false;
-                for(int i=0;i<lista.size();i++){
-                    if(lista.get(i).getProducto().equals(edittext.getText().toString())){
-                        //limpiar();
-                        existe=true;
-                        dialogi.dismiss();
-                        posicion=i;
-                        mostrarDetalleProd();
-                        break;
-                    }//if
-                }
-                if(existe==false){
-                    bepp.play(sonido_error, 1, 1, 1, 0, 0);
-                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
-                    builder.setTitle("AVISO");
-                    builder.setMessage("No existe "+Producto+" en la lista");
-                    builder.setCancelable(false);
-                    builder.setNegativeButton("OK",null);
-                    AlertDialog dialogg = builder.create();
-                    dialogg.show();
+        LayoutInflater inflater = ActivityEnvTraspMultSuc.this.getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_buscprod, null);
+        alert.setView(dialogView);
+        TextView tvTit = dialogView.findViewById(R.id.tvTit);
+        EditText txtBuscaP = dialogView.findViewById(R.id.txtBuscaP);
+        Button btnB = dialogView.findViewById(R.id.btnB);
+        tvTit.setText("Buscar Producto");
+
+        btnB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!txtBuscaP.getText().toString().equals("")){
                     escan=false;
-                }
-            }
-        });
-        alert.setNeutralButton("Cancelar", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
+                    boolean existe=false;
+                    for(int i=0;i<lista.size();i++){
+                        if(lista.get(i).getProducto().equals(txtBuscaP.getText().toString())){
+                            //limpiar();
+                            existe=true;
+                            alertDialog.dismiss();
+                            posicion=i;
+                            mostrarDetalleProd();
+                            break;
+                        }//if
+                    }
+                    if(existe==false){
+                        bepp.play(sonido_error, 1, 1, 1, 0, 0);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
+                        builder.setTitle("AVISO");
+                        builder.setMessage("No existe "+Producto+" en la lista");
+                        builder.setCancelable(false);
+                        builder.setNegativeButton("OK",null);
+                        AlertDialog dialogg = builder.create();
+                        dialogg.show();
+                        escan=false;
+                    }
+                }else{
+                    Toast.makeText(ActivityEnvTraspMultSuc.this, "Campo Vacío", Toast.LENGTH_SHORT).show();
+                }//else
+            }//onclick
+        });//btnB
+
+        alert.setCancelable(false);
+        alert.setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
                 escan=false;
+                keyboard.hideSoftInputFromWindow(txtBuscaP.getWindowToken(), 0);
+                btnBusc.setEnabled(true);
+                txtProducto.requestFocus();
             }
-        });
-        dialogi = alert.create();
-        dialogi.setTitle("Buscar producto");
-        dialogi.setCancelable(false);
-        dialogi.show();
+        });//cerrar
+
+        alertDialog = alert.create();
+        alertDialog.show();
     }//alertBusca
 
     public boolean primeroSinc(int alTerminar){
@@ -452,7 +535,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         adapter = new AdaptadorEnvTraspasos(lista);
         rvEnvTrasp.setAdapter(adapter);
         txtProducto.setEnabled(true);
-        //txtProducto.requestFocus();
+        txtProducto.requestFocus();
         posicion=0;
         mostrarDetalleProd();
     }
@@ -499,6 +582,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 .centerInside()
                 .into(ivProd);
         posG=posicion;
+        txtProducto.requestFocus();
         //scrollView.smoothScrollTo(posX,posY);
     }//mostrarDetalleProd
 
@@ -560,7 +644,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             }else{
                 tipoCambio(var);
                 mostrarDetalleProd();
-            }
+            }//else
         }//else
 
     }//alert
@@ -675,8 +759,12 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                         mostrarDetalleProd();
                         actualizaDat(i,prod);
                     }else{
+                        keyboard.hideSoftInputFromWindow(txtProducto.getWindowToken(), 0);
                         mostrarDetalleProd();
-                    }
+                        if(chbConten.isChecked()==true){
+                            keyboard.showSoftInput(txtCantSurt,InputMethodManager.SHOW_IMPLICIT);
+                        }//if
+                    }//else
                     break;
                 }//if
             }
@@ -729,9 +817,9 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
         }//else
     }//FirtMet saber si hay conexion a internet
 
+    @SuppressLint("ResourceAsColor")
     public void inFinBt(boolean var){
         if(var==true){
-
             btnAggCaja.setEnabled(false);
             btnListaCajas.setEnabled(false);
             btnVerCajas.setEnabled(false);
@@ -744,6 +832,10 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                     valueOf(getResources().getColor(R.color.ColorGris)));
             btnBusc.setBackgroundTintList(ColorStateList.
                     valueOf(getResources().getColor(R.color.ColorGris)));
+            btnGuarMan.setEnabled(false);
+            btnGuarMan.setBackgroundTintList(ColorStateList.
+                    valueOf(getResources().getColor(R.color.ColorGris)));
+
         }else{
             btnAggCaja.setEnabled(true);
             btnListaCajas.setEnabled(true);
@@ -759,7 +851,26 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             btnVerCajas.setBackgroundResource(R.drawable.btn_background1);
 
             btnBusc.setBackgroundTintList(null);
-            btnBusc.setBackgroundResource(R.drawable.btn_background2);
+            btnBusc.setBackgroundResource(R.drawable.btn_background1);
+
+            btnGuarMan.setEnabled(true);
+            btnGuarMan.setBackgroundTintList(null);
+            btnGuarMan.setBackgroundResource(R.drawable.btn_background2);
+        }//else
+
+        if(chbConten.isChecked()==true){
+            escan=false;
+            txtProducto.setInputType(InputType.TYPE_CLASS_TEXT| TYPE_TEXT_FLAG_CAP_CHARACTERS);
+            txtCantSurt.setEnabled(true);
+            //keyboard.showSoftInput(txtProducto,InputMethodManager.SHOW_IMPLICIT);
+            btnGuarMan.setVisibility(View.VISIBLE);
+
+        }else{
+            escan=true;
+            txtProducto.setInputType(InputType.TYPE_NULL);
+            //keyboard.hideSoftInputFromWindow(txtProducto.getWindowToken(), 0);
+            txtCantSurt.setEnabled(false);
+            btnGuarMan.setVisibility(View.GONE);
         }//else
     }//inFinBt
 
@@ -784,6 +895,9 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 break;
             case 5:
                 alertBusca();
+                break;
+            case 6:
+                new AsyncConsultSigCaja(Folio).execute();
                 break;
             default:break;
         }//swich
@@ -939,7 +1053,13 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             TOTPZA=0;
             mensaje="";posicion=-1;lista.clear();
             rvEnvTrasp.setAdapter(null);inFinBt(true);
+            spCaja.setAdapter(null);
             spCaja.setText("");
+            nomCajas.clear();
+            spLineas.setAdapter(null);
+            spLineas.setText("");
+            txtProducto.setText("");
+            txtProducto.setEnabled(false);
             escan=false;
             //cajaGuard=false;
         }//onPreExecute
@@ -1008,6 +1128,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 inFinBt(false);
                 txtFolBusq.setText(Folio);
                 keyboard.hideSoftInputFromWindow(txtFolBusq.getWindowToken(), 0);
+                txtProducto.requestFocus();
                 verLista();
                 //SPINNER LINEAS
                 if(linea.equals("")){
@@ -1020,7 +1141,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                     spLineas.setAdapter(adaptador);
                     spLineas.setText(listaLineas.get(0),false);
                 }//SPINNER
-                txtProducto.requestFocus();
+
                 //SPINNER DE CAJAS
                 ArrayList<String> nomCajas=new ArrayList<>();
                 for(int k=1;k<=TOTCAJAS;k++){
@@ -1034,6 +1155,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                     spCaja.setText(CAJAACT+"",false);
                 }//
             }//else
+            //chbConten.setVisibility(View.GONE);
         }//onPost
     }//AsyncConsulEnvTrasp
 
@@ -1318,6 +1440,14 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             this.sumar=sumar;
             this.ProductoActual=ProductoActual;
             this.alTerminar=alTerminar;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if(mDialog.isShowing()==false){
+                mDialog.show();
+            }
         }
 
         @Override

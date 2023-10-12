@@ -33,7 +33,6 @@ import com.almacen.alamacen202.Adapter.AdaptadorlistOrdComp;
 import com.almacen.alamacen202.R;
 import com.almacen.alamacen202.SetterandGetters.ComprometidasSandG;
 import com.almacen.alamacen202.SetterandGetters.ListProdxFolOrdComp;
-import com.almacen.alamacen202.SetterandGetters.UbicacionSandG;
 import com.almacen.alamacen202.XML.XMLActualizaOrdenCompra;
 import com.almacen.alamacen202.XML.XMLCLArticulo;
 import com.almacen.alamacen202.XML.XMLCompromeAlma;
@@ -80,7 +79,7 @@ public class ActivityInventarioXfolioComp extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_invent_por_folio_comp);
+        setContentView(R.layout.activity_invent_por_folio_com);
 
         MyToolbar.show(this, "Inventario por folio compra", true);
         preference = getSharedPreferences("Login", Context.MODE_PRIVATE);

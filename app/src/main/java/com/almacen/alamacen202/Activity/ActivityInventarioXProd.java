@@ -258,6 +258,8 @@ public class ActivityInventarioXProd extends AppCompatActivity {
                 spOrigen.setEnabled(false);
                 spOrigen.setBackgroundTintList(ColorStateList.
                         valueOf(getResources().getColor(R.color.ColorGris)));
+                btnSelecciona.setEnabled(false);
+                btnSelecciona.setBackgroundTintList(null);
                 btnSelecciona.setBackgroundTintList(ColorStateList.
                         valueOf(getResources().getColor(R.color.ColorGris)));
 
@@ -326,8 +328,8 @@ public class ActivityInventarioXProd extends AppCompatActivity {
             btnGuarda.setBackgroundTintList(ColorStateList.
                     valueOf(getResources().getColor(R.color.Amarillo)));
             btnTrasl.setEnabled(true);
-            btnTrasl.setBackgroundTintList(ColorStateList.
-                    valueOf(getResources().getColor(R.color.AzulBack)));
+            btnTrasl.setBackgroundTintList(null);
+            btnTrasl.setBackgroundResource(R.drawable.btn_background1);
             if(Integer.parseInt(txtTotUbi.getText().toString())==Integer.parseInt(txtExistAlmProd.getText().toString())){
                 txtCantProd.setEnabled(false);
                 btnGuarda.setEnabled(false);
