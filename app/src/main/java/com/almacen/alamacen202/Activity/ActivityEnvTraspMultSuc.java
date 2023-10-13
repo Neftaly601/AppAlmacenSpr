@@ -1056,8 +1056,6 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             spCaja.setAdapter(null);
             spCaja.setText("");
             nomCajas.clear();
-            spLineas.setAdapter(null);
-            spLineas.setText("");
             txtProducto.setText("");
             txtProducto.setEnabled(false);
             escan=false;
