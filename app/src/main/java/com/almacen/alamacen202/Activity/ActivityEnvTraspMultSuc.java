@@ -228,18 +228,22 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 keyboard.hideSoftInputFromWindow(txtCantSurt.getWindowToken(), 0);
                 int cant=0;
                 cant=Integer.parseInt(txtCantidad.getText().toString());
+                int surtAcum=Integer.parseInt(lista.get(posicion2).getCantSurt());
                 if(!txtCantSurt.getText().toString().equals("") && Integer.parseInt(txtCantSurt.getText().toString())>0
-                        && Integer.parseInt(txtCantSurt.getText().toString())<=cant){
+                        && (Integer.parseInt(txtCantSurt.getText().toString())+surtAcum)<=cant){
                     int surt=Integer.parseInt(txtCantSurt.getText().toString());
+                    surtAcum=surtAcum+surt;
                     AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
                     builder.setTitle("CONFIRMACION");
-                    builder.setMessage("¿Desea guardar "+surt+" pzas de "+tvProd.getText().toString());
+                    builder.setMessage("¿Desea guardar "+surt+" piezas de "+tvProd.getText().toString()+"?"+
+                            "\n Serán "+surtAcum+" en total");
                     builder.setCancelable(false);
+                    int finalSurtAcum = surtAcum;
                     builder.setPositiveButton("GUARDAR", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             new AsyncInsertCajasE(strbran, Folio, tvProd.getText().toString(),
-                                    surt +"", spCaja.getText().toString() + "",
+                                    finalSurtAcum +"", spCaja.getText().toString() + "",
                                     lista.get(posicion2).getPartida(), strusr, "change", false, Producto,6).execute();
                         }//onclick
                     });//positive
@@ -249,7 +253,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 }else{
                     AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
                     builder.setTitle("AVISO");
-                    builder.setMessage("Surtido en 0 o excede cantidad");
+                    builder.setMessage("Surtido en 0 o excede cantidad, lleva "+surtAcum+" de surtido en este producto");
                     builder.setCancelable(false);
                     builder.setNegativeButton("ACEPTAR", null);//
                     AlertDialog dialog = builder.create();
