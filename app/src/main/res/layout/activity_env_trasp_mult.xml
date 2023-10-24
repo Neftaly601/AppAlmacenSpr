@@ -333,33 +333,67 @@
                             android:textColor="@color/colorBlack"
                             android:enabled="false"/>
                     </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:hint="Surtido"
-                        android:textColorHint="@color/AzulBack"
-                        app:hintTextColor="@color/AzulBack"
-                        app:boxBackgroundMode="outline"
-                        app:boxCornerRadiusTopEnd="10dp"
-                        app:boxCornerRadiusTopStart="10dp"
-                        app:boxBackgroundColor="@color/ColorWhite"
-                        app:boxStrokeColor="@color/colorPrimary">
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/txtCantSurt"
+                        android:orientation="horizontal">
+                        <com.google.android.material.textfield.TextInputLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:clickable="true"
-                            android:maxLength="5"
-                            android:maxLines="1"
-                            android:inputType="phone"
-                            android:imeOptions="actionDone"
-                            android:digits="0123456789"
-                            android:textSize="13dp"
-                            android:textColor="@color/colorBlack"
-                            android:enabled="false" />
-                    </com.google.android.material.textfield.TextInputLayout>
+                            android:layout_weight="1"
+                            android:hint="Surtido"
+                            android:textColorHint="@color/AzulBack"
+                            app:hintTextColor="@color/AzulBack"
+                            app:boxBackgroundMode="outline"
+                            app:boxCornerRadiusTopEnd="10dp"
+                            app:boxCornerRadiusTopStart="10dp"
+                            app:boxBackgroundColor="@color/ColorWhite"
+                            app:boxStrokeColor="@color/colorPrimary">
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/txtCantSurt"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:clickable="true"
+                                android:maxLength="5"
+                                android:maxLines="1"
+                                android:inputType="phone"
+                                android:imeOptions="actionDone"
+                                android:digits="0123456789"
+                                android:textSize="13dp"
+                                android:textColor="@color/colorBlack"
+                                android:enabled="false" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1.5"
+                            android:hint="Caja"
+                            android:textColorHint="@color/AzulBack"
+                            app:hintTextColor="@color/AzulBack"
+                            app:boxBackgroundMode="outline"
+                            app:boxCornerRadiusTopEnd="10dp"
+                            app:boxCornerRadiusTopStart="10dp"
+                            app:boxBackgroundColor="@color/ColorWhite"
+                            app:boxStrokeColor="@color/colorPrimary"
+                            android:layout_marginLeft="2dp">
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/txtMultCaja"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:clickable="true"
+                                android:maxLength="2"
+                                android:maxLines="1"
+                                android:inputType="phone"
+                                android:imeOptions="actionDone"
+                                android:digits="0123456789"
+                                android:textSize="13dp"
+                                android:textColor="@color/colorBlack"
+                                android:enabled="false"
+                                android:visibility="gone"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+
                 </LinearLayout>
 
                 <ImageView

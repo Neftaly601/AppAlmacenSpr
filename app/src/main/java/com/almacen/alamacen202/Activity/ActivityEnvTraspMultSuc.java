@@ -229,8 +229,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 int cant=0;
                 cant=Integer.parseInt(txtCantidad.getText().toString());
                 int surtAcum=Integer.parseInt(lista.get(posicion2).getCantSurt());
-                if(!txtCantSurt.getText().toString().equals("") && Integer.parseInt(txtCantSurt.getText().toString())>0
-                        && (Integer.parseInt(txtCantSurt.getText().toString())+surtAcum)<=cant){
+                if(!txtCantSurt.getText().toString().equals("") && Integer.parseInt(txtCantSurt.getText().toString())>0){
                     int surt=Integer.parseInt(txtCantSurt.getText().toString());
                     surtAcum=surtAcum+surt;
                     AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
@@ -250,10 +249,18 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                     builder.setNegativeButton("CANCELAR", null);//
                     AlertDialog dialog = builder.create();
                     dialog.show();
+                }else if((Integer.parseInt(txtCantSurt.getText().toString())+surtAcum)<=cant){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
+                    builder.setTitle("AVISO");
+                    builder.setMessage("Excede cantidad, lleva "+surtAcum+" de surtido en este producto");
+                    builder.setCancelable(false);
+                    builder.setNegativeButton("ACEPTAR", null);//
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
                 }else{
                     AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
                     builder.setTitle("AVISO");
-                    builder.setMessage("Surtido en 0 o excede cantidad, lleva "+surtAcum+" de surtido en este producto");
+                    builder.setMessage("Surtido en 0 o vacio");
                     builder.setCancelable(false);
                     builder.setNegativeButton("ACEPTAR", null);//
                     AlertDialog dialog = builder.create();
@@ -438,7 +445,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                     escan=false;
                     boolean existe=false;
                     for(int i=0;i<lista.size();i++){
-                        if(lista.get(i).getProducto().equals(txtBuscaP.getText().toString())){
+                        if(lista.get(i).getProducto().equals(txtBuscaP.getText().toString().trim())){
                             //limpiar();
                             existe=true;
                             alertDialog.dismiss();
@@ -752,6 +759,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
     }//mensjProdCha
 
     public void buscar(String prod,boolean sumar){
+        prod=prod.trim();
         if(escan==false){
             boolean existe=false;
             for(int i=0;i<lista.size();i++){
@@ -881,6 +889,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
     public void alFinalizar(int alTerminar){
         switch (alTerminar){
             case 1:
+                mDialog.dismiss();
                 mensajeAggCaja();
                 break;
             case 2:
@@ -1462,7 +1471,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                         "&k_NumCajas="+numCajas+"&k_partida="+part+""+"&k_UUsuario="+usu;
                 String url = "http://"+strServer+"/InsertCajasE?"+parametros;
                 String jsonStr = new HttpHandler().makeServiceCall(url,strusr,strpass);
-                if (jsonStr != null) {
+                if(jsonStr != null) {
                     try {
                         JSONObject jsonObj = new JSONObject(jsonStr);
                         JSONArray jsonArray = jsonObj.getJSONArray("Response");
@@ -1498,6 +1507,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             super.onPostExecute(result);
             if(conn==true && mensaje.equals("Insertado Exitosa") || mensaje.equals("Actualizacion Exitosa")) {
                 //cajaGuard=true;
+                mDialog.dismiss();
                 Toast.makeText(ActivityEnvTraspMultSuc.this, "Sincronizado", Toast.LENGTH_SHORT).show();
                 bepp.play(sonido_correcto, 1, 1, 1, 0, 0);
                 TOTPZA=TOTPZA+Integer.parseInt(cant);
@@ -1526,6 +1536,113 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             }//else<
         }//onPost
     }//AsyncInsertCajasE
+
+    private class AsyncInsertCajasEContenedores extends AsyncTask<Void, Void, String> {
+
+        private String suc,folio,producto,cant,numCajas,part,usu,var,ProductoActual,newCant;
+        private boolean conn,sumar;
+        int alTerminar;
+
+        public AsyncInsertCajasEContenedores(String suc, String folio, String producto, String cant,
+                                 String numCajas, String part, String usu,String var,
+                                 boolean sumar,String ProductoActual,int alTerminar) {
+            this.suc = suc;
+            this.folio = folio;
+            this.producto = producto;
+            this.cant = cant;
+            this.numCajas = numCajas;
+            this.part = part;
+            this.usu = usu;
+            this.var=var;
+            this.sumar=sumar;
+            this.ProductoActual=ProductoActual;
+            this.alTerminar=alTerminar;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if(mDialog.isShowing()==false){
+                mDialog.show();
+            }
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            conn=firtMet();
+            newCant=cant;
+            if(conn==true){
+
+                String parametros="k_Sucursal="+suc+"&k_Folio="+folio+
+                        "&k_Producto="+producto+"&k_Cantidad="+cant+
+                        "&k_NumCajas="+numCajas+"&k_partida="+part+""+"&k_UUsuario="+usu;
+                String url = "http://"+strServer+"/InsertCajasE?"+parametros;
+                String jsonStr = new HttpHandler().makeServiceCall(url,strusr,strpass);
+                if(jsonStr != null) {
+                    try {
+                        JSONObject jsonObj = new JSONObject(jsonStr);
+                        JSONArray jsonArray = jsonObj.getJSONArray("Response");
+                        mensaje=jsonArray.getString(0);
+                        if(mensaje.equals("Insertado Exitosa") || mensaje.equals("Actualizacion Exitosa")){
+                            newCant=jsonArray.getString(1);
+                        }
+                    } catch (final JSONException e) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mensaje="Sin datos";
+                            }//run
+                        });
+                    }//catch JSON EXCEPTION
+                }else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mensaje="Problema actualizar";
+                        }//run
+                    });//runUniTthread
+                }//else
+                return null;
+            }else{
+                mensaje="Problemas de conexión";
+                return null;
+            }//else
+        }//doInBackground
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            if(conn==true && mensaje.equals("Insertado Exitosa") || mensaje.equals("Actualizacion Exitosa")) {
+                //cajaGuard=true;
+                mDialog.dismiss();
+                Toast.makeText(ActivityEnvTraspMultSuc.this, "Sincronizado", Toast.LENGTH_SHORT).show();
+                bepp.play(sonido_correcto, 1, 1, 1, 0, 0);
+                TOTPZA=TOTPZA+Integer.parseInt(cant);
+                lista.get(posicion2).setSincronizado(true);
+                lista.get(posicion2).setCantSurt(newCant);
+                escan=false;
+                if(sumar==true){
+                    buscar(ProductoActual,true);
+                }else{
+                    if((posicion+1)<lista.size()){
+                        var="next";
+                    }
+                    tipoCambio(var);
+                    mostrarDetalleProd();
+                }
+                alFinalizar(alTerminar);
+            }else{
+                mDialog.dismiss();
+                AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
+                builder.setTitle("AVISO");
+                builder.setMessage(mensaje);
+                builder.setCancelable(false);
+                builder.setNegativeButton("OK",null);
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }//else<
+        }//onPost
+    }//AsyncInsertCajasEContenedores
 
     private class AsyncConsultSigCaja extends AsyncTask<Void, Void, Void> {
 

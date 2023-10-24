@@ -211,6 +211,9 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                 if(!txtFolBusq.getText().equals("")){
                     Folio=folio(txtFolBusq.getText().toString());
                     txtFolBusq.setText(Folio);
+                    keyboard.hideSoftInputFromWindow(txtFolBusq.getWindowToken(), 0);
+                    rvTraspasos.setAdapter(null);
+                    limpiar();
                     new AsyncTotCajas(Folio).execute();
                 }else{
                     Toast.makeText(ActivityRecepTraspMultSuc.this, "Folio vacío", Toast.LENGTH_SHORT).show();
@@ -697,7 +700,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
 
     private class AsyncTotCajas extends AsyncTask<Void, Void, Void> {
 
-        private String folio;
+        private String folio,consSuc;
         private boolean conn;
 
         public AsyncTotCajas(String folio) {
@@ -708,7 +711,9 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             mDialog.show();
+            mensaje="";
             spCaja.setText("");
+            spCaja.setAdapter(null);
         }//onPreExecute
 
         @Override
@@ -727,8 +732,13 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                         TOTCAJAS=Integer.parseInt(dato.getString("maximo"));
                         TOTP=Integer.parseInt(dato.getString("totalp"));
                         RECEP=Integer.parseInt(dato.getString("recepcion"));
-                        if(TOTCAJAS==0){
-                            mensaje="No hay productos registrados en cajas";
+                        consSuc=dato.getString("suc");
+                        if(!consSuc.equals(strbran)){
+                            mensaje="Este folio no pertenece a esta sucursal";
+                        }else{
+                            if(TOTCAJAS==0){
+                                mensaje="No hay productos registrados en cajas";
+                            }
                         }
                     }catch (final JSONException e) {
                         runOnUiThread(new Runnable() {
@@ -756,7 +766,7 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aBoolean) {
             super.onPostExecute(aBoolean);
-            if(TOTCAJAS>=1) {
+            if(mensaje.equals("")) {
                 CONTCAJA=TOTCAJAS;
                 ArrayList<String> nomCajas=new ArrayList<>();
                 for(int k=1;k<=TOTCAJAS;k++){
