@@ -339,6 +339,7 @@
                         android:layout_weight="1"
                         android:orientation="horizontal">
                         <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tIlSurt"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -364,11 +365,13 @@
                                 android:textColor="@color/colorBlack"
                                 android:enabled="false" />
                         </com.google.android.material.textfield.TextInputLayout>
+
                         <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tIlSurtN"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1.5"
-                            android:hint="Caja"
+                            android:layout_weight="1"
+                            android:hint="Nuevo Surtido"
                             android:textColorHint="@color/AzulBack"
                             app:hintTextColor="@color/AzulBack"
                             app:boxBackgroundMode="outline"
@@ -376,22 +379,37 @@
                             app:boxCornerRadiusTopStart="10dp"
                             app:boxBackgroundColor="@color/ColorWhite"
                             app:boxStrokeColor="@color/colorPrimary"
-                            android:layout_marginLeft="2dp">
+                            android:layout_marginLeft="2dp"
+                            android:visibility="gone">
                             <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/txtMultCaja"
+                                android:id="@+id/txtCantSurtCont"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:clickable="true"
-                                android:maxLength="2"
+                                android:maxLength="5"
+                                android:text="0"
                                 android:maxLines="1"
                                 android:inputType="phone"
                                 android:imeOptions="actionDone"
                                 android:digits="0123456789"
                                 android:textSize="13dp"
                                 android:textColor="@color/colorBlack"
-                                android:enabled="false"
-                                android:visibility="gone"/>
+                                android:enabled="false"/>
                         </com.google.android.material.textfield.TextInputLayout>
+
+                        <CheckBox
+                            android:id="@+id/chTipoS"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Por Caja"
+                            android:lines="2"
+                            android:maxLines="2"
+                            android:textColor="@color/AzulBack"
+                            android:textSize="10dp"
+                            android:textStyle="bold"
+                            android:buttonTint="@color/AzulBack"
+                            android:layout_gravity="center"
+                            android:visibility="gone"/>
                     </LinearLayout>
 
                 </LinearLayout>
