@@ -25,8 +25,10 @@ import android.provider.Settings;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -186,9 +188,12 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                 Producto=editable.toString();
                 if(!editable.toString().equals("")){
                     if (codeBar.equals("Zebra")) {
+                        Producto=Producto.trim();
+                        Producto=Producto.replaceAll("(\n|\r)", "");
                         posicion2=posG;
                         cambio(Producto,true);
                         txtProd.setText("");
+                        txtProd.requestFocus();
                     }else{
                         for (int i = 0; i < editable.length(); i++) {
                             char ban;
@@ -204,6 +209,16 @@ public class ActivityRecepTraspMultSuc extends AppCompatActivity {
                 }//if es diferente a vacio
             }//after
         });//txtProd textchange
+
+        txtProd.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId ==0) {
+                    txtProd.requestFocus();
+                    return true;
+                }//if action done
+                return false;
+            }//oneditoraction
+        });
 
         btnBuscar.setOnClickListener(new View.OnClickListener() {
             @Override

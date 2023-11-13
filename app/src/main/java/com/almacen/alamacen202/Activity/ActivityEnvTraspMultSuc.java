@@ -327,9 +327,9 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                     Producto=editable.toString();
                     if(!editable.toString().equals("")){
                         if (codeBar.equals("Zebra")) {
+                            Producto=Producto.trim();
                             buscar(Producto,true);
                             txtProducto.setText("");
-                            txtProducto.requestFocus();
                             mover=true;
                         }else{
                             for (int i = 0; i < editable.length(); i++) {
@@ -338,7 +338,6 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                                 if (ban == '\n') {
                                     buscar(Producto,true);
                                     txtProducto.setText("");
-                                    txtProducto.requestFocus();
                                     mover=true;
                                     break;
                                 }//if
@@ -358,6 +357,10 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                     }else{
                         Toast.makeText(ActivityEnvTraspMultSuc.this, "Sin datos para buscar", Toast.LENGTH_SHORT).show();
                     }//else
+                    return true;
+                }//if action done
+                if (actionId ==0) {
+                    txtProducto.requestFocus();
                     return true;
                 }//if action done
                 return false;
@@ -485,10 +488,11 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(!txtBuscaP.getText().toString().equals("")){
+                    String comparar=txtBuscaP.getText().toString().trim();
                     escan=false;
                     boolean existe=false;
                     for(int i=0;i<lista.size();i++){
-                        if(lista.get(i).getProducto().equals(txtBuscaP.getText().toString().trim())){
+                        if(lista.get(i).getProducto().equals(comparar)){
                             btnBusc.setEnabled(true);
                             //limpiar();
                             existe=true;
@@ -781,6 +785,7 @@ public class ActivityEnvTraspMultSuc extends AppCompatActivity {
                 }//else
 
             }//else
+            txtProducto.requestFocus();
         }else{
             bepp.play(sonido_error, 1, 1, 1, 0, 0);
             AlertDialog.Builder builder = new AlertDialog.Builder(ActivityEnvTraspMultSuc.this);
