@@ -263,6 +263,36 @@ public class ActivityInventarioXfolioComp extends AppCompatActivity {
 
     }//onCreate
 
+    public String folio(String folio){
+        if (folio.length() < 7) {
+            int fo = folio.length();
+            switch (fo) {
+                case 1:
+                    folio = "000000" + folio;
+                    break;
+                case 2:
+                    folio = "00000" + folio;
+                    break;
+                case 3:
+                    folio ="0000" + folio;
+                    break;
+                case 4:
+                    folio ="000" + folio;
+                    break;
+                case 5:
+                    folio ="00" + folio;
+                    break;
+                case 6:
+                    folio = "0" + folio;
+                    break;
+                default:
+                    folio=folio;
+                    break;
+            }//switch
+        }//if
+        return folio;
+    }//String folio
+
     public void alertTraspasoUbi(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
@@ -404,7 +434,8 @@ public class ActivityInventarioXfolioComp extends AppCompatActivity {
 
         if (networkInfo != null && networkInfo.isConnected()) {//si hay conexion a internet
             if (!txtFolioOrden.getText().toString().equals("")){//si hay folio en edittext
-                folioSelec = txtFolioOrden.getText().toString();
+                folioSelec=folio(txtFolioOrden.getText().toString());
+                txtFolioOrden.setText(folioSelec);
                 new AsynCallOrdenCompra().execute();
                 //txtEscanerFol.setText(null);
             }else{

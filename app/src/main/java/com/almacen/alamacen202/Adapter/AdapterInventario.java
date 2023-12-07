@@ -31,8 +31,9 @@ public class AdapterInventario extends RecyclerView.Adapter<AdapterInventario.Vi
 
     @Override
     public void onBindViewHolder(AdapterInventario.ViewHolderInventario holder, int position) {
-        holder.Producto.setText(datos.get(position).getProducto());
-        holder.Cantidad.setText(datos.get(position).getCantidad());
+        holder.tvProd.setText(datos.get(position).getProducto());
+        holder.tvCant.setText(datos.get(position).getCantidad());
+        holder.tvEscan.setText(datos.get(position).getEscan());
         holder.n.setText(datos.get(position).getNum());
 
         if(index==position){
@@ -57,13 +58,14 @@ public class AdapterInventario extends RecyclerView.Adapter<AdapterInventario.Vi
     }
 
     public static class ViewHolderInventario extends RecyclerView.ViewHolder {
-        TextView n,Producto, Cantidad;
+        TextView n,tvProd,tvCant,tvEscan;
         LinearLayout lyInv;
         public ViewHolderInventario (View itemView) {
             super(itemView);
             n= itemView.findViewById(R.id.tvN);
-            Producto =  itemView.findViewById(R.id.Producto);
-            Cantidad =  itemView.findViewById(R.id.Cantidad);
+            tvProd =  itemView.findViewById(R.id.Producto);
+            tvCant = itemView.findViewById(R.id.Cantidad);
+            tvEscan =  itemView.findViewById(R.id.Escan);
             lyInv = itemView.findViewById(R.id.lyInv);
         }//constructor
     }//AdapterInventarioViewHolder class

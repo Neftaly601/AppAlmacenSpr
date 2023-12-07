@@ -468,7 +468,6 @@ public class ActivityMenu extends AppCompatActivity {
                         editor.commit();
                     }
                 });
-
                 AlertDialog titulo = alerta.create();
                 titulo.setTitle("¡AVISO!");
                 titulo.show();
