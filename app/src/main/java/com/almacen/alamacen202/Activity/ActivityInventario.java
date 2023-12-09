@@ -194,6 +194,7 @@ public class ActivityInventario extends AppCompatActivity {
                             buscar(ProductoAct,compararCantidad(ProductoAct)+"");
                             txtProducto.setText("");
                         }else{//manual si
+                            txtEscan.setText("");
                             txtEscan.requestFocus();
                             keyboard.showSoftInput(txtEscan, InputMethodManager.SHOW_IMPLICIT);
                         }//else
@@ -567,7 +568,7 @@ public class ActivityInventario extends AppCompatActivity {
             contInsert=0;
             posicion=-1;
             txtProductoVi.setText("");
-            txtEscan.setText("");
+            //txtEscan.setText("");
             conectaListInv();
             return null;
         }
@@ -830,6 +831,7 @@ public class ActivityInventario extends AppCompatActivity {
             if(listaInv.get(i).getProducto().equals(prod)){
                 bandera=true;
                 if(actualizarSql(prod,Integer.parseInt(cant)+"")==true){
+                    txtProductoVi.setText(prod);
                     listaInv.get(i).setEscan(cant);
                     mostrarDetalleCod(i);
                 }else{
@@ -908,7 +910,7 @@ public class ActivityInventario extends AppCompatActivity {
                 do {
                     j++;
                     if(ProductoAct.equals(fila.getString(0))){
-                        posicion=j-1;
+                        posicion=j;
                     }
                     listaInv.add(new Inventario((j+1)+"",fila.getString(0),fila.getString(1),fila.getString(2)));
                 }while (fila.moveToNext());
